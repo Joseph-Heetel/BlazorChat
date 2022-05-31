@@ -1,0 +1,74 @@
+﻿@using CustomBlazorApp.Shared
+@using System.Collections
+@inject Services.IChatStateService ChatStateService
+@inject Services.IChatApiService ChatApiService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Search in @(_currentChannel.Name)</MudText>
+    </TitleContent>
+    <DialogContent>
+        @switch (_state)
+        {
+            case EState.Config:
+                {
+                                <MudTextField Label="Search Text" @bind-Value=@(_searchStr)></MudTextField>
+                                <MudSelect @bind-Value=@(_author) Label="Message created by" Placeholder="Any Author">
+                                    <MudSelectItem Value=@(null) T=User>Any</MudSelectItem>
+                        @foreach (var user in _availableUsers)
+                        {
+                    <MudSelectItem Value=@(user.User)><UserView Params=user /></MudSelectItem>
+                        }
+        </MudSelect>
+                                <MudSwitch Label="Show time range select" @bind-Checked=@(DisplayRangePicker)>
+                                </MudSwitch>
+                    @if (DisplayRangePicker)
+                    {
+                                        <MudDateRangePicker @bind-DateRange=@(_range) Label="Message created at ... dates"></MudDateRangePicker>
+                    }
+                    break;
+                }
+            case EState.Fetch:
+                {
+                                <MudProgressCircular Indeterminate="true" />
+                    break;
+                }
+            case EState.Result:
+                {
+                                <MudText Typo="Typo.body1">
+                                    Query: "@(_searchStr)" @(_author == null ? "" : $"from {_author.Name}")
+                                </MudText>
+                                <MudText Typo="Typo.body1">@(_results.Count) results</MudText>
+                                <MudList SelectedValue=@(_selectedResult) SelectedValueChanged=@((object value) => this._selectedResult = value as Message) Clickable=true Style="max-height: 300px; overflow-y: auto">
+                        @foreach (var message in _results)
+                        {
+                                            <MudListItem Value=@(message.Message)>
+                                                <MessageView Params=message />
+                                            </MudListItem>
+                        }
+                                </MudList>
+                    break;
+                }
+        }
+    </DialogContent>
+    <DialogActions>
+        @if (_state != EState.Fetch)
+        {
+                <MudButton OnClick="Cancel">Cancel</MudButton>
+        }
+        @if (_state == EState.Config)
+        {
+                <MudButton Color="Color.Primary" OnClick="Search" Disabled=@(string.IsNullOrWhiteSpace(_searchStr))>Dispatch Search</MudButton>
+        }
+        @if (_state == EState.Result)
+        {
+                <MudButton OnClick="Reset">New Search</MudButton>
+                <MudButton Color="Color.Primary" OnClick="JumpToMessage" Disabled=@(_selectedResult == null)>Jump To Message</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    bool DisplayRangePicker = false;
+}
+

@@ -1,0 +1,80 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
+using System.Net.Http;
+using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
+using Microsoft.AspNetCore.Components.WebAssembly.Http;
+using Microsoft.JSInterop;
+using CustomBlazorApp.Client;
+using CustomBlazorApp.Client.Shared;
+using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor;
+using CustomBlazorApp.Shared;
+
+namespace CustomBlazorApp.Client.Components
+{
+    public partial class UserArea : IDisposable
+    {
+        private UserViewParams _selfUserParams = default;
+        private bool __isDarkMode = false;
+        private bool _isDarkMode
+        {
+            get => __isDarkMode;
+            set
+            {
+                ThemeService.SetDarkMode(!__isDarkMode);
+            }
+        }
+
+        protected override void OnInitialized()
+        {
+            ThemeService.IsDarkMode.StateChanged += IsDarkMode_StateChanged;
+            IsDarkMode_StateChanged(ThemeService.IsDarkMode.State);
+            ApiService.SelfUser.StateChanged += SelfUser_StateChanged;
+        }
+
+        private void SelfUser_StateChanged(User? value)
+        {
+            _selfUserParams = new UserViewParams()
+            {
+                DisplayOnlineState = false,
+                SelfUserId = default,
+                User = value,
+                UserId = value?.Id ?? default
+            };
+            this.StateHasChanged();
+        }
+
+        private void IsDarkMode_StateChanged(bool value)
+        {
+            __isDarkMode = value;
+            this.StateHasChanged();
+        }
+
+        private Task logout()
+        {
+            return ApiService.Logout();
+        }
+
+        private void editUserProfile()
+        {
+            if (ApiService.SelfUser.State != null)
+            {
+                DialogParameters parameters = new DialogParameters();
+                var dialog = DialogService.Show<UserEditDialog>("", parameters);
+            }
+        }
+
+        public void Dispose()
+        {
+            ThemeService.IsDarkMode.StateChanged -= IsDarkMode_StateChanged;
+            ApiService.SelfUser.StateChanged -= SelfUser_StateChanged;
+        }
+    }
+}

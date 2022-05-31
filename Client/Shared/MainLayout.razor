@@ -1,0 +1,11 @@
+﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject Services.IThemeService ThemeService
+
+<MudThemeProvider @ref=themeProvider IsDarkMode=@isDarkMode />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<CascadingValue TValue=IThemeInfo Value=@(themeInfo!)>
+    @Body
+</CascadingValue>
+

@@ -1,0 +1,60 @@
+﻿@using System.Text.Json
+@using CustomBlazorApp.Client.Components.Forms
+@using CustomBlazorApp.Client.Services
+@using CustomBlazorApp.Shared
+@inject IDialogService Dialogs
+@inject IChatApiService Api
+
+<MudButton OnClick=@(displayDialog) Disabled=_buttonDisabled>@(_buttonText)</MudButton>
+@code {
+    [Parameter]
+    public ItemId FormRequestId { get; set; } = default;
+
+    private FormRequest? _formRequest;
+    private bool _buttonDisabled = true;
+
+    private string _buttonText = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (FormRequestId.IsZero)
+        {
+            _buttonDisabled = true;
+            _buttonText = "";
+        }
+        else if (_formRequest?.Id != FormRequestId)
+        {
+            _buttonDisabled = true;
+            _buttonText = "Loading ...";
+            this.StateHasChanged();
+            _formRequest = await Api.GetFormRequest(FormRequestId);
+            if (_formRequest == null)
+            {
+                _buttonText = "Invalid Form";
+            }
+            else if (_formRequest.AnswerCount > 0 && !_formRequest.AllowMultipleAnswers)
+            {
+                _buttonText = "No further responses allowed";
+            }
+            else if (_formRequest.Expires < DateTimeOffset.Now)
+            {
+                _buttonText = "Expired";
+            }
+            else
+            {
+                _buttonDisabled = false;
+                _buttonText = "Submit Form";
+            }
+            this.StateHasChanged();
+        }
+    }
+
+    private void displayDialog()
+    {
+        DialogParameters parameters = new DialogParameters()
+        {
+            { nameof(FormDialog.FormRequest), _formRequest }
+        };
+        Dialogs.Show<FormDialog>("", parameters);
+    }
+}

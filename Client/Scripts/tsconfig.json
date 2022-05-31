@@ -1,0 +1,10 @@
+﻿{
+  "compilerOptions": {
+    "moduleResolution": "Node",
+    "module": "ES6",
+    "target": "ES6",
+    "typeRoots": [ "./definitions/@microsoft/dotnet-js-interop/dist" ],
+    "outDir": "../wwwroot/"
+  },
+  "exclude": [ "./definition/*" ],
+}

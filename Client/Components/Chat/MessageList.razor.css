@@ -1,0 +1,7 @@
+﻿div.messagelist_container
+{
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 0.8em;
+    justify-content: flex-start;
+}

@@ -1,0 +1,18 @@
+﻿@using CustomBlazorApp.Shared
+@inject Services.IChatStateService ChatState
+@inject IJSRuntime JS
+
+<div class="messagelist_container maxflex" style="overflow-y: auto; padding-top: 0px" id="listElement">
+    <div id="topMarker" style="flex: 0 0 1px" />
+    @foreach (var message in _messages)
+    {
+        <MessageView Params=message></MessageView>
+    }
+    <div id="bottomMarker" style="flex: 0 0 1px" />
+    @if (_messages.Count == 0)
+    {
+        <div style="flex: 0 1 50%" />
+        <MudText Align="Align.Center">@(ChatState.CurrentChannel.State == null ? "Select a channel to the left!" : "No messages yet. Send one!")</MudText>
+        <div style="flex: 0 1 50%" />
+    }
+</div>

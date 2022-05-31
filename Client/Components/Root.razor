@@ -1,0 +1,42 @@
+﻿@using CustomBlazorApp.Client.Components.Chat
+@using CustomBlazorApp.Client.Components.Calls
+@using CustomBlazorApp.Shared
+@using System.Security.Cryptography
+@using System.Text
+@inject Services.IChatApiService ChatApiService
+@inject Services.ICallService CallService
+@inject ISnackbar Snackbar;
+
+<AuthorizeView>
+    <Authorized>
+        @if (_callInProgress)
+        {
+            <CallRoot />
+        }
+        else
+        {
+            <ChatRoot />
+        }
+    </Authorized>
+    <NotAuthorized>
+        <MudMainContent>
+            <form onsubmit=@(() => onSubmit())>
+                @if (enableEnduserSelfregister)
+                {
+                    <MudSwitch @bind-Checked=@(_registerInsteadOfLogin) Label="Register new User"></MudSwitch>
+                    @if (_registerInsteadOfLogin)
+                    {
+                        <MudTextField @bind-Value=@(_username) Label="Username" HelperText="Non-unique display name for the user"></MudTextField>
+                    }
+                }
+                <MudTextField @bind-Value=@(_login) Label="Login" HelperText="Unique identifier (ex. E-Mail) for the user"></MudTextField>
+                <MudTextField @bind-Value=@(_password) Label="Password" HelperText="User password" InputType=@(InputType.Password)></MudTextField>
+                <MudButton ButtonType=@(ButtonType.Submit) Variant="Variant.Filled" Color="Color.Primary">@(_registerInsteadOfLogin ? "Register" : "Login")</MudButton>
+            </form>
+            @if (_state == Services.LoginState.Connecting)
+            {
+                <MudProgressCircular Indeterminate="true" Color=@(Color.Primary) />
+            }
+        </MudMainContent>
+    </NotAuthorized>
+</AuthorizeView>

@@ -1,0 +1,9 @@
+﻿div.formviewroot {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-flow: column nowrap;
+    align-items: center;
+    flex: 0 1 100%;
+    overflow-y: auto;
+}

@@ -1,0 +1,17 @@
+﻿div.messagecontainer {
+    display: flex;
+    max-width: 100%;
+    flex-flow: column nowrap;
+    gap: 0.5em;
+    margin: 0.5em;
+    flex: 0 0 fit-content;
+    flex: 0 0 content;
+}
+
+div.alignleft {
+    align-items: start;
+}
+
+div.alignright{
+    align-items: end;
+}

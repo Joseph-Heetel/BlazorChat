@@ -1,0 +1,64 @@
+﻿@using CustomBlazorApp.Shared
+@using Services
+@inject ICallService Calls
+@inject IChatApiService Api
+@inject IChatStateService State
+
+<MudLayout Class="restrictheight">
+    <MudAppBar ToolBarClass="row_container gap">
+        <MudTooltip Text="Leave Call">
+            <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.CallEnd" Color="Color.Secondary" OnClick=hangup />
+        </MudTooltip>
+        <MudText Typo=@(Typo.h5) Class="maxflex">Peer to Peer Call</MudText>
+    </MudAppBar>
+    <MudMainContent Class="restrictheight row_container">
+        <MudCard Class="column_container" Style="flex: 0 0 12rem; height: 100%">
+            <div class="flexspacer" />
+            <UserView Params=_localUser />
+            <Video Id="LocalVideo" Style="max-width: calc(100% - 1rem)" />
+            <MudSelect T=Device Label="Video" @bind-Value=_videoDevice>
+                <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
+                @foreach (var device in _availableVideoDevices)
+                {
+                    <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T=Device Label="Audio" @bind-Value=_audioDevice>
+                <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
+                @foreach (var device in _availableAudioDevices)
+                {
+                    <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                }
+            </MudSelect>
+            <div class="flexspacer" />
+            @if (!string.IsNullOrEmpty(_screenshare))
+            {
+                <MudText>Sharing @(_screenshare)</MudText>
+                <MudButton StartIcon=@(Icons.Filled.Stop) OnClick=endScreenShare>Stop Sharing</MudButton>
+            }
+            else
+            {
+                <MudButton StartIcon=@(Icons.Filled.ScreenShare) OnClick=beginScreenShare>Screen Share</MudButton>
+            }
+            <div class="maxflex" />
+        </MudCard>
+        <Video Id="RemoteCamera" Style="flex: 1 1 100%; height: 100%; position: relative">
+            <MudCard Style="position:absolute; left: 1rem; top: 1rem">
+                @if (_state == Services.ECallState.Ongoing)
+                {
+                    <UserView Params=_remoteUser />
+                }
+                else
+                {
+                    <MudText>@(_state)</MudText>
+                }
+            </MudCard>
+        </Video>
+        <Video Id="RemoteCapture" Style="flex: 1 1 100%; height: 100%; position: relative">
+            <MudCard Style="position:absolute; left: 1rem; top: 1rem">
+                <MudText>Screen Capture</MudText>
+            </MudCard>
+        </Video>
+        <audio id="RemoteAudio" autoplay style="display: none" />
+    </MudMainContent>
+</MudLayout>

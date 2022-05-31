@@ -1,0 +1,14 @@
+﻿@using System.Text.Json
+@using System.Text.RegularExpressions
+@inherits FormValueBase<string?>
+
+@if (_paramsValid)
+{
+    <MudTextField T=string @bind-Text=_value
+           Required=@(!_optional)
+              Immediate
+              Label=@(Schema!.Title)
+              HelperText=@(Schema!.Description)
+              Error=@(_errorHints.Any())
+              ErrorText=@(_errorHint) />
+}

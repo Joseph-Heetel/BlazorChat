@@ -1,0 +1,41 @@
+﻿@using System.Text.Json
+@using CustomBlazorApp.Client.Services
+@inject IChatApiService Api
+@inject IHttpClientFactory ClientFactory
+@inject NavigationManager Nav
+
+@* Style="width: 80%; max-width: 80%; height: 90%; max-height: 90%;" ClassContent="formscontainer" *@
+
+<MudDialog>
+    <DialogContent>
+
+
+        @switch (_state)
+        {
+            case EState.Editing:
+                <CascadingValue Value=@(_formRoot)>
+                    <div class="formviewroot">
+                        <FormObjectViewer Schema=_schema Form=_formRoot DisplayAlways=true />
+                    </div>
+                </CascadingValue>
+                @if (!_validation.IsSuccess)
+                {
+                    <MudText Color=@(Color.Error)>Unable to submit: @(_errors)</MudText>
+                }
+                break;
+            case EState.Submitted:
+                <MudText>Form Submitted</MudText>
+                break;
+            case EState.Fetching:
+            case EState.Uploading:
+                <MudProgressCircular Indeterminate />
+                break;
+        }
+
+        <MudButton OnClick=@(Submit)>Submit</MudButton>
+    </DialogContent>
+</MudDialog>
+
+
+
+

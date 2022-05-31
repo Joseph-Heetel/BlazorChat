@@ -1,0 +1,45 @@
+﻿@using CustomBlazorApp.Client.Services
+@using CustomBlazorApp.Shared
+@using System.Collections
+@inject IChatStateService ChatStateService
+@inject IChatApiService ChatApiService
+@inject IMediaResolverService MediaService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Edit User Profile
+        </MudText>
+        <div class="flexspacer"/>
+            <UserView Params=@(_selfUserParams) />
+    </TitleContent>
+    <DialogContent>
+        <InputFile id="fileInput" OnChange="uploadAvatar" hidden accept=".jpg, .jpeg, .png, .pdf" />
+        @if (string.IsNullOrEmpty(_process))
+        {
+            <div class="row_container">
+                <MudTextField T=string Label="Edit Username" @bind-Text=@(_userName)></MudTextField>
+                <MudButton OnClick=@(updateUserName)>Apply</MudButton>
+            </div>
+            <MudButton HtmlTag="label"
+                   Variant="Variant.Outlined"
+                   for="fileInput">
+                @if (!string.IsNullOrEmpty(_avatarUrl))
+                {
+                    <img class="avatarpreview" src=@(_avatarUrl) />
+                    <div class="flexspacer" />
+                }
+                <MudText>Upload Avatar</MudText>
+            </MudButton>
+        }
+        else
+        {
+            <MudText>@(_process)</MudText>
+            <MudProgressCircular Indeterminate></MudProgressCircular>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick=@(exit)>Done</MudButton>
+    </DialogActions>
+</MudDialog>
+
+

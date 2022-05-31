@@ -1,0 +1,49 @@
+﻿div.container {
+    position: relative;
+    flex: 0 0 1.6em;
+    width: 1.6em;
+    height: 1.6em;
+    min-width: 1.6em;
+    min-height: 1.6em;
+    max-width: 1.6em;
+    max-height: 1.6em;
+}
+
+div.small {
+    font-size: 1em;
+}
+
+div.medium {
+    font-size: 2em;
+}
+
+div.large {
+    font-size: 3em;
+}
+
+.bubble {
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.badge {
+    position: absolute;
+    background-color: var(--mud-palette-success);
+    border-radius: 50%;
+    bottom: -3px;
+    right: -3px;
+    width: 40%;
+    height: 40%;
+}
+
+span.initials {
+    font-size: 0.8em;
+}

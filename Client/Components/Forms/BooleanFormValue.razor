@@ -1,0 +1,41 @@
+﻿@using System.Text.Json
+@using System.Text.RegularExpressions
+@inherits FormValueBase<bool?>
+
+@if (_paramsValid)
+{
+    @if (_allowNull)
+    {
+        <MudSelect T=bool? @bind-Value=_value
+           Label=@(Schema!.Title)
+           Error=@(_errorHints.Any())
+           ErrorText=@(_errorHint)
+           HelperText=@(Schema!.Description)>
+            <MudSelectItem T=bool? Value=null>No Answer</MudSelectItem>
+            <MudSelectItem T=bool? Value=true>Yes</MudSelectItem>
+            <MudSelectItem T=bool? Value=false>No</MudSelectItem>
+        </MudSelect>
+    }
+    else
+    {
+        <MudTooltip Text=@(Schema!.Description)>
+            <MudSwitch @bind-Checked=_value
+               Label=@(Schema!.Title)
+               Error=@(_errorHints.Any())
+               ErrorText=@(_errorHint) />
+        </MudTooltip>
+    }
+}
+
+@code {
+    private bool _allowNull = false;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (Schema != null)
+        {
+            _allowNull = Schema.GetTypeConstraint().Contains(ESchemaValueKind.Null);
+        }
+    }
+}

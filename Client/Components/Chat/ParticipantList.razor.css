@@ -1,0 +1,19 @@
+﻿div.userlistcontainer {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1em;
+    padding: 1em;
+}
+
+div.userlistitem {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 0.2em;
+    align-items: center;
+}
+
+div.participantcaptions {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 0 1 100%;
+}

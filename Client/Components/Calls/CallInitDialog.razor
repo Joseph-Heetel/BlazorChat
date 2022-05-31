@@ -1,0 +1,43 @@
+﻿@using CustomBlazorApp.Client.Services
+@inject Services.ICallService Calls
+@inject Services.IChatApiService Api
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo=@(Typo.h6)>Call @(RemoteUser?.Name ?? "?")</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (!_devicesLoaded)
+        {
+            if (string.IsNullOrEmpty(_errorMessage))
+            {
+                <MudProgressCircular Indeterminate=true></MudProgressCircular>
+            }
+            else
+            {
+                <MudText Typo=@(Typo.body1) Color=@(Color.Error)>@(_errorMessage)</MudText>
+            }
+        }
+        else
+        {
+            <MudSelect T="Device" @bind-Value=__videoDevice Label="Select Video Input">
+                <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
+                @foreach (var device in _videoInputs)
+                {
+                    <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="Device" @bind-Value=__audioDevice Label="Select Audio Input">
+                <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
+                @foreach (var device in _audioInputs)
+                {
+                    <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                }
+            </MudSelect>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick=onCancel>@(_cancelString)</MudButton>
+        <MudButton StartIcon=@(Icons.Filled.Call) OnClick=onAccept Disabled=@(__videoDevice == null && __audioDevice == null)>@(_acceptString)</MudButton>
+    </DialogActions>
+</MudDialog>

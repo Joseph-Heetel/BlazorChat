@@ -1,0 +1,26 @@
+﻿@inject Services.IChatStateService ChatStateService
+@inject Services.IChatApiService ChatApiService
+@inject Services.ICallService CallService
+@inject IDialogService DialogService
+
+<div class="userlistcontainer">
+    @foreach (var participant in _participantsSorted.Values)
+    {
+        <div class="userlistitem">
+            <MudTooltip Text="@(participant.Tooltip)">
+                <MudMenu AnchorOrigin=@(Origin.CenterLeft) TransformOrigin=@(Origin.TopRight)>
+                    <ActivatorContent>
+                        <UserView Params="participant.ViewParams" />
+                    </ActivatorContent>
+                    <ChildContent>
+                        <UserProfileViewer Params="participant.ProfileParams" />
+                    </ChildContent>
+                </MudMenu>
+            </MudTooltip>
+            @if ((participant.ViewParams.User?.Online ?? false) && participant.ViewParams.UserId != _selfUserId)
+            {
+                <MudIconButton Icon=@(Icons.Filled.Call) OnClick=@(() => callParticipant(participant.ViewParams.User)) />
+            }
+        </div>
+    }
+</div>

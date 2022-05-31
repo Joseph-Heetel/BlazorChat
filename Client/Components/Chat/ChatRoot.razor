@@ -1,0 +1,95 @@
+﻿@using CustomBlazorApp.Shared
+@using System.Text.Json
+@inject Services.IChatApiService ChatApiService
+@inject Services.IChatStateService ChatStateService
+@inject Services.IChatHubService ChatHubService
+@inject Services.ICallService CallService
+@inject ISnackbar _Snackbar;
+@inject IDialogService DialogService
+
+<MudLayout Class="restrictheight">
+    <MudAppBar Color="Color.Surface" ToolBarClass="row_container gap">
+        <MudTooltip Text=@(_displayChannelList ? "Hide Channel List" : "Show Channel List")>
+            <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Chat" Color=_appbarButtonColor OnClick="@((_) => ToggleChannelList())" />
+        </MudTooltip>
+        <MudText Typo=@(Typo.h5) Class="maxflex">@(Title())</MudText>
+        <MudTooltip Text="Perform search">
+            <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Search" Color=_appbarButtonColor OnClick=@(openSearchDialog) Disabled=@(CurrentChannel == null) />
+        </MudTooltip>
+        <MudTooltip Text=@(_displayUserList ? "Hide Channel Participants" : "Show Channel Participants")>
+            <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.People" Color=_appbarButtonColor OnClick="@((_) => ToggleUserList())" />
+        </MudTooltip>
+    </MudAppBar>
+    <MudMainContent Class="restrictheight">
+        <MudDrawerContainer Class="restrictheight">
+            <MudDrawer @bind-Open="@_displayChannelList" Anchor="Anchor.Left" Class="shrinkdrawer">
+                <ChannelList Params=(_channelListParams) OnChannelClicked=(ChannelList_OnChannelClicked)></ChannelList>
+                <MudToolBar>
+                    <UserArea />
+                </MudToolBar>
+            </MudDrawer>
+            <MudDrawer Anchor="Anchor.Right" Fixed="false" @bind-Open="@_displayUserList" Class="shrinkdrawer">
+                <ChannelInfo Params=(_channelInfoParams) />
+                <ParticipantList Params=(_userListParams) />
+            </MudDrawer>
+
+            <div class="maincontainer @(SubtractDrawerClasses())">
+                <MessageList Params=(_messageListParams) OnTopVisible=attemptLoadOlderMessages OnBottomVisible=attemptLoadNewerMessages></MessageList>
+                <MudPaper Outlined=true>
+                    <MudToolBar Class="bottomtoolbar">
+                        <SendControl Params=@(_sendControlParams)></SendControl>
+                    </MudToolBar>
+                </MudPaper>
+            </div>
+        </MudDrawerContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    [CascadingParameter]
+    IThemeInfo? _themeInfo { get; set; }
+
+    bool _displayChannelList = true;
+    bool _displayUserList = true;
+
+    void ToggleChannelList()
+    {
+        _displayChannelList = !_displayChannelList;
+    }
+
+    void ToggleUserList()
+    {
+        _displayUserList = !_displayUserList;
+    }
+
+    string SubtractDrawerClasses()
+    {
+        if (_displayChannelList && _displayUserList)
+        {
+            return "subtractdrawerboth";
+        }
+        else if (_displayChannelList)
+        {
+            return "subtractdrawerleft";
+        }
+        else if (_displayUserList)
+        {
+            return "subtractdrawerright";
+        }
+        return "";
+    }
+
+    string Title()
+    {
+        if (CurrentChannel != null)
+        {
+            return CurrentChannel.Name;
+        }
+        else
+        {
+            return $"CustomBlazorChat";
+        }
+    }
+
+    Color _appbarButtonColor => (_themeInfo?.IsDarkMode ?? false) ? Color.Primary : Color.Inherit;
+}

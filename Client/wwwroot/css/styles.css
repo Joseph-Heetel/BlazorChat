@@ -1,0 +1,111 @@
+﻿div.column_container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+div.row_container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+
+.minflex {
+    flex: 0 0 content;
+}
+
+.maxflex {
+    flex: 1 1 100%;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.autoflex {
+    flex: 1 1 auto;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.maincontent {
+    display: flex;
+    height: 100%;
+    flex-flow: column nowrap;
+}
+
+.bottomtoolbar {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 0.3em;
+}
+
+.restrictheight {
+    height: 100% !important;
+    max-height: 100% !important;
+}
+
+div.flexspacer {
+    flex: 0 0 1em;
+}
+
+div.flexspacer2 {
+    flex: 0 0 2em;
+}
+
+aside.shrinkdrawer {
+    height: calc(100% - var(--mud-appbar-height));
+    max-height: calc(100% - var(--mud-appbar-height));
+}
+
+.gap {
+    gap: 1em;
+}
+
+html {
+    overflow: hidden;
+}
+
+.centerviamargin {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.darkbackgroundaccent {
+    background-color: var(--mud-palette-primary);
+}
+
+div.lightbackgroundaccent {
+    background-color: var(--mud-palette-info-lighten);
+}
+
+div.jsonrow {
+    display: flex;
+    flex-flow: row nowrap;
+    width: max-content;
+}
+
+div.darkenedcard{
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.optional {
+    color: var(--mud-palette-text-secondary);
+}
+
+.required {
+    color: var(--mud-palette-error);
+}
+
+.formscontainer {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+}

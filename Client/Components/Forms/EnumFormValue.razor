@@ -1,0 +1,33 @@
+﻿@using System.Text.Json
+@using System.Text.RegularExpressions
+@inherits FormValueBase<string?>
+
+@if (_paramsValid)
+{
+    <MudSelect T=string @bind-Value=@(_value)
+           Required=@(!_optional)
+           Label=@(Schema!.Title)
+           Error=@(_errorHints.Any())
+           ErrorText=@(_errorHint)
+           HelperText=@(Schema!.Description)>
+        @foreach (var enumValue in _enumValues)
+        {
+            <MudSelectItem Value=enumValue>@(enumValue.Trim('\"'))</MudSelectItem>
+        }
+    </MudSelect>
+}
+
+@code {
+    List<string> _enumValues = new List<string>();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        _enumValues.Clear();
+        if (Schema != null)
+        {
+            EnumConstraint constraint = (Schema.Constraints[EnumConstraint.Id] as EnumConstraint)!;
+            _enumValues.AddRange(constraint.Values);
+        }
+    }
+}

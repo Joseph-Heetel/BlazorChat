@@ -1,0 +1,80 @@
+{
+    "title": "Forms Demonstrator",
+    "properties": {
+        "strings": {
+            "title": "String Values",
+            "properties": {
+                "lengths": {
+                    "title": "Length Constrained",
+                    "description": "Maximum and minimum length",
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 8
+                },
+                "regexpattern": {
+                    "title": "Pattern Constrained",
+                    "description": "IP adresses match this regex",
+                    "type": "string",
+                    "pattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+                }
+            }
+        },
+        "numbers": {
+            "title": "Number Values",
+            "properties": {
+                "integer": {
+                    "title": "Integer",
+                    "description": "Allows only integers to be entered",
+                    "type": "integer"
+                },
+                "minMax": {
+                    "title": "Minima / Maxima",
+                    "description": "Inclusive and exlusive maxima can be set",
+                    "minimum": -0.5,
+                    "exclusiveMaximum": 0.78,
+                    "type": "number"
+                },
+                "multi": {
+                    "title": "Multiple Of",
+                    "description": "Allows only positive multiples of a certain number",
+                    "multipleOf": 0.3,
+                    "type": "number"
+                }
+            }
+        },
+        "selectors":{
+            "title": "Selectors and Toggles",
+            "properties":{
+                "toggle":{
+                    "title": "Toggle (boolean)",
+                    "description": "Just a toggle",
+                    "type":"boolean"
+                },
+                "optionaltoggle":{
+                    "title": "Toggle (Optional boolean)",
+                    "description": "Just a toggle",
+                    "type": ["boolean", "null"]
+                },
+                "enum":{
+                    "title":"Dropdown Selector",
+                    "enum": ["Option 1", "Option 2", "Option 3"]
+                }
+            }
+        },
+        "requireds":{
+            "title": "Required versus optional fields",
+            "properties": {
+                "optional": {
+                    "title": "Optional Field",
+                    "type": ["string", "null"]
+                },
+                "required":{
+                    "title": "Required Field",
+                    "type": "string"
+                }
+            },
+            "required": ["required"]
+        }
+    },
+    "required": ["strings", "numbers", "selectors", "requireds"]
+}

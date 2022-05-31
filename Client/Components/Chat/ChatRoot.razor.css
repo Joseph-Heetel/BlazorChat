@@ -1,0 +1,36 @@
+﻿.bottomtoolbar {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 0.3em;
+}
+
+div.maincontainer {
+    display: flex;
+    flex-flow: column nowrap;
+    /*    height: calc(100% - var(--mud-appbar-height));
+    max-height: calc(100% - var(--mud-appbar-height));*/
+    height: 100%;
+    max-height: 100%;
+}
+
+div.subtractdrawerleft {
+    width: calc(100% - var(--mud-drawer-width-left));
+    max-width: calc(100% - var(--mud-drawer-width-left));
+    margin-left: var(--mud-drawer-width-left);
+}
+
+div.subtractdrawerright {
+    width: calc(100% - var(--mud-drawer-width-right));
+    max-width: calc(100% - var(--mud-drawer-width-right));
+    margin-right: var(--mud-drawer-width-right);
+}
+
+div.subtractdrawerboth {
+    width: calc(100% - var(--mud-drawer-width-left) - var(--mud-drawer-width-right));
+    max-width: calc(100% - var(--mud-drawer-width-left) - var(--mud-drawer-width-right));
+    margin-left: var(--mud-drawer-width-left);
+    margin-right: var(--mud-drawer-width-right);
+}

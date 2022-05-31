@@ -1,0 +1,60 @@
+﻿@using CustomBlazorApp.Client.Components.Forms
+@using CustomBlazorApp.Client.Services
+@using CustomBlazorApp.Shared
+@inject IChatStateService ChatStateService
+@inject IChatApiService ChatApiService
+@inject IMediaResolverService MediaResolver
+
+<div class="messagecontainer @(_alignRight ? "alignright" : "alignleft")" id=@(Params.Message.Id)>
+    @if (Params.ShowAuthor)
+    {
+        <UserView Params=@(_authorViewParams) />
+    }
+    <MudCard Elevation=1 Style="width:fit-content; min-width: 18em; max-width: 70%" Class=@(_cardClass)>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="row_container" style="align-content: stretch">
+                    <MudText Typo=@(Typo.caption) Style="flex: 0 1 100%">@(_timedisplay)</MudText>
+                    @if (Params.TotalCount > 0)
+                    {
+                        <MudText Typo=@(Typo.caption) Style="flex: 0 1 100%; text-align: right">Read by @(Params.ReadCount) / @(Params.TotalCount)</MudText>
+                    }
+                </div>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                @if (!string.IsNullOrEmpty(_attachmentUrl))
+                {
+                    <MudIconButton Icon=@(Icons.Filled.Download) Link=@(_attachmentUrl)></MudIconButton>
+                }
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent Style="padding-top: 4px" Class="column_container">
+            @foreach (string text in _text)
+            {
+                <MudText Style="align-self: start" Typo=@(Typo.body1)>@(text)</MudText>
+            }
+            @if (!_formRequestId.IsZero)
+            {
+                <MessageFormViewer FormRequestId=_formRequestId />
+            }
+            @if (_hasAttachment)
+            {
+                @if (string.IsNullOrEmpty(_attachmentUrl))
+                {
+                    <MudProgressCircular Indeterminate=true />
+                }
+                else if (_attachmentIsImage)
+                {
+                    <MudImage Src=@(_attachmentUrl) Fluid=true></MudImage>
+                }
+                else
+                {
+                    <MudText Typo=@(Typo.body1)><MudIcon Icon=@(Icons.Filled.FileOpen)></MudIcon> @(Path.GetFileName(_attachmentUrl))</MudText>
+                }
+            }
+            
+
+        </MudCardContent>
+    </MudCard>
+
+</div>

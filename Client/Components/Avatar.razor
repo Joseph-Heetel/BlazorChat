@@ -1,0 +1,19 @@
+﻿@using CustomBlazorApp.Client.Services
+@inject IMediaResolverService MediaResolver
+
+<div style=@(Style) class="container @(_size)">
+    @if (!string.IsNullOrEmpty(_imageUrl))
+    {
+        <img class="bubble" src="@(_imageUrl)"/>
+    }
+    else
+    {
+        <div style=@(_colorCode) class="bubble">
+            <span style=@(_initialsStyle) class="initials">@(_initials)</span>
+        </div>
+    }
+    @if (_onlineBadge)
+    {
+        <div class="badge"/>
+    }
+</div>
