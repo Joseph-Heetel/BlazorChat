@@ -117,6 +117,19 @@ namespace BlazorChat.Client.Components.Chat
             }
         }
 
+        private void openProfileViewer(UserProfileViewerParams param)
+        {
+            DialogParameters parameters = new DialogParameters()
+            {
+                [nameof(UserProfileViewDialog.Params)] = param
+            };
+            DialogOptions options = new DialogOptions()
+            {
+                NoHeader = true
+            };
+            _dialogService.Show<UserProfileViewDialog>("", parameters, options);
+        }
+
         public void Dispose()
         {
             ChatApiService.SelfUser.StateChanged -= SelfUser_StateChanged;

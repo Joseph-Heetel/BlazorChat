@@ -4,23 +4,19 @@
 
 <form onkeydown=@((KeyboardEventArgs e) => onKeyPress(e)) onsubmit=@(() => {}) class="maxflex">
     <InputFile id="fileInput" OnChange="onInputFileChanged" hidden accept=".jpg, .jpeg, .png, .pdf" />
-    <MudTooltip Text="Upload File">
-        <MudIconButton HtmlTag="label"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Icon="@Icons.Filled.CloudUpload"
-                       Disabled=@(_state != SendControlState.Ready)
-                       for="fileInput" />
-    </MudTooltip>
+    <MudIconButton HtmlTag="label"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Icon="@Icons.Filled.CloudUpload"
+                   Disabled=@(_state != SendControlState.Ready)
+                   for="fileInput" />
     @if (_file != null)
     {
         <MudText Typo=(Typo.body1)>File: @(getFileInfo())</MudText>
-        <MudTooltip Text="Clear File Selection">
-            <MudIconButton Variant="Variant.Filled"
-                       Color="Color.Error"
-                       Icon="@Icons.Filled.Cancel"
-                       OnClick=@(() => clearFile()) />
-        </MudTooltip>
+        <MudIconButton Variant="Variant.Filled"
+                   Color="Color.Error"
+                   Icon="@Icons.Filled.Cancel"
+                   OnClick=@(() => clearFile()) />
     }
     <MudTextField Class="autoflex" @bind-Value="_newMessageBody" Immediate Lines=@(2) Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     @if (_state == SendControlState.Sending)
@@ -29,13 +25,10 @@
     }
     else
     {
-        <MudTooltip Text="Send Message">
-            <MudIconButton
-                       Variant="Variant.Filled"
-                       Icon=@(Icons.Filled.Send)
-                       Color="Color.Primary"
-                       OnClick=@(onSubmit)
-                       Disabled="_state != SendControlState.Ready || (_file == null && string.IsNullOrEmpty(_newMessageBody))" />
-        </MudTooltip>
+        <MudIconButton Variant="Variant.Filled"
+                   Icon=@(Icons.Filled.Send)
+                   Color="Color.Primary"
+                   OnClick=@(onSubmit)
+                   Disabled="_state != SendControlState.Ready || (_file == null && string.IsNullOrEmpty(_newMessageBody))" />
     }
 </form>

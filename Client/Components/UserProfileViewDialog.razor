@@ -1,0 +1,47 @@
+﻿@inject IDialogService _dialogService
+
+<MudDialog>
+    <DialogContent>
+        <div class="container">
+            <UserView Params=_userviewparams Size=@(Size.Large) />
+            <div class="entry" style="margin-top: 2em">
+                <span class="key">Id</span>
+                <span class="spacer" />
+                <span class="value">@(_id)</span>
+            </div>
+            <div class="entry">
+                <span class="key">Account Created</span>
+                <span class="spacer" />
+                <span class="value">@(_created)</span>
+            </div>
+            @if (_hasParticipation)
+            {
+                <div class="entry" style="margin-top: 2em">
+                    <span class="key">In channel</span>
+                    <span class="value">@(_channelname)</span>
+                </div>
+                <div class="entry">
+                    <span class="key">Joined</span>
+                    <span class="spacer" />
+                    <span class="value">@(_joined)</span>
+                </div>
+                <div class="entry">
+                    <span class="key">Last Read Message</span>
+                    <span class="spacer" />
+                    <span class="value">@(_lastread)</span>
+                </div>
+            }
+        </div>
+    </DialogContent>
+    <DialogActions>
+        @if (!_isSelf)
+        {
+            <MudButton StartIcon=@(Icons.Filled.Call)
+                   Disabled=@(!_online)
+                   OnClick=@(CallUser)>
+                Call
+            </MudButton>
+        }
+        <MudButton OnClick=@(() => MudDialog.Close())>Close</MudButton>
+    </DialogActions>
+</MudDialog>

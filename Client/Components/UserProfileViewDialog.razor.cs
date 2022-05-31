@@ -31,8 +31,11 @@ namespace BlazorChat.Client.Components
         public Channel? Channel { get; set; } = null;
     }
 
-    public partial class UserProfileViewer
+    public partial class UserProfileViewDialog
     {
+        [CascadingParameter]
+        MudDialogInstance MudDialog { get; set; } = new MudDialogInstance();
+
         [Parameter]
         public UserProfileViewerParams Params { get; set; } = default;
 
@@ -80,13 +83,16 @@ namespace BlazorChat.Client.Components
 
         void CallUser()
         {
+            MudDialog.Close();
             User? user = Params.User;
             ItemId self = Params.SelfUserId;
             if (user != null && !self.IsZero && user.Online && user.Id != self)
             {
-                DialogParameters parameters = new DialogParameters();
-                parameters.Add(nameof(CallInitDialog.PendingCall), null);
-                parameters.Add(nameof(CallInitDialog.RemoteUser), user);
+                DialogParameters parameters = new DialogParameters()
+                {
+                    [nameof(CallInitDialog.PendingCall)] = null,
+                    [nameof(CallInitDialog.RemoteUser)] = user
+                };
                 var dialog = _dialogService.Show<CallInitDialog>("", parameters);
             }
         }

@@ -4,55 +4,39 @@
 @inject IDialogService DialogService
 
 <div class="bottomtoolbar" style="flex: 0 1 100%">
-    <MudTooltip Text="Show User Options" RootStyle="flex: 0 1 100%">
-        <MudMenu Variant="Variant.Filled" Color="Color.Primary" Style="width: 100%">
-            <ActivatorContent>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon=@(Icons.Filled.ArrowDropUp) Style="width: 100%">
-                    <UserView Params=@(_selfUserParams) Style="flex: 0 1 100%" />
-                </MudButton>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem OnClick=@(logout)>
+    <MudMenu Variant="Variant.Filled" Color="Color.Primary" Style="width: 100%">
+        <ActivatorContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon=@(Icons.Filled.ArrowDropUp) Style="width: 100%">
+                <UserView Params=@(_selfUserParams) Style="flex: 0 1 100%" />
+            </MudButton>
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem OnClick=@(logout)>
+                <div class="menuitem">
+                    <MudIcon Icon=@(Icons.Filled.Logout) Color="Color.Error" /> Logout
+                </div>
+            </MudMenuItem>
+            @if (_isDarkMode)
+            {
+                <MudMenuItem OnClick=@(() => _isDarkMode = false)>
                     <div class="menuitem">
-                        <MudIcon Icon=@(Icons.Filled.Logout) Color="Color.Error" /> Logout
+                        <MudIcon Icon=@(Icons.Filled.LightMode) /> Light Mode
                     </div>
                 </MudMenuItem>
-                @if (_isDarkMode)
-                {
-                    <MudMenuItem OnClick=@(() => _isDarkMode = false)>
-                        <div class="menuitem">
-                            <MudIcon Icon=@(Icons.Filled.LightMode) /> Light Mode
-                        </div>
-                    </MudMenuItem>
-                }
-                else
-                {
-                    <MudMenuItem OnClick=@(() => _isDarkMode = true)>
-                        <div class="menuitem">
-                            <MudIcon Icon=@(Icons.Filled.DarkMode) /> Dark Mode
-                        </div>
-                    </MudMenuItem>
-                }
-                <MudMenuItem OnClick=@(editUserProfile)>
+            }
+            else
+            {
+                <MudMenuItem OnClick=@(() => _isDarkMode = true)>
                     <div class="menuitem">
-                        <MudIcon Icon=@(Icons.Filled.Edit) /> Edit Profile
+                        <MudIcon Icon=@(Icons.Filled.DarkMode) /> Dark Mode
                     </div>
                 </MudMenuItem>
-            </ChildContent>
-        </MudMenu>
-    </MudTooltip>
-
-    @*    <MudTooltip Text="Logout">
-        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Logout" Color="Color.Secondary" OnClick="@(Logout)" />
-        </MudTooltip>
-        <div class="maxflex" />
-        <MudTooltip Text="Toggle Theme">
-        <MudToggleIconButton Variant="Variant.Filled"
-        Color="Color.Secondary"
-        ToggledColor="Color.Secondary"
-        Icon=@(Icons.Filled.DarkMode)
-        ToggledIcon=@(Icons.Filled.LightMode)
-        @bind-Toggled=IsDarkMode />
-        </MudTooltip>
-    *@
+            }
+            <MudMenuItem OnClick=@(editUserProfile)>
+                <div class="menuitem">
+                    <MudIcon Icon=@(Icons.Filled.Edit) /> Edit Profile
+                </div>
+            </MudMenuItem>
+        </ChildContent>
+    </MudMenu>
 </div>

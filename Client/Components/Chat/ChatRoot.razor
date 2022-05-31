@@ -9,16 +9,10 @@
 
 <MudLayout Class="restrictheight">
     <MudAppBar Color="Color.Surface" ToolBarClass="row_container gap">
-        <MudTooltip Text=@(_displayChannelList ? "Hide Channel List" : "Show Channel List")>
-            <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Chat" Color=_appbarButtonColor OnClick="@((_) => ToggleChannelList())" />
-        </MudTooltip>
+        <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Chat" Color=_appbarButtonColor OnClick="@((_) => ToggleChannelList())" />
         <MudText Typo=@(Typo.h5) Class="maxflex">@(Title())</MudText>
-        <MudTooltip Text="Perform search">
-            <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Search" Color=_appbarButtonColor OnClick=@(openSearchDialog) Disabled=@(CurrentChannel == null) />
-        </MudTooltip>
-        <MudTooltip Text=@(_displayUserList ? "Hide Channel Participants" : "Show Channel Participants")>
-            <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.People" Color=_appbarButtonColor OnClick="@((_) => ToggleUserList())" />
-        </MudTooltip>
+        <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Search" Color=_appbarButtonColor OnClick=@(openSearchDialog) Disabled=@(CurrentChannel == null) />
+        <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.People" Color=_appbarButtonColor OnClick="@((_) => ToggleUserList())" />
     </MudAppBar>
     <MudMainContent Class="restrictheight">
         <MudDrawerContainer Class="restrictheight">

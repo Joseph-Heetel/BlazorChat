@@ -4,32 +4,30 @@
     @foreach (var channel in _channelsSorted.Values)
     {
         <MudListItem Value=@(channel.Id)>
-            <MudTooltip Text=@($"@{channel.Name} [{channel.Id.ToString()}]")>
-                @if (channel.Id == Params.CurrentChannelId)
-                {
-                    <!-- Currently selected channel -->
-                    <div class="listitem">
-                        <MudIcon Icon=@(Icons.Filled.Chat)></MudIcon>
-                        <MudText Class="mud-text-primary" Typo=@(Typo.body1)>@(channel.Name)</MudText>
-                    </div>
-                }
-                else if (channel.HasUnread)
-                {
-                    <!-- Channel with unread messages -->
-                    <div class="listitem">
-                        <MudIcon Icon=@(Icons.Outlined.MarkChatUnread) Color=@(Color.Success)></MudIcon>
-                        <MudText Typo=@(Typo.body1)>@(channel.Name)</MudText>
-                    </div>
-                }
-                else
-                {
-                    <!-- Default -->
-                    <div class="listitem">
-                        <MudIcon Icon=@(Icons.Outlined.ChatBubbleOutline)></MudIcon>
-                        <MudText Typo=@(Typo.body1)>@(channel.Name)</MudText>
-                    </div>
-                }
-            </MudTooltip>
+            @if (channel.Id == Params.CurrentChannelId)
+            {
+                <!-- Currently selected channel -->
+                <div class="listitem">
+                    <MudIcon Icon=@(Icons.Filled.Chat)></MudIcon>
+                    <MudText Class="mud-text-primary" Typo=@(Typo.body1)>@(channel.Name)</MudText>
+                </div>
+            }
+            else if (channel.HasUnread)
+            {
+                <!-- Channel with unread messages -->
+                <div class="listitem">
+                    <MudIcon Icon=@(Icons.Outlined.MarkChatUnread) Color=@(Color.Success)></MudIcon>
+                    <MudText Typo=@(Typo.body1)>@(channel.Name)</MudText>
+                </div>
+            }
+            else
+            {
+                <!-- Default -->
+                <div class="listitem">
+                    <MudIcon Icon=@(Icons.Outlined.ChatBubbleOutline)></MudIcon>
+                    <MudText Typo=@(Typo.body1)>@(channel.Name)</MudText>
+                </div>
+            }
         </MudListItem>
     }
 </MudList>

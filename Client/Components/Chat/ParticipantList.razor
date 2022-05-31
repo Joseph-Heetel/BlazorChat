@@ -1,22 +1,15 @@
 ﻿@inject Services.IChatStateService ChatStateService
 @inject Services.IChatApiService ChatApiService
 @inject Services.ICallService CallService
-@inject IDialogService DialogService
+@inject IDialogService _dialogService
 
 <div class="userlistcontainer">
     @foreach (var participant in _participantsSorted.Values)
     {
         <div class="userlistitem">
-            <MudTooltip Text="@(participant.Tooltip)">
-                <MudMenu AnchorOrigin=@(Origin.CenterLeft) TransformOrigin=@(Origin.TopRight)>
-                    <ActivatorContent>
-                        <UserView Params="participant.ViewParams" />
-                    </ActivatorContent>
-                    <ChildContent>
-                        <UserProfileViewer Params="participant.ProfileParams" />
-                    </ChildContent>
-                </MudMenu>
-            </MudTooltip>
+            <MudButton OnClick=@(() => openProfileViewer(participant.ProfileParams))>
+                <UserView Params="participant.ViewParams" />
+            </MudButton>
         </div>
     }
 </div>
