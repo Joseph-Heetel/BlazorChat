@@ -17,6 +17,7 @@ using BlazorChat.Client.Services;
 using BlazorChat.Shared;
 using System.Text.Json;
 using BlazorChat.Client.Components.Forms;
+using MudBlazor;
 
 namespace BlazorChat.Client.Components.Chat
 {
@@ -39,6 +40,7 @@ namespace BlazorChat.Client.Components.Chat
         private bool _accent = false;
         private ItemId _formRequestId = default;
         private string _cardClass = "darkenedcard";
+        private ItemId _channelId = default;
 
         private UserViewParams _authorViewParams;
 
@@ -75,6 +77,7 @@ namespace BlazorChat.Client.Components.Chat
             };
             UserCache_StateChanged(ChatStateService.UserCache.State);
 
+            _channelId = Params.Message.ChannelId;
             _hasAttachment = Params.Message.Attachment != null;
             if (_hasAttachment)
             {
@@ -133,6 +136,20 @@ namespace BlazorChat.Client.Components.Chat
             if (dirty)
             {
                 this.StateHasChanged();
+            }
+        }
+
+        private void viewImage()
+        {
+            if (_attachmentUrl != null)
+            {
+                DialogParameters parameters = new DialogParameters()
+                {
+                    [nameof(ImageViewDialog.DomainId)] = _channelId,
+                    [nameof(ImageViewDialog.Attachment)] = Params.Message.Attachment
+                };
+                DialogOptions options = new DialogOptions() { NoHeader = true };
+                _dialogService.Show<ImageViewDialog>("", parameters, options);
             }
         }
 

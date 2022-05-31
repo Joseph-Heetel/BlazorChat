@@ -94,6 +94,36 @@ namespace BlazorChat.Shared
             }
             return MakeFileNameExt(fileId, MimeTypeToExtension(mime));
         }
+
+        public static string MakeHumanReadableFileSize(long size)
+        {
+            string fileSize = "";
+            const long oneKiB = 1024L;
+            const long oneMiB = oneKiB * 1024L;
+            const long oneGiB = oneMiB * 1024L;
+            const long oneTiB = (long)oneGiB * 1024L;
+            if (size < oneKiB)
+            {
+                fileSize = $"{size} B";
+            }
+            if (size >= oneKiB &&size < oneMiB)
+            {
+                fileSize = $"{size / (double)oneKiB:0.00} KiB";
+            }
+            else if (size >= oneMiB &&size < oneGiB)
+            {
+                fileSize = $"{size / (double)oneMiB:0.00} MiB";
+            }
+            else if (size >= oneGiB &&size < oneTiB)
+            {
+                fileSize = $"{size / (double)oneGiB:0.00} GiB";
+            }
+            else
+            {
+                fileSize = $"{size / (double)oneTiB:0.00} TiB";
+            }
+            return fileSize;
+        }
     }
 
     /// <summary>

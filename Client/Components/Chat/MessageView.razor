@@ -4,6 +4,7 @@
 @inject IChatStateService ChatStateService
 @inject IChatApiService ChatApiService
 @inject IMediaResolverService MediaResolver
+@inject IDialogService _dialogService
 
 <div class="messagecontainer @(_alignRight ? "alignright" : "alignleft")" id=@(Params.Message.Id)>
     @if (Params.ShowAuthor)
@@ -45,14 +46,16 @@
                 }
                 else if (_attachmentIsImage)
                 {
-                    <MudImage Src=@(_attachmentUrl) Fluid=true></MudImage>
+                    <MudButton OnClick=@(viewImage)>
+                        <MudImage Src=@(_attachmentUrl) Fluid=true></MudImage>
+                    </MudButton>
                 }
                 else
                 {
                     <MudText Typo=@(Typo.body1)><MudIcon Icon=@(Icons.Filled.FileOpen)></MudIcon> @(Path.GetFileName(_attachmentUrl))</MudText>
                 }
             }
-            
+
 
         </MudCardContent>
     </MudCard>

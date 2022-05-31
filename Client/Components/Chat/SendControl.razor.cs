@@ -103,28 +103,8 @@ namespace BlazorChat.Client.Components.Chat
         private string getFileInfo()
         {
             Debug.Assert(_file != null);
-            string fileSize = "";
-            const int oneKiB = 1024;
-            const int oneMiB = oneKiB * 1024;
-            const int oneGiB = oneMiB * 1024;
-            const long oneTiB = (long)oneGiB * 1024L;
-            if (_file.Size >= oneKiB && _file.Size < oneMiB)
-            {
-                fileSize = $"{_file.Size / oneKiB} KiB";
-            }
-            else if (_file.Size >= oneMiB && _file.Size < oneGiB)
-            {
-                fileSize = $"{_file.Size / oneMiB} MiB";
-            }
-            else if (_file.Size >= oneGiB && _file.Size < oneTiB)
-            {
-                fileSize = $"{_file.Size / oneGiB} GiB";
-            }
-            else
-            {
-                fileSize = $"{_file.Size} B";
-            }
-            string fileInfo = $"{_file.Name} ({fileSize})";
+
+            string fileInfo = $"{_file.Name} ({FileHelper.MakeHumanReadableFileSize(_file.Size)})";
 
             return fileInfo;
         }
