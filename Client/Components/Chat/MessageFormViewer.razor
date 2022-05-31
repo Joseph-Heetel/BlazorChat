@@ -1,7 +1,7 @@
 ﻿@using System.Text.Json
-@using CustomBlazorApp.Client.Components.Forms
-@using CustomBlazorApp.Client.Services
-@using CustomBlazorApp.Shared
+@using BlazorChat.Client.Components.Forms
+@using BlazorChat.Client.Services
+@using BlazorChat.Shared
 @inject IDialogService Dialogs
 @inject IChatApiService Api
 
@@ -9,6 +9,8 @@
 @code {
     [Parameter]
     public ItemId FormRequestId { get; set; } = default;
+
+    private ItemId _checkingRequestId = default;
 
     private FormRequest? _formRequest;
     private bool _buttonDisabled = true;
@@ -22,8 +24,9 @@
             _buttonDisabled = true;
             _buttonText = "";
         }
-        else if (_formRequest?.Id != FormRequestId)
+        else if (_formRequest?.Id != FormRequestId && _checkingRequestId != FormRequestId)
         {
+            _checkingRequestId = FormRequestId;
             _buttonDisabled = true;
             _buttonText = "Loading ...";
             this.StateHasChanged();

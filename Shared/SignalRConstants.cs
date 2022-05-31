@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CustomBlazorApp.Shared
+namespace BlazorChat.Shared
 {
     /// <summary>
     /// Constants for use of SignalR (Event/Method names)

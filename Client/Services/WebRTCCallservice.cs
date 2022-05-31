@@ -1,8 +1,8 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using Microsoft.JSInterop;
 using System.Text.Json;
 
-namespace CustomBlazorApp.Client.Services
+namespace BlazorChat.Client.Services
 {
     public enum ECallState
     {

@@ -1,12 +1,12 @@
-﻿using CustomBlazorApp.Server.Services;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Services;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Security.Cryptography;
 
-namespace CustomBlazorApp.Server.Controllers
+namespace BlazorChat.Server.Controllers
 {
     [Route("api/session")]
     [ApiController]

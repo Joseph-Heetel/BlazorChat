@@ -11,13 +11,13 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.JSInterop;
-using CustomBlazorApp.Client;
-using CustomBlazorApp.Shared;
+using BlazorChat.Client;
+using BlazorChat.Shared;
 using System.Text.Json;
 using MudBlazor;
-using CustomBlazorApp.Client.Components.Calls;
+using BlazorChat.Client.Components.Calls;
 
-namespace CustomBlazorApp.Client.Components.Chat
+namespace BlazorChat.Client.Components.Chat
 {
     public sealed partial class ChatRoot : IAsyncDisposable
     {
@@ -162,7 +162,7 @@ namespace CustomBlazorApp.Client.Components.Chat
             updateUserListParams();
         }
 
-        private void SelfUser_StateChanged(CustomBlazorApp.Shared.User? value)
+        private void SelfUser_StateChanged(BlazorChat.Shared.User? value)
         {
             this.SelfUser = value;
             updateMessageListParams();

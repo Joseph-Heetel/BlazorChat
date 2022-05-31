@@ -1,7 +1,7 @@
-﻿using CustomBlazorApp.Server.Models;
+﻿using BlazorChat.Server.Models;
 using Microsoft.Azure.Cosmos.Scripts;
 
-namespace CustomBlazorApp.Server.Services.DatabaseWrapper
+namespace BlazorChat.Server.Services.DatabaseWrapper
 {
     public struct TableActionResult
     {

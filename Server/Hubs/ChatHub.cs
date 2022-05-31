@@ -1,11 +1,11 @@
-﻿using CustomBlazorApp.Server.Services;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Services;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.SignalR;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace CustomBlazorApp.Server.Hubs
+namespace BlazorChat.Server.Hubs
 {
 
     public class ChatHub : Hub

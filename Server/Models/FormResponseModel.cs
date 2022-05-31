@@ -1,9 +1,9 @@
-﻿using CustomBlazorApp.Server.Services.DatabaseWrapper;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Services.DatabaseWrapper;
+using BlazorChat.Shared;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
-namespace CustomBlazorApp.Server.Models
+namespace BlazorChat.Server.Models
 {
     public class FormResponseModel : DBModelBase
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace CustomBlazorApp.Shared
+namespace BlazorChat.Shared
 {
     /// <summary>
     /// Represents a user interacting with chat

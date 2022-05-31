@@ -11,14 +11,14 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.JSInterop;
-using CustomBlazorApp.Client;
-using CustomBlazorApp.Client.Shared;
+using BlazorChat.Client;
+using BlazorChat.Client.Shared;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using CustomBlazorApp.Shared;
+using BlazorChat.Shared;
 using System.Collections;
 
-namespace CustomBlazorApp.Client.Components.Chat
+namespace BlazorChat.Client.Components.Chat
 {
     public partial class SearchDialog
     {

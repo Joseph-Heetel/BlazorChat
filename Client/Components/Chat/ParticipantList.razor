@@ -17,10 +17,6 @@
                     </ChildContent>
                 </MudMenu>
             </MudTooltip>
-            @if ((participant.ViewParams.User?.Online ?? false) && participant.ViewParams.UserId != _selfUserId)
-            {
-                <MudIconButton Icon=@(Icons.Filled.Call) OnClick=@(() => callParticipant(participant.ViewParams.User)) />
-            }
         </div>
     }
 </div>

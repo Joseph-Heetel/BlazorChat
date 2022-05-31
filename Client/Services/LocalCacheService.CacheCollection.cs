@@ -1,7 +1,7 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using System.Text.Json;
 
-namespace CustomBlazorApp.Client.Services
+namespace BlazorChat.Client.Services
 {
 
     public partial class LocalCacheService

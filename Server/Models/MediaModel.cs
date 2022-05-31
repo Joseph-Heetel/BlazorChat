@@ -1,7 +1,7 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using System.Text.Json.Serialization;
 
-namespace CustomBlazorApp.Server.Models
+namespace BlazorChat.Server.Models
 {
     public class MediaModel : DBModelBase
     {

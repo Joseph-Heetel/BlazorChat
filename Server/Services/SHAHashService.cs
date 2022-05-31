@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Security.Cryptography;
-using CustomBlazorApp.Shared;
+using BlazorChat.Shared;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     /// <summary>
     /// A service for generating stable hashes (c# object.GetHashCode() is not guaranteed stable!)

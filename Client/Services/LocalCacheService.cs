@@ -1,8 +1,8 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using Blazored.LocalStorage;
 using System.Text.Json.Serialization;
 
-namespace CustomBlazorApp.Client.Services
+namespace BlazorChat.Client.Services
 {
     public sealed partial class LocalCacheService : ILocalCacheService, IDisposable
     {

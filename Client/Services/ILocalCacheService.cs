@@ -1,7 +1,7 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 
 
-namespace CustomBlazorApp.Client.Services
+namespace BlazorChat.Client.Services
 {
     public struct Result<T> where T : class
     {

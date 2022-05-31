@@ -1,10 +1,10 @@
-﻿using CustomBlazorApp.Server.Services;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Services;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace CustomBlazorApp.Server.AdminApi
+namespace BlazorChat.Server.AdminApi
 {
     [Route("api/admin/users")]
     [ApiController]

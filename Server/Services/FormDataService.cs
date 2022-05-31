@@ -1,10 +1,10 @@
-﻿using CustomBlazorApp.Server.Models;
-using CustomBlazorApp.Server.Services.DatabaseWrapper;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Models;
+using BlazorChat.Server.Services.DatabaseWrapper;
+using BlazorChat.Shared;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     public interface IFormDataService
     {

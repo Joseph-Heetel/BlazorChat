@@ -1,5 +1,5 @@
-﻿using CustomBlazorApp.Server.Services;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Services;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace CustomBlazorApp
+namespace BlazorChat
 {
     public static class CosmosDBExtensions
     {

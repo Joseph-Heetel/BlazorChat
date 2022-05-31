@@ -1,7 +1,7 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using System.Text;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     /// <summary>
     /// Service which authenticates admin bearer tokens

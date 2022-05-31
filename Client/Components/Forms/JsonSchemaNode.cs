@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
-namespace CustomBlazorApp.Client.Components.Forms
+namespace BlazorChat.Client.Components.Forms
 {
     /// <summary>
     /// Schema specific value types.

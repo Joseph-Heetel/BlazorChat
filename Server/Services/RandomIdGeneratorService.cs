@@ -1,7 +1,7 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using System.Security.Cryptography;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     /// <summary>
     /// A service which generates random Ids

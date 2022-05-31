@@ -11,13 +11,13 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.JSInterop;
-using CustomBlazorApp.Client;
-using CustomBlazorApp.Client.Shared;
+using BlazorChat.Client;
+using BlazorChat.Client.Shared;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using CustomBlazorApp.Shared;
+using BlazorChat.Shared;
 
-namespace CustomBlazorApp.Client.Components.Chat
+namespace BlazorChat.Client.Components.Chat
 {
     public struct ChannelInfoParams {
         public ItemId ChannelId { get; set; } = default;
@@ -42,7 +42,7 @@ namespace CustomBlazorApp.Client.Components.Chat
             _hasChannel = !Params.ChannelId.IsZero;
             if (Params.Channel != null)
             {
-                _created = Params.Channel.Created.ToString("d");
+                _created = Params.Channel.Created.LocalDateTime.ToString("d");
                 _users = Params.Channel.Participants.Count.ToString();
             }
             else

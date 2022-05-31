@@ -1,4 +1,4 @@
-﻿namespace CustomBlazorApp.Server
+﻿namespace BlazorChat.Server
 {
     public static class EnvironmentVarKeys
     {

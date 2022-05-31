@@ -1,6 +1,6 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 
-namespace CustomBlazorApp.Client.Components
+namespace BlazorChat.Client.Components
 {
     public struct MessageViewParams
     {

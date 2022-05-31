@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
-namespace CustomBlazorApp.Client.Components.Forms
+namespace BlazorChat.Client.Components.Forms
 {
     // https://github.com/dotnet/runtime/issues/64472
     // TL;DR: Json Nodes suck, because they're strongly typed internally (which does not function well with Json, which is not strongly typed)

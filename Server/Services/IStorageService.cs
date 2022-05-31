@@ -1,10 +1,10 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
-using CustomBlazorApp.Shared;
+using BlazorChat.Shared;
 using System.Diagnostics;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     public interface IStorageService
     {

@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CustomBlazorApp.Shared
+namespace BlazorChat.Shared
 {
     /// <summary>
     /// A helper struct result of <see cref="Extensions.WaitAsyncDisposable(SemaphoreSlim)"/>. 

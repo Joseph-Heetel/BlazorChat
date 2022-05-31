@@ -1,14 +1,14 @@
-﻿using CustomBlazorApp.Server.Hubs;
-using CustomBlazorApp.Server.Models;
-using CustomBlazorApp.Server.Services.DatabaseWrapper;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Hubs;
+using BlazorChat.Server.Models;
+using BlazorChat.Server.Services.DatabaseWrapper;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.Cosmos;
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     public class ChannelDataService : IChannelDataService
     {
@@ -354,17 +354,22 @@ namespace CustomBlazorApp.Server.Services
         {
             // Patch user read timestamp in memberships table
             var getResponse = await _membersTable.GetItemAsync(MembershipModel.MakeId(channelId, userId), "0");
-            if (getResponse.IsSuccess)
+            if (!getResponse.IsSuccess)
+            { return false; }
+
+            var model = getResponse.ResultAsserted;
+
+            model.LastRead = timeOfReadMessage;
+
+            var replaceResponse = await _membersTable.ReplaceItemAsync(model);
+            if (!replaceResponse.IsSuccess)
             {
-                var model = getResponse.ResultAsserted;
-
-                model.LastRead = timeOfReadMessage;
-
-                var replaceResponse = await _membersTable.ReplaceItemAsync(model);
-                return replaceResponse.IsSuccess;
+                return false;
             }
 
-            return false;
+            await _hubContext.Clients.Group(channelId.ToString()).SendAsync(SignalRConstants.CHANNEL_MESSAGESREAD, channelId, userId, timeOfReadMessage);
+
+            return true;
         }
 
         public async Task<bool> PatchLastMessageTimestamp(ItemId channelId, long messageSendTime)

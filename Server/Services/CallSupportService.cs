@@ -1,9 +1,9 @@
-﻿using CustomBlazorApp.Server.Hubs;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Hubs;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     public interface ICallSupportService
     {

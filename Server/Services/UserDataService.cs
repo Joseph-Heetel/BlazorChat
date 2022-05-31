@@ -1,12 +1,12 @@
-﻿using CustomBlazorApp.Server.Hubs;
-using CustomBlazorApp.Server.Models;
-using CustomBlazorApp.Server.Services.DatabaseWrapper;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Hubs;
+using BlazorChat.Server.Models;
+using BlazorChat.Server.Services.DatabaseWrapper;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.SignalR;
 using System.Diagnostics;
 using System.Net;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     public class UserDataService : IUserDataService
     {

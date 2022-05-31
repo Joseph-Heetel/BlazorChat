@@ -1,4 +1,4 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
 using System.Security.Cryptography;
@@ -11,7 +11,7 @@ using System.Text.Json;
 using System.Net.Http.Headers;
 using System.Text.Json.Nodes;
 
-namespace CustomBlazorApp.Client.Services
+namespace BlazorChat.Client.Services
 {
 
     public enum LoginState

@@ -1,10 +1,10 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
 using System.Security.Claims;
 
-namespace CustomBlazorApp.Client.Services
+namespace BlazorChat.Client.Services
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {

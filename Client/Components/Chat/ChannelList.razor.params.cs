@@ -1,7 +1,7 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using System.Collections.Generic;
 
-namespace CustomBlazorApp.Client.Components
+namespace BlazorChat.Client.Components
 {
     /// <summary>
     /// Single channel item as passed to the channel list

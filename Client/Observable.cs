@@ -1,6 +1,6 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 
-namespace CustomBlazorApp.Client
+namespace BlazorChat.Client
 {
     public delegate void ItemChanged<T>(T value);
 

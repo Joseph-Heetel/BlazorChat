@@ -1,5 +1,5 @@
-﻿using CustomBlazorApp.Server.Models;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Models;
+using BlazorChat.Shared;
 using Microsoft.Azure.Cosmos;
 using System.Net;
 using System.Reflection;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace CustomBlazorApp.Server.Services.DatabaseWrapper
+namespace BlazorChat.Server.Services.DatabaseWrapper
 {
     public class CosmosTableService<T> : ITableService<T>
     {

@@ -1,5 +1,5 @@
-using CustomBlazorApp.Client;
-using CustomBlazorApp.Client.Services;
+using BlazorChat.Client;
+using BlazorChat.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

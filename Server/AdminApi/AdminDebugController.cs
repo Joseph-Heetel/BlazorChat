@@ -1,7 +1,7 @@
-﻿using CustomBlazorApp.Server.Services;
+﻿using BlazorChat.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CustomBlazorApp.Server.AdminApi
+namespace BlazorChat.Server.AdminApi
 {
     [Route("api/admin/debug")]
     [ApiController]

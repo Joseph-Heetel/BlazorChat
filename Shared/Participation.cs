@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CustomBlazorApp.Shared
+namespace BlazorChat.Shared
 {
     /// <summary>
     /// Participation is a channel context sensitive helper type for communicating membership data in the server and client API

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos;
 
-namespace CustomBlazorApp.Server.Services.DatabaseWrapper
+namespace BlazorChat.Server.Services.DatabaseWrapper
 {
     public interface IDatabaseConnection
     {

@@ -1,4 +1,4 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Text.Json;
@@ -6,7 +6,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Components.Routing;
 using System.Web;
 
-namespace CustomBlazorApp.Client.Services
+namespace BlazorChat.Client.Services
 {
     /// <summary>
     /// Service exposing chat state access. Manages state of Channel/User collections, current channel and Message Collections and Hub connection
@@ -577,7 +577,7 @@ namespace CustomBlazorApp.Client.Services
                 {
                     _ = Task.Run(async () =>
                     {
-                        var result = await _apiService.UpdateReadHorizon(message.ChannelId, message.Created);
+                        await _apiService.UpdateReadHorizon(message.ChannelId, message.Created);
                     });
                 }
             }

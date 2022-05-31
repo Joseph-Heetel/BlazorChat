@@ -1,5 +1,5 @@
-﻿using CustomBlazorApp.Server.Models;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Models;
+using BlazorChat.Shared;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Scripts;
 using System.Collections.Concurrent;
@@ -7,7 +7,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace CustomBlazorApp.Server.Services.DatabaseWrapper
+namespace BlazorChat.Server.Services.DatabaseWrapper
 {
     public class CosmosDatabaseConnection : IDatabaseConnection
     {

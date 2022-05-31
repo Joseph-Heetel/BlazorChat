@@ -1,4 +1,4 @@
-﻿namespace CustomBlazorApp.Server.Models
+﻿namespace BlazorChat.Server.Models
 {
     public abstract class DBModelBase
     {

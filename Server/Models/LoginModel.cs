@@ -1,10 +1,10 @@
-﻿using CustomBlazorApp.Server.Services.DatabaseWrapper;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Services.DatabaseWrapper;
+using BlazorChat.Shared;
 using Microsoft.Azure.Cosmos;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace CustomBlazorApp.Server.Models
+namespace BlazorChat.Server.Models
 {
     /// <summary>
     /// Database entry storing user login name, password hash and associated user Id

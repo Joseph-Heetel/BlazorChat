@@ -11,13 +11,13 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.JSInterop;
-using CustomBlazorApp.Client;
-using CustomBlazorApp.Client.Shared;
+using BlazorChat.Client;
+using BlazorChat.Client.Shared;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using CustomBlazorApp.Shared;
+using BlazorChat.Shared;
 
-namespace CustomBlazorApp.Client.Components
+namespace BlazorChat.Client.Components
 {
     public partial class UserArea : IDisposable
     {
@@ -37,6 +37,7 @@ namespace CustomBlazorApp.Client.Components
             ThemeService.IsDarkMode.StateChanged += IsDarkMode_StateChanged;
             IsDarkMode_StateChanged(ThemeService.IsDarkMode.State);
             ApiService.SelfUser.StateChanged += SelfUser_StateChanged;
+            SelfUser_StateChanged(ApiService.SelfUser.State);
         }
 
         private void SelfUser_StateChanged(User? value)

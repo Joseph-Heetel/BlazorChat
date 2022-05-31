@@ -1,4 +1,4 @@
-﻿namespace CustomBlazorApp.Server.Services.DatabaseWrapper
+﻿namespace BlazorChat.Server.Services.DatabaseWrapper
 {
     public static class BulkDeleteScript
     {

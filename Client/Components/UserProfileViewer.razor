@@ -1,5 +1,7 @@
-﻿<div class="container">
-    <UserView Params=_userviewparams Size=@(Size.Large)/>
+﻿@inject IDialogService _dialogService
+
+<div class="container">
+    <UserView Params=_userviewparams Size=@(Size.Large) />
     <div class="entry" style="margin-top: 2em">
         <span class="key">Id</span>
         <span class="spacer" />
@@ -26,5 +28,13 @@
             <span class="spacer" />
             <span class="value">@(_lastread)</span>
         </div>
+    }
+    @if (!_isSelf)
+    {
+        <MudButton StartIcon=@(Icons.Filled.Call)
+               Disabled=@(!_online)
+               OnClick=@(CallUser)>
+            Call
+        </MudButton>
     }
 </div>

@@ -1,9 +1,9 @@
-﻿using CustomBlazorApp.Server.Services;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Services;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
-namespace CustomBlazorApp.Server.AdminApi
+namespace BlazorChat.Server.AdminApi
 {
     [Route("api/admin/channels")]
     [ApiController]

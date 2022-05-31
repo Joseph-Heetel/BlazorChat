@@ -1,6 +1,6 @@
 ﻿using Blazored.LocalStorage;
 
-namespace CustomBlazorApp.Client.Services
+namespace BlazorChat.Client.Services
 {
     public interface IThemeService
     {

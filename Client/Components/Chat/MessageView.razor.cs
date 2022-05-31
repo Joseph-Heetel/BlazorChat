@@ -11,14 +11,14 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.JSInterop;
-using CustomBlazorApp.Client;
-using CustomBlazorApp.Client.Shared;
-using CustomBlazorApp.Client.Services;
-using CustomBlazorApp.Shared;
+using BlazorChat.Client;
+using BlazorChat.Client.Shared;
+using BlazorChat.Client.Services;
+using BlazorChat.Shared;
 using System.Text.Json;
-using CustomBlazorApp.Client.Components.Forms;
+using BlazorChat.Client.Components.Forms;
 
-namespace CustomBlazorApp.Client.Components.Chat
+namespace BlazorChat.Client.Components.Chat
 {
     public sealed partial class MessageView : IDisposable
     {
@@ -91,17 +91,17 @@ namespace CustomBlazorApp.Client.Components.Chat
             if (sendDateDiff > TimeSpan.FromHours(48))
             {
                 // 48h+ ago, display date only
-                this._timedisplay = Params.Message.Created.ToString("d");
+                this._timedisplay = Params.Message.Created.LocalDateTime.ToString("d");
             }
             else if (sendDateDiff > TimeSpan.FromHours(18))
             {
                 // 18h+ ago, display date and time
-                this._timedisplay = Params.Message.Created.ToString("g");
+                this._timedisplay = Params.Message.Created.LocalDateTime.ToString("g");
             }
             else
             {
                 // display time only
-                this._timedisplay = Params.Message.Created.ToString("t");
+                this._timedisplay = Params.Message.Created.LocalDateTime.ToString("t");
             }
 
             _alignRight = Params.Message.AuthorId == Params.SelfUserId;

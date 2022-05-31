@@ -11,14 +11,14 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.JSInterop;
-using CustomBlazorApp.Client;
-using CustomBlazorApp.Client.Shared;
-using CustomBlazorApp.Shared;
+using BlazorChat.Client;
+using BlazorChat.Client.Shared;
+using BlazorChat.Shared;
 using System.Security.Cryptography;
 using System.Text;
 using MudBlazor;
 
-namespace CustomBlazorApp.Client.Components
+namespace BlazorChat.Client.Components
 {
     public sealed partial class Root : IAsyncDisposable
     {

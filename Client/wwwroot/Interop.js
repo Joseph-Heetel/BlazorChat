@@ -342,12 +342,13 @@ class RtcManager {
                 iceServers: [{
                         urls: "stun:stun.l.google.com:19302"
                     },
-                    {
-                        urls: ["stun:numb.viagenie.ca", "turn:numb.viagenie.ca"],
-                        username: "joseph.heetel@hs-kempten.de",
-                        credentialType: "password",
-                        credential: "JD8wypjzbijk3W3"
-                    }]
+                    //{
+                    //    urls: ["stun:numb.viagenie.ca", "turn:numb.viagenie.ca"],
+                    //    username: "",
+                    //    credentialType: "password",
+                    //    credential: ""
+                    //}
+                ]
             };
             yield wrapCallWithTimeout(null, () => __awaiter(this, void 0, void 0, function* () { return this.connection = new RTCPeerConnection(config); }));
             // assign connection to local tracks

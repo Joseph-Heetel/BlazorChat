@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace CustomBlazorApp.Shared
+namespace BlazorChat.Shared
 {
     /// <summary>
     /// Static helper class for dealing with file extensions and mime types

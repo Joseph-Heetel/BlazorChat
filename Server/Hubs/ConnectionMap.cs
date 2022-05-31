@@ -1,11 +1,11 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using static CustomBlazorApp.CosmosDBExtensions;
-using static CustomBlazorApp.OtherExtensions;
-using static CustomBlazorApp.Shared.Extensions;
+using static BlazorChat.CosmosDBExtensions;
+using static BlazorChat.OtherExtensions;
+using static BlazorChat.Shared.Extensions;
 
-namespace CustomBlazorApp.Server.Hubs
+namespace BlazorChat.Server.Hubs
 {
     public class ConnectionBag
     {

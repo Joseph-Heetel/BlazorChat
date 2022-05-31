@@ -11,16 +11,16 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.JSInterop;
-using CustomBlazorApp.Client;
-using CustomBlazorApp.Client.Shared;
+using BlazorChat.Client;
+using BlazorChat.Client.Shared;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using CustomBlazorApp.Shared;
-using CustomBlazorApp.Client.Components.Calls;
+using BlazorChat.Shared;
+using BlazorChat.Client.Components.Calls;
 
-namespace CustomBlazorApp.Client.Components.Chat
+namespace BlazorChat.Client.Components.Chat
 {
-    public sealed partial class ParticipantList
+    public sealed partial class ParticipantList : IDisposable
     {
         [Parameter]
         public ParticipantListParams Params { get; set; }
@@ -40,7 +40,14 @@ namespace CustomBlazorApp.Client.Components.Chat
 
         protected override void OnInitialized()
         {
+            ChatApiService.SelfUser.StateChanged += SelfUser_StateChanged;
+            SelfUser_StateChanged(ChatApiService.SelfUser.State);
             ChatStateService.UserCache.StateChanged += UserCache_StateChanged;
+        }
+
+        private void SelfUser_StateChanged(User? value)
+        {
+            _selfUserId = value?.Id ?? default;
         }
 
         private void UserCache_StateChanged(IDictionary<ItemId, User> value)
@@ -100,7 +107,8 @@ namespace CustomBlazorApp.Client.Components.Chat
                         {
                           User = user,
                           Participation = participant,
-                          Channel = Params.Channel
+                          Channel = Params.Channel,
+                          SelfUserId = _selfUserId
                         },
                         OnlineState = onlinestate ?? participant.LastRead.ToString("d")
                     };
@@ -109,12 +117,10 @@ namespace CustomBlazorApp.Client.Components.Chat
             }
         }
 
-        private void callParticipant(User user)
+        public void Dispose()
         {
-            DialogParameters parameters = new DialogParameters();
-            parameters.Add(nameof(CallInitDialog.PendingCall), null);
-            parameters.Add(nameof(CallInitDialog.RemoteUser), user);
-            var dialog = DialogService.Show<CallInitDialog>("", parameters);
+            ChatApiService.SelfUser.StateChanged -= SelfUser_StateChanged;
+            ChatStateService.UserCache.StateChanged -= UserCache_StateChanged;
         }
     }
 }

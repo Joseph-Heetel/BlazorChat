@@ -11,14 +11,14 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.JSInterop;
-using CustomBlazorApp.Client;
-using CustomBlazorApp.Client.Shared;
+using BlazorChat.Client;
+using BlazorChat.Client.Shared;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace CustomBlazorApp.Client.Components.Forms
+namespace BlazorChat.Client.Components.Forms
 {
 
     public partial class FormObjectViewer

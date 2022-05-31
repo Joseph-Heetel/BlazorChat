@@ -1,10 +1,10 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace CustomBlazorApp.Client.Services
+namespace BlazorChat.Client.Services
 {
     public interface IChatHubService
     {

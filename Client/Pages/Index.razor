@@ -1,0 +1,38 @@
+﻿@page "/"
+
+<MudLayout>auto
+    <MudAppBar>Blazor Chat</MudAppBar>
+    <MudMainContent Style="height: 100%">
+        <div style="display: flex; flex-direction: row; height: 100%">
+            <div class="maxflex" />
+            <MudPaper Style="flex: 60% 0 0.2; min-width: 300px; height: 100%">
+                <MudList>
+                    <MudListItem>
+                        <MudButton Href="/chat"
+                                   StartIcon=@(Icons.Filled.MarkUnreadChatAlt)
+                                   Variant=@(Variant.Filled)
+                                   IconColor=@(Color.Success)>
+                            Chat
+                        </MudButton>
+                    </MudListItem>
+                    <MudListItem>
+                        <MudButton Href="/swagger/index.html"
+                                   StartIcon=@(Icons.Filled.Api)
+                                   Variant=@(Variant.Filled)>
+                            Swagger UI Api Viewer
+                        </MudButton>
+                    </MudListItem>
+                    <MudListItem>
+                        <MudButton Href="https://github.com/Joseph-Heetel/BlazorChat"
+                                   StartIcon=@(Icons.Custom.Brands.GitHub)
+                                   Variant=@(Variant.Filled)
+                                   IconColor=@(Color.Info)>
+                            Github
+                        </MudButton>
+                    </MudListItem>
+                </MudList>
+            </MudPaper>
+            <div class="maxflex" />
+        </div>
+    </MudMainContent>
+</MudLayout>

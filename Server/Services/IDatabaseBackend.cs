@@ -1,4 +1,4 @@
-﻿using CustomBlazorApp.Server.Models;
+﻿using BlazorChat.Server.Models;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Scripts;
 using System.Collections.Concurrent;
@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     /// <summary>
     /// Struct describing properties of a database table

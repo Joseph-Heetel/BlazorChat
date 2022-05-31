@@ -1,12 +1,12 @@
 ﻿
-using CustomBlazorApp.Server.Hubs;
-using CustomBlazorApp.Server.Services;
-using CustomBlazorApp.Shared;
+using BlazorChat.Server.Hubs;
+using BlazorChat.Server.Services;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace CustomBlazorApp.Server.Controllers
+namespace BlazorChat.Server.Controllers
 {
     [Route("api/forms")]
     [ApiController]

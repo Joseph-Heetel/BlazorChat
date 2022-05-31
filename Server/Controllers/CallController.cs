@@ -1,10 +1,10 @@
 ﻿
-using CustomBlazorApp.Server.Hubs;
-using CustomBlazorApp.Server.Services;
-using CustomBlazorApp.Shared;
+using BlazorChat.Server.Hubs;
+using BlazorChat.Server.Services;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CustomBlazorApp.Server.Controllers
+namespace BlazorChat.Server.Controllers
 {
     [Route("api/calls")]
     [ApiController]

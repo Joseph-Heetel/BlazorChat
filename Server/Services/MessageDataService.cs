@@ -1,13 +1,13 @@
-﻿using CustomBlazorApp.Server.Hubs;
-using CustomBlazorApp.Server.Models;
-using CustomBlazorApp.Server.Services.DatabaseWrapper;
-using CustomBlazorApp.Shared;
+﻿using BlazorChat.Server.Hubs;
+using BlazorChat.Server.Models;
+using BlazorChat.Server.Services.DatabaseWrapper;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.Cosmos;
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     public class MessageDataService : IMessageDataService
     {
@@ -47,9 +47,9 @@ namespace CustomBlazorApp.Server.Services
             var response = await _messagesTable.CreateItemAsync(message);
             if (response.IsSuccess)
             {
-                await _hubContext.Clients.Group(channelId.ToString()).SendAsync(SignalRConstants.MESSAGE_INCOMING, message.ToApiType());
                 await _channelService.UpdateReadHorizon(channelId, authorId, message.Created);
                 await _channelService.PatchLastMessageTimestamp(channelId, message.Created);
+                await _hubContext.Clients.Group(channelId.ToString()).SendAsync(SignalRConstants.MESSAGE_INCOMING, message.ToApiType());
                 return message.ToApiType();
             }
             return null;

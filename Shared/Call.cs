@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace CustomBlazorApp.Shared
+namespace BlazorChat.Shared
 {
     public class Call : ItemBase
     {

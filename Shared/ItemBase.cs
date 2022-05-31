@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
 
-namespace CustomBlazorApp.Shared
+namespace BlazorChat.Shared
 {
     /// <summary>
     /// Represents a unique id/handle which is used across the entire project for identification and referencing of unique objects.

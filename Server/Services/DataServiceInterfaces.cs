@@ -1,6 +1,6 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 
-namespace CustomBlazorApp.Server.Services
+namespace BlazorChat.Server.Services
 {
     /// <summary>
     /// Service providing access to the data backend

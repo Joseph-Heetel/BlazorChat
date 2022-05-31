@@ -1,14 +1,14 @@
-using CustomBlazorApp.Server.Hubs;
-using CustomBlazorApp.Server.Services;
-using CustomBlazorApp.Shared;
+using BlazorChat.Server.Hubs;
+using BlazorChat.Server.Services;
+using BlazorChat.Shared;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using CustomBlazorApp.Server.Services.DatabaseWrapper;
-using CustomBlazorApp.Server;
+using BlazorChat.Server.Services.DatabaseWrapper;
+using BlazorChat.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -72,13 +72,12 @@ builder.Logging.AddAzureWebAppDiagnostics();
 
 var app = builder.Build();
 
-app.UseDeveloperExceptionPage();
-// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI();
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseWebAssemblyDebugging();
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
 else
 {

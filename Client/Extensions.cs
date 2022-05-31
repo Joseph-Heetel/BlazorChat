@@ -1,9 +1,9 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
-namespace CustomBlazorApp.Client
+namespace BlazorChat.Client
 {
     public static class Extensions
     {

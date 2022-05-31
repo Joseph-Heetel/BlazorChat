@@ -1,6 +1,6 @@
-﻿using CustomBlazorApp.Shared;
+﻿using BlazorChat.Shared;
 
-namespace CustomBlazorApp.Client.Services
+namespace BlazorChat.Client.Services
 {
     /// <summary>
     /// Class helping to maintain a list of subscribers and url state for a remote media object
