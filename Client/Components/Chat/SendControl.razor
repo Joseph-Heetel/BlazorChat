@@ -2,33 +2,44 @@
 @inject Services.IChatApiService ChatApiService
 @inject Services.IChatStateService ChatStateService
 
-<form onkeydown=@((KeyboardEventArgs e) => onKeyPress(e)) onsubmit=@(() => {}) class="maxflex">
-    <InputFile id="fileInput" OnChange="onInputFileChanged" hidden accept=".jpg, .jpeg, .png, .pdf" />
-    <MudIconButton HtmlTag="label"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Icon="@Icons.Filled.CloudUpload"
-                   Disabled=@(_state != SendControlState.Ready)
-                   for="fileInput" />
+<div>
     @if (_file != null)
     {
-        <MudText Typo=(Typo.body1)>File: @(getFileInfo())</MudText>
-        <MudIconButton Variant="Variant.Filled"
-                   Color="Color.Error"
-                   Icon="@Icons.Filled.Cancel"
-                   OnClick=@(() => clearFile()) />
+        <MudPaper Style="margin-left: 1em; margin-right: 1em" Class="darkenedcard">
+            <div class="file">
+                <MudText Typo=(Typo.body1) Style="flex: 100% 0 1">File: @(getFileInfo())</MudText>
+                <MudIconButton Variant="Variant.Filled"
+                           Color="Color.Error"
+                           Icon="@Icons.Filled.Cancel"
+                           
+                           OnClick=@(() => clearFile()) />
+            </div>
+        </MudPaper>
     }
-    <MudTextField Class="autoflex" @bind-Value="_newMessageBody" Immediate Lines=@(2) Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-    @if (_state == SendControlState.Sending)
-    {
-        <MudProgressCircular Color=(Color.Primary) Indeterminate=true></MudProgressCircular>
-    }
-    else
-    {
-        <MudIconButton Variant="Variant.Filled"
-                   Icon=@(Icons.Filled.Send)
-                   Color="Color.Primary"
-                   OnClick=@(onSubmit)
-                   Disabled="_state != SendControlState.Ready || (_file == null && string.IsNullOrEmpty(_newMessageBody))" />
-    }
-</form>
+    <MudPaper Outlined=true>
+        <MudToolBar Class="bottomtoolbar">
+            <form onkeydown=@((KeyboardEventArgs e) => onKeyPress(e)) onsubmit=@(() => {}) class="maxflex">
+                <InputFile id="fileInput" OnChange="onInputFileChanged" hidden accept=".jpg, .jpeg, .png, .pdf" />
+                <MudIconButton HtmlTag="label"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Icon="@Icons.Filled.CloudUpload"
+                               Disabled=@(_state != SendControlState.Ready)
+                               for="fileInput" />
+                <MudTextField Class="autoflex" @bind-Value="_newMessageBody" Immediate Lines=@(2) Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                @if (_state == SendControlState.Sending)
+                {
+                    <MudProgressCircular Color=(Color.Primary) Indeterminate=true></MudProgressCircular>
+                }
+                else
+                {
+                    <MudIconButton Variant="Variant.Filled"
+                               Icon=@(Icons.Filled.Send)
+                               Color="Color.Primary"
+                               OnClick=@(onSubmit)
+                               Disabled="_state != SendControlState.Ready || (_file == null && string.IsNullOrEmpty(_newMessageBody))" />
+                }
+            </form>
+        </MudToolBar>
+    </MudPaper>
+</div>

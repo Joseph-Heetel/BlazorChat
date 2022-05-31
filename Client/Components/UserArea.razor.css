@@ -2,17 +2,16 @@
     display: flex;
     flex: 0 0 content;
     flex: 0 0 fit-content;
-    height: 100%;
-    flex-flow: row nowrap;
+    flex-flow: column nowrap;
     align-items: center;
     gap: 0.3em;
+    padding: 1em;
 }
 
-.menuitem {
+.menu{
     display: flex;
-    flex-flow: row nowrap;
-    height: 100%;
+    flex-flow: column nowrap;
+    gap: 0.5em;
+    padding: 0.5em;
     width: 100%;
-    align-items: center;
-    gap: 0.3em;
 }

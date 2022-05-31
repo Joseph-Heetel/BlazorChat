@@ -1,4 +1,5 @@
-﻿@using BlazorChat.Shared
+﻿@using BlazorChat.Client.Shared
+@using BlazorChat.Shared
 @using System.Text.Json
 @inject Services.IChatApiService ChatApiService
 @inject Services.IChatStateService ChatStateService
@@ -18,9 +19,7 @@
         <MudDrawerContainer Class="restrictheight">
             <MudDrawer @bind-Open="@_displayChannelList" Anchor="Anchor.Left" Class="shrinkdrawer">
                 <ChannelList Params=(_channelListParams) OnChannelClicked=(ChannelList_OnChannelClicked)></ChannelList>
-                <MudToolBar>
-                    <UserArea />
-                </MudToolBar>
+                <UserArea />
             </MudDrawer>
             <MudDrawer Anchor="Anchor.Right" Fixed="false" @bind-Open="@_displayUserList" Class="shrinkdrawer">
                 <ChannelInfo Params=(_channelInfoParams) />
@@ -29,11 +28,7 @@
 
             <div class="maincontainer @(SubtractDrawerClasses())">
                 <MessageList Params=(_messageListParams) OnTopVisible=attemptLoadOlderMessages OnBottomVisible=attemptLoadNewerMessages></MessageList>
-                <MudPaper Outlined=true>
-                    <MudToolBar Class="bottomtoolbar">
-                        <SendControl Params=@(_sendControlParams)></SendControl>
-                    </MudToolBar>
-                </MudPaper>
+                <SendControl Params=@(_sendControlParams)/>
             </div>
         </MudDrawerContainer>
     </MudMainContent>

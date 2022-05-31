@@ -2,41 +2,37 @@
 @inject IThemeService ThemeService
 @inject IChatApiService ApiService
 @inject IDialogService DialogService
+@inject ISnackbar SnackbarService
 
-<div class="bottomtoolbar" style="flex: 0 1 100%">
-    <MudMenu Variant="Variant.Filled" Color="Color.Primary" Style="width: 100%">
-        <ActivatorContent>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon=@(Icons.Filled.ArrowDropUp) Style="width: 100%">
-                <UserView Params=@(_selfUserParams) Style="flex: 0 1 100%" />
-            </MudButton>
-        </ActivatorContent>
-        <ChildContent>
-            <MudMenuItem OnClick=@(logout)>
-                <div class="menuitem">
-                    <MudIcon Icon=@(Icons.Filled.Logout) Color="Color.Error" /> Logout
-                </div>
-            </MudMenuItem>
-            @if (_isDarkMode)
-            {
-                <MudMenuItem OnClick=@(() => _isDarkMode = false)>
-                    <div class="menuitem">
-                        <MudIcon Icon=@(Icons.Filled.LightMode) /> Light Mode
-                    </div>
-                </MudMenuItem>
-            }
-            else
-            {
-                <MudMenuItem OnClick=@(() => _isDarkMode = true)>
-                    <div class="menuitem">
-                        <MudIcon Icon=@(Icons.Filled.DarkMode) /> Dark Mode
-                    </div>
-                </MudMenuItem>
-            }
-            <MudMenuItem OnClick=@(editUserProfile)>
-                <div class="menuitem">
-                    <MudIcon Icon=@(Icons.Filled.Edit) /> Edit Profile
-                </div>
-            </MudMenuItem>
-        </ChildContent>
-    </MudMenu>
+<div class="bottomtoolbar">
+    @if (_showOptions)
+    {
+        <MudPaper Style="width: 100%">
+            <div class="menu">
+                <MudButton StartIcon=@(Icons.Filled.Logout)
+                       IconColor=@(Color.Error)
+                       FullWidth
+                       OnClick=@(logout)>
+                    Logout
+                </MudButton>
+                <MudButton StartIcon=@(_themeModeIcon)
+                       FullWidth
+                       OnClick=@(toggleDarkMode)>
+                    @(_themeModeButtonText)
+                </MudButton>
+                <MudButton StartIcon=@(Icons.Filled.Edit)
+                       FullWidth
+                       OnClick=@(editUserProfile)>
+                    Edit Profile
+                </MudButton>
+            </div>
+        </MudPaper>
+    }
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               EndIcon=@(_buttonIcon)
+               Style="width: 100%"
+               OnClick=@(toggleOptionsDisplay)>
+        <UserView Params=@(_selfUserParams) Style="flex: 0 1 100%" />
+    </MudButton>
 </div>

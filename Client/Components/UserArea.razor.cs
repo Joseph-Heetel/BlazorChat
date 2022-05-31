@@ -22,15 +22,12 @@ namespace BlazorChat.Client.Components
     public partial class UserArea : IDisposable
     {
         private UserViewParams _selfUserParams = default;
-        private bool __isDarkMode = false;
-        private bool _isDarkMode
-        {
-            get => __isDarkMode;
-            set
-            {
-                ThemeService.SetDarkMode(!__isDarkMode);
-            }
-        }
+        private bool _isDarkMode = false;
+        private bool _showOptions = false;
+
+        private string _buttonIcon => _showOptions ? Icons.Filled.ArrowDropDown : Icons.Filled.ArrowDropUp;
+        private string _themeModeIcon => _isDarkMode ? Icons.Filled.LightMode : Icons.Filled.DarkMode;
+        private string _themeModeButtonText => _isDarkMode ? "Light Mode" : "Dark Mode";
 
         protected override void OnInitialized()
         {
@@ -54,8 +51,19 @@ namespace BlazorChat.Client.Components
 
         private void IsDarkMode_StateChanged(bool value)
         {
-            __isDarkMode = value;
+            _isDarkMode = value;
             this.StateHasChanged();
+        }
+
+        private void toggleOptionsDisplay()
+        {
+            _showOptions = !_showOptions;
+            this.StateHasChanged();
+        }
+
+        private void toggleDarkMode()
+        {
+            ThemeService.SetDarkMode(!_isDarkMode);
         }
 
         private Task logout()

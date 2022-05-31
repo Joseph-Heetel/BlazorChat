@@ -97,10 +97,6 @@ namespace BlazorChat.Client.Components.Chat
 #pragma warning disable CA1826 // Do not use Enumerable methods on indexable collections
             _file = e.GetMultipleFiles().FirstOrDefault();
 #pragma warning restore CA1826 // Do not use Enumerable methods on indexable collections
-            if (_file != null)
-            {
-                _newMessageBody = string.Empty;
-            }
             this.StateHasChanged();
         }
 
@@ -128,7 +124,9 @@ namespace BlazorChat.Client.Components.Chat
             {
                 fileSize = $"{_file.Size} B";
             }
-            return $"{_file.Name} ({fileSize})";
+            string fileInfo = $"{_file.Name} ({fileSize})";
+
+            return fileInfo;
         }
 
         private void clearFile()
