@@ -30,8 +30,12 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
         {
             try
             {
-                this._cosmosClient = new CosmosClient(Environment.GetEnvironmentVariable(EnvironmentVarKeys.AZURECOSMOSCONNECTIONSTRING));
-                this._database = await this._cosmosClient.CreateDatabaseIfNotExistsAsync(DATABASEID);
+                var connectionString = Environment.GetEnvironmentVariable(EnvironmentVarKeys.AZURECOSMOSCONNECTIONSTRING);
+                if (connectionString != null)
+                {
+                    this._cosmosClient = new CosmosClient(connectionString);
+                    this._database = await this._cosmosClient.CreateDatabaseIfNotExistsAsync(DATABASEID);
+                }
                 Task<bool>[] containerInitTasks = new Task<bool>[]
                         {
                     InitContainer<LoginModel>(DatabaseConstants.LOGINSTABLE),
@@ -59,32 +63,36 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
         private async Task<bool> InitContainer<T>(string containerName)
         {
             CosmosTableService<T> table = new CosmosTableService<T>(_serviceProvider, containerName);
-            ContainerResponse containerResponse = await this._database!.CreateContainerIfNotExistsAsync(containerName, table.PartitionPath);
-            bool createdNewContainer = containerResponse.StatusCode == HttpStatusCode.Created;
-            Container container = containerResponse.Container;
-            bool hasBulkDeleteScript = false;
-            try
+            bool createdNewContainer = false;
+            if (this._database != null)
             {
-                var response = await container.Scripts.ReadStoredProcedureAsync(BULKDELETESPROC);
-                if (response?.StatusCode == HttpStatusCode.OK)
+                ContainerResponse containerResponse = await this._database.CreateContainerIfNotExistsAsync(containerName, table.PartitionPath);
+                createdNewContainer = containerResponse.StatusCode == HttpStatusCode.Created;
+                Container container = containerResponse.Container;
+                bool hasBulkDeleteScript = false;
+                try
                 {
-                    hasBulkDeleteScript = true;
+                    var response = await container.Scripts.ReadStoredProcedureAsync(BULKDELETESPROC);
+                    if (response?.StatusCode == HttpStatusCode.OK)
+                    {
+                        hasBulkDeleteScript = true;
+                    }
                 }
-            }
-            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
-            {
-
-            }
-            if (!hasBulkDeleteScript)
-            {
-                var properties = new StoredProcedureProperties()
+                catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
                 {
-                    Body = BulkDeleteScript.SOURCE,
-                    Id = BULKDELETESPROC,
-                };
-                await container.Scripts.CreateStoredProcedureAsync(properties);
+
+                }
+                if (!hasBulkDeleteScript)
+                {
+                    var properties = new StoredProcedureProperties()
+                    {
+                        Body = BulkDeleteScript.SOURCE,
+                        Id = BULKDELETESPROC,
+                    };
+                    await container.Scripts.CreateStoredProcedureAsync(properties);
+                }
+                table.Container = container;
             }
-            table.Container = container;
             _containers.TryAdd(containerName, table);
 
             return createdNewContainer;

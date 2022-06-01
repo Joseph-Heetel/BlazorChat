@@ -69,6 +69,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Logging.AddAzureWebAppDiagnostics();
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 

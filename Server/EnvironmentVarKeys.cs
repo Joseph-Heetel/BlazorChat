@@ -13,7 +13,7 @@
 
             if (!hasCosmosDbConnectionString)
             {
-                throw new Exception($"Required environment variable \"{AZURECOSMOSCONNECTIONSTRING}\" was not set!");
+                Console.Error.WriteLine($"Required environment variable \"{AZURECOSMOSCONNECTIONSTRING}\" was not set!");
             }
             
             if (!enableBlob)
