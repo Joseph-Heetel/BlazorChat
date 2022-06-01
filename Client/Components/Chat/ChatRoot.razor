@@ -8,6 +8,7 @@
 @inject ISnackbar _Snackbar;
 @inject IDialogService DialogService
 
+<PageTitle>@(Title())</PageTitle>
 <MudLayout Class="restrictheight">
     <MudAppBar Color="Color.Surface" ToolBarClass="row_container gap">
         <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Chat" Color=_appbarButtonColor OnClick="@((_) => ToggleChannelList())" />
@@ -76,7 +77,7 @@
         }
         else
         {
-            return $"CustomBlazorChat";
+            return $"BlazorChat";
         }
     }
 

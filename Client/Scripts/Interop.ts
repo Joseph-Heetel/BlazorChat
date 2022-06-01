@@ -296,7 +296,7 @@ class RtcManager {
         this.userId = userid;
 
         // configure constraints to select video/audio device
-        let constraints: MediaStreamConstraints;
+        let constraints: MediaStreamConstraints | null;
         if (videoDeviceId || audioDeviceId) {
             constraints = {
                 audio: audioDeviceId ? { deviceId: audioDeviceId } : false,
@@ -304,35 +304,34 @@ class RtcManager {
             }
         }
         else {
-            constraints = {
-                audio: true,
-                video: { facingMode: 'user' }
-            };
+            constraints = null;
         }
 
         // get local media
-        this.localUserMediaStream = await wrapCallWithTimeout(navigator.mediaDevices, navigator.mediaDevices.getUserMedia, constraints);
+        if (constraints) {
+            this.localUserMediaStream = await wrapCallWithTimeout(navigator.mediaDevices, navigator.mediaDevices.getUserMedia, constraints);
 
-        // setup audio
-        const localAudioTracks: MediaStreamTrack[] = this.localUserMediaStream.getAudioTracks();
-        if (localAudioTracks.length) {
-            const localaudio = localAudioTracks[0];
-            this.localAudioTrack = new LocalTrack(
-                "audio",
-                { id: audioDeviceId, label: localaudio.label },
-                localaudio, this.localUserMediaStream);
-            this.localAudioTrack.enabled = true;
-        }
+            // setup audio
+            const localAudioTracks: MediaStreamTrack[] = this.localUserMediaStream.getAudioTracks();
+            if (localAudioTracks.length) {
+                const localaudio = localAudioTracks[0];
+                this.localAudioTrack = new LocalTrack(
+                    "audio",
+                    { id: audioDeviceId, label: localaudio.label },
+                    localaudio, this.localUserMediaStream);
+                this.localAudioTrack.enabled = true;
+            }
 
-        // setup video
-        const localVideoTracks: MediaStreamTrack[] = this.localUserMediaStream.getVideoTracks();
-        if (localVideoTracks.length) {
-            const localvideo = localVideoTracks[0];
-            this.localCameraTrack = new LocalTrack(
-                "camera",
-                { id: videoDeviceId, label: localvideo.label },
-                localvideo, this.localUserMediaStream);
-            this.localCameraTrack.enabled = true;
+            // setup video
+            const localVideoTracks: MediaStreamTrack[] = this.localUserMediaStream.getVideoTracks();
+            if (localVideoTracks.length) {
+                const localvideo = localVideoTracks[0];
+                this.localCameraTrack = new LocalTrack(
+                    "camera",
+                    { id: videoDeviceId, label: localvideo.label },
+                    localvideo, this.localUserMediaStream);
+                this.localCameraTrack.enabled = true;
+            }
         }
 
         this.handleTransmitStateChanged();
@@ -373,6 +372,7 @@ class RtcManager {
 
     // Sets video transmit device
     public async setVideoDevice(id: string | null) {
+
         if (this.localCameraTrack) {
             if (this.localCameraTrack.device.id === id) {
                 return; // bail if device is already set
@@ -413,6 +413,7 @@ class RtcManager {
 
     // Sets video transmit device
     public async setAudioDevice(id: string | null) {
+
         if (this.localAudioTrack) {
             if (this.localAudioTrack.device.id === id) {
                 return; // bail if device is already set
@@ -821,6 +822,8 @@ async function wrapCall(thisArg: any, call: any, ...args: any[]): Promise<any> {
 
 // Queries mediaDevices
 async function queryDevices(): Promise<DeviceQuery> {
+    console.log("Query devices ...");
+
     const result: DeviceQuery = {
         videoDevices: new Array<Device>(),
         audioDevices: new Array<Device>()
@@ -870,6 +873,8 @@ async function queryDevices(): Promise<DeviceQuery> {
             result.videoDevices.push(makeDevice(device));
         }
     }
+
+    console.log("Device Query", result);
 
     return result;
 }

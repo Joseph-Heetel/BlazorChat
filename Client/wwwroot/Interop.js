@@ -206,26 +206,25 @@ class RtcManager {
                 };
             }
             else {
-                constraints = {
-                    audio: true,
-                    video: { facingMode: 'user' }
-                };
+                constraints = null;
             }
             // get local media
-            this.localUserMediaStream = yield wrapCallWithTimeout(navigator.mediaDevices, navigator.mediaDevices.getUserMedia, constraints);
-            // setup audio
-            const localAudioTracks = this.localUserMediaStream.getAudioTracks();
-            if (localAudioTracks.length) {
-                const localaudio = localAudioTracks[0];
-                this.localAudioTrack = new LocalTrack("audio", { id: audioDeviceId, label: localaudio.label }, localaudio, this.localUserMediaStream);
-                this.localAudioTrack.enabled = true;
-            }
-            // setup video
-            const localVideoTracks = this.localUserMediaStream.getVideoTracks();
-            if (localVideoTracks.length) {
-                const localvideo = localVideoTracks[0];
-                this.localCameraTrack = new LocalTrack("camera", { id: videoDeviceId, label: localvideo.label }, localvideo, this.localUserMediaStream);
-                this.localCameraTrack.enabled = true;
+            if (constraints) {
+                this.localUserMediaStream = yield wrapCallWithTimeout(navigator.mediaDevices, navigator.mediaDevices.getUserMedia, constraints);
+                // setup audio
+                const localAudioTracks = this.localUserMediaStream.getAudioTracks();
+                if (localAudioTracks.length) {
+                    const localaudio = localAudioTracks[0];
+                    this.localAudioTrack = new LocalTrack("audio", { id: audioDeviceId, label: localaudio.label }, localaudio, this.localUserMediaStream);
+                    this.localAudioTrack.enabled = true;
+                }
+                // setup video
+                const localVideoTracks = this.localUserMediaStream.getVideoTracks();
+                if (localVideoTracks.length) {
+                    const localvideo = localVideoTracks[0];
+                    this.localCameraTrack = new LocalTrack("camera", { id: videoDeviceId, label: localvideo.label }, localvideo, this.localUserMediaStream);
+                    this.localCameraTrack.enabled = true;
+                }
             }
             this.handleTransmitStateChanged();
         });
@@ -702,6 +701,7 @@ window.webRtcHelper = new RtcManager();
 // Queries mediaDevices
 function queryDevices() {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log("Query devices ...");
         const result = {
             videoDevices: new Array(),
             audioDevices: new Array()
@@ -748,6 +748,7 @@ function queryDevices() {
                 result.videoDevices.push(makeDevice(device));
             }
         }
+        console.log("Device Query", result);
         return result;
     });
 }

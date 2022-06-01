@@ -48,6 +48,10 @@ namespace BlazorChat.Client.Components.Chat
 
         private async Task onSubmit()
         {
+            if (_state != SendControlState.Ready)
+            {
+                return;
+            }
             if (_file == null && string.IsNullOrWhiteSpace(_newMessageBody))
             {
                 return;

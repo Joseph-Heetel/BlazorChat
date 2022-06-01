@@ -10,37 +10,73 @@
         <MudText Typo=@(Typo.h5) Class="maxflex">Peer to Peer Call</MudText>
     </MudAppBar>
     <MudMainContent Class="restrictheight row_container">
-        <MudCard Class="column_container" Style="flex: 0 0 12rem; height: 100%">
-            <div class="flexspacer" />
-            <UserView Params=_localUser />
-            <Video Id="LocalVideo" Style="max-width: calc(100% - 1rem)" />
-            <MudSelect T=Device Label="Video" @bind-Value=_videoDevice>
-                <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
-                @foreach (var device in _availableVideoDevices)
+        <div class="column_container gap" style="flex: 0 0 12rem; height: 100%; overflow-y: auto">
+            <div class="flexspacer"/>
+            <UserView Params=_localUser Size=@(Size.Medium) />
+            <!-- Video -->
+            <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
+                @if (_canTransmitVideo)
                 {
-                    <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                    <Video Id="LocalVideo" Style=@($"max-width: calc(100% - 1rem); {(_videoDevice == null ? "display: none;" : "")}") />
+                    <MudButton StartIcon=@(_videoDeviceButtonIcon) IconColor=@(_videoDeviceButtonIconColor) OnClick=@(toggleVideoMute)>@(_videoDeviceButtonText)</MudButton>
+                    @if (_videoDevice != null && _availableVideoDevices.Count > 1)
+                    {
+                        <MudSelect T=Device Label="Camera" @bind-Value=_videoDevice>
+                            @foreach (var device in _availableVideoDevices)
+                            {
+                                <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                    else if (_videoDevice != null)
+                    {
+                        <MudText>@(_videoDevice.label)</MudText>
+                    }
                 }
-            </MudSelect>
-            <MudSelect T=Device Label="Audio" @bind-Value=_audioDevice>
-                <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
-                @foreach (var device in _availableAudioDevices)
+                else
                 {
-                    <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                    <MudText>No Camera Detected!</MudText>
                 }
-            </MudSelect>
-            <div class="flexspacer" />
-            @if (!string.IsNullOrEmpty(_screenshare))
-            {
-                <MudText>Sharing @(_screenshare)</MudText>
-                <MudButton StartIcon=@(Icons.Filled.Stop) OnClick=endScreenShare>Stop Sharing</MudButton>
-            }
-            else
-            {
-                <MudButton StartIcon=@(Icons.Filled.ScreenShare) OnClick=beginScreenShare>Screen Share</MudButton>
-            }
-            <div class="maxflex" />
-        </MudCard>
-        <Video Id="RemoteCamera" Style="flex: 1 1 100%; height: 100%; position: relative">
+            </MudCard>
+            <!-- Audio -->
+            <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
+                @if (_canTransmitAudio)
+                {
+                    <MudButton StartIcon=@(_audioDeviceButtonIcon) IconColor=@(_audioDeviceButtonIconColor) OnClick=@(toggleAudioMute)>@(_audioDeviceButtonText)</MudButton>
+                    @if (_audioDevice != null && _availableAudioDevices.Count > 1)
+                    {
+                        <MudSelect T=Device Label="Audio" @bind-Value=_audioDevice>
+                            @foreach (var device in _availableAudioDevices)
+                            {
+                                <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                    else if (_audioDevice != null)
+                    {
+                        <MudText>@(_audioDevice.label)</MudText>
+                    }
+                }
+                else
+                {
+                    <MudText>No Microphone Detected!</MudText>
+                }
+            </MudCard>
+            <!-- Screenshare -->
+            <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
+                @if (!string.IsNullOrEmpty(_screenshare))
+                {
+                    <MudText>Sharing @(_screenshare)</MudText>
+                    <MudButton StartIcon=@(Icons.Filled.Stop) OnClick=endScreenShare>Stop Sharing</MudButton>
+                }
+                else
+                {
+                    <MudButton StartIcon=@(Icons.Filled.ScreenShare) OnClick=beginScreenShare>Screen Share</MudButton>
+                }
+                <div class="maxflex" />
+            </MudCard>
+        </div>
+        <Video Id="RemoteVideoLarge" Style="flex: 1 1 100%; height: 100%; position: relative">
             <MudCard Style="position:absolute; left: 1rem; top: 1rem">
                 @if (_state == Services.ECallState.Ongoing)
                 {
@@ -51,11 +87,9 @@
                     <MudText>@(_state)</MudText>
                 }
             </MudCard>
-        </Video>
-        <Video Id="RemoteCapture" Style="flex: 1 1 100%; height: 100%; position: relative">
-            <MudCard Style="position:absolute; left: 1rem; top: 1rem">
-                <MudText>Screen Capture</MudText>
-            </MudCard>
+            <MudButton Style="position:absolute; right: 1rem; bottom: 1rem; width: 8rem; height: auto" OnClick=@(swapVideoElements)>
+                <Video Id="RemoteVideoPreview" />
+            </MudButton>
         </Video>
         <audio id="RemoteAudio" autoplay style="display: none" />
     </MudMainContent>

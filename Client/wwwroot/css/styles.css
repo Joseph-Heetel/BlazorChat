@@ -67,6 +67,11 @@ aside.shrinkdrawer {
     gap: 1em;
 }
 
+.smallpadgap{
+    gap: 0.5em;
+    padding: 0.5em;
+}
+
 html {
     overflow: hidden;
 }

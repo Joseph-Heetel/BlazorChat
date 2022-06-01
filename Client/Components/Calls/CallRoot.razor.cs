@@ -32,6 +32,8 @@ namespace BlazorChat.Client.Components.Calls
 
         private List<Device> _availableVideoDevices = new List<Device>();
         private Device? __videoDevice;
+        private Device? _previouslyUsedVideoDevice;
+        private bool _canTransmitVideo => _availableVideoDevices.Count > 0;
         private Device? _videoDevice
         {
             get
@@ -45,6 +47,8 @@ namespace BlazorChat.Client.Components.Calls
         }
         private List<Device> _availableAudioDevices = new List<Device>();
         private Device? __audioDevice;
+        private Device? _previouslyUsedAudioDevice;
+        private bool _canTransmitAudio => _availableAudioDevices.Count > 0;
         private Device? _audioDevice
         {
             get
@@ -56,6 +60,47 @@ namespace BlazorChat.Client.Components.Calls
                 Calls.SetAudioDevice(value);
             }
         }
+        private string _audioDeviceButtonText => _audioDevice == null ? "Enable Microphone" : "Mute Microphone";
+        private string _audioDeviceButtonIcon => _audioDevice == null ? Icons.Filled.Mic : Icons.Filled.MicOff;
+        private Color _audioDeviceButtonIconColor => _audioDevice == null ? Color.Success : Color.Error;
+        private string _videoDeviceButtonText => _videoDevice == null ? "Enable Camera" : "Disable Camera";
+        private string _videoDeviceButtonIcon => _videoDevice == null ? Icons.Filled.Videocam : Icons.Filled.VideocamOff;
+        private Color _videoDeviceButtonIconColor => _videoDevice == null ? Color.Success : Color.Error;
+
+        private void toggleAudioMute()
+        {
+            if (_audioDevice != null)
+            {
+                _previouslyUsedAudioDevice = _audioDevice;
+                _audioDevice = null;
+            }
+            else
+            {
+                Device? device = _previouslyUsedAudioDevice ?? _availableAudioDevices.FirstOrDefault();
+                if (device != null)
+                {
+                    _audioDevice = device;
+                }
+            }
+        }
+
+        private void toggleVideoMute()
+        {
+            if (_videoDevice != null)
+            {
+                _previouslyUsedVideoDevice = _videoDevice;
+                _videoDevice = null;
+            }
+            else
+            {
+                Device? device = _previouslyUsedVideoDevice ?? _availableVideoDevices.FirstOrDefault();
+                if (device != null)
+                {
+                    _videoDevice = device;
+                }
+            }
+        }
+
         private string? _screenshare = "";
 
         protected override void OnInitialized()
@@ -126,10 +171,18 @@ namespace BlazorChat.Client.Components.Calls
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
+            List<Task> tasks = new List<Task>();
+            if (_videoElementsSwapped)
+            {
+                tasks.Add(Calls.SetVideoElements("LocalVideo", "RemoteAudio", "RemoteVideoPreview", "RemoteVideoLarge"));
+            }
+            else
+            {
+                tasks.Add(Calls.SetVideoElements("LocalVideo", "RemoteAudio", "RemoteVideoLarge", "RemoteVideoPreview"));
+            }
             if (firstRender)
             {
-                var setelements = Calls.SetVideoElements("LocalVideo", "RemoteAudio", "RemoteCamera", "RemoteCapture");
-                var getDevices = Task.Run(async () =>
+                tasks.Add(Task.Run(async () =>
                 {
                     var devices = await Calls.QueryDevices();
                     this._availableVideoDevices.Clear();
@@ -137,8 +190,23 @@ namespace BlazorChat.Client.Components.Calls
                     this._availableAudioDevices.Clear();
                     this._availableAudioDevices.AddRange(devices.audioDevices);
                     this.StateHasChanged();
-                });
-                await Task.WhenAll(getDevices, setelements);
+                }));
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        bool _videoElementsSwapped = false;
+
+        private async Task swapVideoElements()
+        {
+            _videoElementsSwapped = !_videoElementsSwapped;
+            if (_videoElementsSwapped)
+            {
+                await Calls.SetVideoElements("LocalVideo", "RemoteAudio", "RemoteVideoPreview", "RemoteVideoLarge");
+            }
+            else
+            {
+                await Calls.SetVideoElements("LocalVideo", "RemoteAudio", "RemoteVideoLarge", "RemoteVideoPreview");
             }
         }
 

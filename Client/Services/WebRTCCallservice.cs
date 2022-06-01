@@ -201,6 +201,7 @@ namespace BlazorChat.Client.Services
 
         public async Task SetAudioDevice(Device? device)
         {
+            Console.WriteLine($"Audio {JsonSerializer.Serialize(device)}");
             await _jsRuntime.InvokeVoidAsync("webRtcHelper.setAudioDevice", device?.id);
             audioDevice.State = device;
         }

@@ -18,26 +18,53 @@
                 <MudText Typo=@(Typo.body1) Color=@(Color.Error)>@(_errorMessage)</MudText>
             }
         }
+        else if (_videoInputs.Length > 0 || _audioInputs.Length > 0)
+        {
+            @if (_videoInputs.Length > 1)
+            {
+                <MudSelect T="Device" @bind-Value=_videoDevice Label="Select Video Input">
+                    <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
+                    @foreach (var device in _videoInputs)
+                    {
+                        <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+            else if (_videoInputs.Length == 1)
+            {
+                <MudSwitch T=bool
+                   Checked=@(_videoDevice != null)
+                   CheckedChanged=@((v) => _videoDevice = v ? _videoInputs.First() : null)>
+                    @(_videoInputs.First().label)
+                </MudSwitch>
+            }
+            @if (_audioInputs.Length > 1)
+            {
+                <MudSelect T="Device" @bind-Value=_audioDevice Label="Select Audio Input">
+                    <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
+                    @foreach (var device in _audioInputs)
+                    {
+                        <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+            else if (_audioInputs.Length == 1)
+            {
+                <MudSwitch T=bool
+                   Checked=@(_audioDevice != null)
+                   CheckedChanged=@((v) => _audioDevice = v ? _audioInputs.First() : null)>
+                    @(_audioInputs.First().label)
+                </MudSwitch>
+            }            
+        }
         else
         {
-            <MudSelect T="Device" @bind-Value=__videoDevice Label="Select Video Input">
-                <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
-                @foreach (var device in _videoInputs)
-                {
-                    <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
-                }
-            </MudSelect>
-            <MudSelect T="Device" @bind-Value=__audioDevice Label="Select Audio Input">
-                <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
-                @foreach (var device in _audioInputs)
-                {
-                    <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
-                }
-            </MudSelect>
+            <MudText Color=@(Color.Warning)>GetUserMedia did not detect any valid inputs on your device!</MudText>
         }
     </DialogContent>
     <DialogActions>
         <MudButton OnClick=onCancel>@(_cancelString)</MudButton>
-        <MudButton StartIcon=@(Icons.Filled.Call) OnClick=onAccept Disabled=@(__videoDevice == null && __audioDevice == null)>@(_acceptString)</MudButton>
+        @* Disabled=@(__videoDevice == null && __audioDevice == null) *@
+        <MudButton StartIcon=@(Icons.Filled.Call) OnClick=onAccept>@(_acceptString)</MudButton>
     </DialogActions>
 </MudDialog>
