@@ -151,9 +151,6 @@ class MediaTrack {
         if (this._element === el) {
             return;
         }
-        if (this._element) {
-            this._element.srcObject = null;
-        }
         this._element = el;
         if (this._element && this.stream && !this.track.muted) {
             this._element.srcObject = this.stream;
@@ -261,10 +258,10 @@ class LocalTrack extends MediaTrack {
 }
 
 class MediaElements {
-    localVideoElement: HTMLVideoElement | null = null;
-    remoteAudioElement: HTMLAudioElement | null = null;
-    remoteCameraElement: HTMLAudioElement | null = null;
-    remoteCaptureElement: HTMLAudioElement | null = null;
+    localVideo: HTMLVideoElement | null = null;
+    remoteAudio: HTMLAudioElement | null = null;
+    remoteVideo0: HTMLVideoElement | null = null;
+    remoteVideo1: HTMLVideoElement | null = null;
 }
 
 declare type SignalingRole = "polite" | "impolite" | "unassigned";
@@ -275,8 +272,8 @@ class RtcManager {
     private localCaptureTrack: LocalTrack | null = null;
     private localAudioTrack: LocalTrack | null = null;
     private remoteAudioTrack: MediaTrack | null = null;
-    private remoteCameraTrack: MediaTrack | null = null;
-    private remoteCaptureTrack: MediaTrack | null = null;
+    private remoteVideo0Track: MediaTrack | null = null;
+    private remoteVideo1Track: MediaTrack | null = null;
     private dnetobj: DotNet.DotNetObject | null = null;
     private userId: string | null = null;
     private role: SignalingRole = "unassigned";
@@ -358,26 +355,26 @@ class RtcManager {
         }
 
         if (this.localCameraTrack) {
-            this.localCameraTrack.element = this.elements.localVideoElement;
+            this.localCameraTrack.element = this.elements.localVideo;
         }
         if (this.remoteAudioTrack) {
-            this.remoteAudioTrack.element = this.elements.remoteAudioElement;
+            this.remoteAudioTrack.element = this.elements.remoteAudio;
         }
-        if (this.remoteCameraTrack) {
-            this.remoteCameraTrack.element = this.elements.remoteCameraElement;
+        if (this.remoteVideo0Track) {
+            this.remoteVideo0Track.element = this.elements.remoteVideo0;
         }
-        if (this.remoteCaptureTrack) {
-            this.remoteCaptureTrack.element = this.elements.remoteCaptureElement;
+        if (this.remoteVideo1Track) {
+            this.remoteVideo1Track.element = this.elements.remoteVideo1;
         }
     }
 
     // Sets DOM element ids
     public setElementIds(lvideoid: unknown, raudioid: unknown, rcameraid: unknown, rcaptureid: unknown) {
         this.elements ??= new MediaElements();
-        this.elements.localVideoElement = document.querySelector(`video#${lvideoid}`) as HTMLVideoElement;
-        this.elements.remoteAudioElement = document.querySelector(`audio#${raudioid}`) as HTMLAudioElement;
-        this.elements.remoteCameraElement = document.querySelector(`video#${rcameraid}`) as HTMLAudioElement;
-        this.elements.remoteCaptureElement = document.querySelector(`video#${rcaptureid}`) as HTMLAudioElement;
+        this.elements.localVideo = document.querySelector(`video#${lvideoid}`) as HTMLVideoElement;
+        this.elements.remoteAudio = document.querySelector(`audio#${raudioid}`) as HTMLAudioElement;
+        this.elements.remoteVideo0 = document.querySelector(`video#${rcameraid}`) as HTMLVideoElement;
+        this.elements.remoteVideo1 = document.querySelector(`video#${rcaptureid}`) as HTMLVideoElement;
         this.setElements(this.elements);
     }
 
@@ -512,13 +509,13 @@ class RtcManager {
                     this.remoteAudioTrack = new MediaTrack("audio", e.track, e.streams[0])
                 }
                 else {
-                    if (this.remoteCameraTrack?.track && !this.remoteCameraTrack.track.muted) {
-                        this.remoteCaptureTrack?.dispose();
-                        this.remoteCaptureTrack = new MediaTrack("capture", e.track, e.streams[0]);
+                    if (this.remoteVideo0Track?.track && !this.remoteVideo0Track.track.muted) {
+                        this.remoteVideo1Track?.dispose();
+                        this.remoteVideo1Track = new MediaTrack("camera", e.track, e.streams[0]);
                     }
                     else {
-                        this.remoteCameraTrack?.dispose();
-                        this.remoteCameraTrack = new MediaTrack("camera", e.track, e.streams[0]);
+                        this.remoteVideo0Track?.dispose();
+                        this.remoteVideo0Track = new MediaTrack("camera", e.track, e.streams[0]);
                     }
                     //this.mapRemoteTracks();
                 }
@@ -629,28 +626,6 @@ class RtcManager {
         }
     }
 
-    //private mapRemoteTracks() {
-    // Does not work because neither Stream nor Track Id are guaranteed!
-    //    if (!this.remoteTransmitState) {
-    //        return;
-    //    }
-    //    for (const track of this.remoteTracks) {
-    //        if (this.remoteTransmitState.camera === track.stream.id) {
-    //            if (this.remoteCameraTrack?.stream.id !== track.stream.id) {
-    //                this.remoteCameraTrack?.dispose();
-    //                this.remoteCameraTrack = new MediaTrack("camera", track.track, track.stream);
-    //            }
-    //        }
-    //        if (this.remoteTransmitState.capture === track.stream.id) {
-    //            if (this.remoteCaptureTrack?.stream.id !== track.stream.id) {
-    //                this.remoteCaptureTrack?.dispose();
-    //                this.remoteCaptureTrack = new MediaTrack("capture", track.track, track.stream);
-    //            }
-    //        }
-    //    }
-    //    this.setElements(null);
-    //}
-
     private async sendDatachannelMessage(data: object) {
         if (!this.datachannel || this.datachannel.readyState !== "open") {
             throw "Cannot send datachannel message: Datachannel not ready";
@@ -749,10 +724,10 @@ class RtcManager {
         this.localCameraTrack = null;
         this.remoteAudioTrack?.dispose();
         this.remoteAudioTrack = null;
-        this.remoteCameraTrack?.dispose();
-        this.remoteCameraTrack = null;
-        this.remoteCaptureTrack?.dispose();
-        this.remoteCaptureTrack = null;
+        this.remoteVideo0Track?.dispose();
+        this.remoteVideo0Track = null;
+        this.remoteVideo1Track?.dispose();
+        this.remoteVideo1Track = null;
         this.connection?.close();
         this.connection = null;
         this.datachannel = null;

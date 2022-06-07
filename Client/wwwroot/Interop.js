@@ -85,15 +85,16 @@ class MediaTrack {
         if (this._element === el) {
             return;
         }
-        if (this._element) {
-            this._element.srcObject = null;
-        }
+        const oldEl = this._element;
         this._element = el;
         if (this._element && this.stream && !this.track.muted) {
             this._element.srcObject = this.stream;
             this._element.muted = true;
             this._element.play();
         }
+        //    if (oldEl) {
+        //        oldEl.srcObject = null;
+        //    }
     }
     dispose() {
         this.track.stop();
@@ -389,6 +390,7 @@ class RtcManager {
                         this.remoteAudioTrack = new MediaTrack("audio", e.track, e.streams[0]);
                     }
                     else {
+                        console.warn("Incoming Track", e);
                         if (((_b = this.remoteCameraTrack) === null || _b === void 0 ? void 0 : _b.track) && !this.remoteCameraTrack.track.muted) {
                             (_c = this.remoteCaptureTrack) === null || _c === void 0 ? void 0 : _c.dispose();
                             this.remoteCaptureTrack = new MediaTrack("capture", e.track, e.streams[0]);
@@ -507,27 +509,6 @@ class RtcManager {
             this.remoteTransmitState = obj;
         }
     }
-    //private mapRemoteTracks() {
-    // Does not work because neither Stream nor Track Id are guaranteed!
-    //    if (!this.remoteTransmitState) {
-    //        return;
-    //    }
-    //    for (const track of this.remoteTracks) {
-    //        if (this.remoteTransmitState.camera === track.stream.id) {
-    //            if (this.remoteCameraTrack?.stream.id !== track.stream.id) {
-    //                this.remoteCameraTrack?.dispose();
-    //                this.remoteCameraTrack = new MediaTrack("camera", track.track, track.stream);
-    //            }
-    //        }
-    //        if (this.remoteTransmitState.capture === track.stream.id) {
-    //            if (this.remoteCaptureTrack?.stream.id !== track.stream.id) {
-    //                this.remoteCaptureTrack?.dispose();
-    //                this.remoteCaptureTrack = new MediaTrack("capture", track.track, track.stream);
-    //            }
-    //        }
-    //    }
-    //    this.setElements(null);
-    //}
     sendDatachannelMessage(data) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.datachannel || this.datachannel.readyState !== "open") {
