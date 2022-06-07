@@ -36,3 +36,4 @@ You may provide environment variables via Server/Properties/launchSettings.json
 |`AdminApiBearerToken`|The bearer token string that requests to the admin api need to match if `ENABLE_ADMINAPI_AUTH` compiler flag is set|
 |`AzureCosmosConnectionString` (required)|Connection string used to contact the database backend|
 |`AzureBlobConnectionString`|Connection string used to contact the blob storage|
+|`IceConfigurations`|Array of [RTCIceServer](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer) json objects (urls property must be array!). Provided to the client for initializing the RTCPeerConnection with (enabling STUN and TURN support accordingly). |

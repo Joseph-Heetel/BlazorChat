@@ -168,12 +168,14 @@ namespace BlazorChat.Client.Services
 
         private async Task initiateJS()
         {
+            var iceConfigs = await _apiService.GetIceConfigurations(callId.State);
             await _jsRuntime.InvokeVoidAsync(
-                "webRtcHelper.init",
-                dnetObjRef,
-                _apiService.SelfUser.State!.Id.ToString(),
-                videoDevice.State?.id ?? null,
-                audioDevice.State?.id ?? null
+                    "webRtcHelper.init",
+                    dnetObjRef,
+                    _apiService.SelfUser.State!.Id.ToString(),
+                    videoDevice.State?.id ?? null,
+                    audioDevice.State?.id ?? null,
+                    iceConfigs
                 );
         }
 
@@ -228,10 +230,10 @@ namespace BlazorChat.Client.Services
             }
             videoDevice.State = video;
             audioDevice.State = audio;
-            await initiateJS();
             callId.State = await _apiService.InitCall(remotePeerId);
             if (callId.State != default)
             {
+                await initiateJS();
                 status.State = ECallState.Pending;
                 this.remotePeerId.State = remotePeerId;
                 return true;

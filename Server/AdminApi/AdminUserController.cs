@@ -95,7 +95,7 @@ namespace BlazorChat.Server.AdminApi
                 return BadRequest();
             }
             // TODO: Proper user deletion
-            return await _userService.UpdateUserName(userId, "$DELETED USER") ? Ok() : NotFound();
+            return await _userService.UpdateUserName(userId, "Deleted User") ? Ok() : NotFound();
         }
 
         [Route("{userIdstr}")]

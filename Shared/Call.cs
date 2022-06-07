@@ -60,4 +60,16 @@ namespace BlazorChat.Shared
         public string? sdpMid { get; set; } = null;
         public double sdpMLineIndex { get; set; } = 0;
     }
+
+    public class IceConfiguration
+    {
+        [JsonPropertyName("credential")]
+        public string? Credential { get; set; }
+        [JsonPropertyName("credentialType")]
+        public string? CredentialType { get; set; }
+        [JsonPropertyName("urls")]
+        public string[]? Urls { get; set; }
+        [JsonPropertyName("username")]
+        public string? Username { get; set; }
+    }
 }

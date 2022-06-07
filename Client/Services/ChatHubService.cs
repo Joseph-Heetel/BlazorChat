@@ -110,17 +110,18 @@ namespace BlazorChat.Client.Services
         {
             private static readonly TimeSpan[] retryDelays = new TimeSpan[]
             {
+                TimeSpan.FromSeconds(0),
                 TimeSpan.FromSeconds(1),
                 TimeSpan.FromSeconds(5),
-                TimeSpan.FromSeconds(30),
-                TimeSpan.FromMinutes(1)
             };
 
             public TimeSpan? NextRetryDelay(RetryContext retryContext)
             {
-
                 long index = Math.Max(retryContext.PreviousRetryCount, (long)retryDelays.Length - 1);
                 TimeSpan delay = retryDelays[index];
+#if HUBDEBUGLOGGING
+                Console.WriteLine($"Hub Connection Retry attempt #{retryContext.PreviousRetryCount} in {delay.TotalSeconds} seconds)");
+#endif
                 return delay;
             }
         }

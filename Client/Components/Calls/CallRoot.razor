@@ -17,7 +17,7 @@
             <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
                 @if (_canTransmitVideo)
                 {
-                    <Video Id="LocalVideo" Style=@($"max-width: calc(100% - 1rem); {(_videoDevice == null ? "display: none;" : "")}") />
+                    <Video Id="LocalVideo" Style=@(_localVideoStyle) />
                     <MudButton StartIcon=@(_videoDeviceButtonIcon) IconColor=@(_videoDeviceButtonIconColor) OnClick=@(toggleVideoMute)>@(_videoDeviceButtonText)</MudButton>
                     @if (_videoDevice != null && _availableVideoDevices.Count > 1)
                     {

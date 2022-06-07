@@ -2,6 +2,7 @@
 using BlazorChat.Shared;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
+using System.Text.Json;
 
 namespace BlazorChat.Server.Services
 {
@@ -13,6 +14,7 @@ namespace BlazorChat.Server.Services
         public Task<bool> IsOngoingCall(ItemId callId);
         public Task<bool> IsInCall(ItemId callId, ItemId userId, bool checkpending = true, bool checkongoing = true);
         public Task ElevateToOngoing(ItemId callId);
+        public Task<IceConfiguration[]> GetIceConfigurations();
     }
 
     public class PendingCallModel : CallModel
@@ -37,6 +39,8 @@ namespace BlazorChat.Server.Services
 
         private readonly IIdGeneratorService _idGenService;
         private readonly IHubContext<ChatHub> _HubContext;
+
+        private IceConfiguration[]? _iceConfigs;
 
         public CallSupportService(IIdGeneratorService idgen, IHubContext<ChatHub> hub)
         {
@@ -227,5 +231,19 @@ namespace BlazorChat.Server.Services
             }
         }
 
+        public Task<IceConfiguration[]> GetIceConfigurations()
+        {
+            if (_iceConfigs != null)
+            {
+                return Task.FromResult(_iceConfigs);
+            }
+            string? raw = Environment.GetEnvironmentVariable(EnvironmentVarKeys.ICECONFIGURATIONS);
+            if (!string.IsNullOrEmpty(raw))
+            {
+                _iceConfigs = JsonSerializer.Deserialize<IceConfiguration[]>(raw);
+            }
+            _iceConfigs ??= Array.Empty<IceConfiguration>();
+            return Task.FromResult(_iceConfigs);
+        }
     }
 }

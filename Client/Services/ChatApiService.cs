@@ -145,6 +145,12 @@ namespace BlazorChat.Client.Services
         /// <returns></returns>
         public Task<bool> TerminateCall(ItemId callID);
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="callId"></param>
+        /// <returns></returns>
+        public Task<IceConfiguration[]> GetIceConfigurations(ItemId callId);
+        /// <summary>
         /// Get a form
         /// </summary>
         /// <param name="formId"></param>
@@ -524,6 +530,12 @@ namespace BlazorChat.Client.Services
             JsonContent content = JsonContent.Create(response);
             var result = await getHttpClient().PostAsync($" api/forms/response/{requestId}", content);
             return result != null && result.IsSuccessStatusCode;
+        }
+
+        public async Task<IceConfiguration[]> GetIceConfigurations(ItemId callId)
+        {
+            var result = (await getHttpClient().GetFromJSONAsyncNoExcept<IceConfiguration[]>($"api/calls/ice/{callId}"));
+            return result ?? Array.Empty<IceConfiguration>();
         }
     }
 }

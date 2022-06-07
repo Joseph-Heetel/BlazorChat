@@ -289,9 +289,10 @@ class RtcManager {
     private makingOffer: boolean = false;
     private remoteTransmitState: TransmitState | null = null;
     private remoteTracks: RemoteTrack[] = new Array<RemoteTrack>();
+    private iceServers: RTCIceServer[] = new Array<RTCIceServer>();
 
     // Setup pre call
-    public async init(dnetobj: DotNet.DotNetObject, userid: string, videoDeviceId?: string, audioDeviceId?: string) {
+    public async init(dnetobj: DotNet.DotNetObject, userid: string, videoDeviceId?: string, audioDeviceId?: string, iceServers?: RTCIceServer[]) {
         this.dnetobj = dnetobj;
         this.userId = userid;
 
@@ -331,6 +332,18 @@ class RtcManager {
                     { id: videoDeviceId, label: localvideo.label },
                     localvideo, this.localUserMediaStream);
                 this.localCameraTrack.enabled = true;
+            }
+        }
+
+        if (iceServers) {
+            this.iceServers = iceServers;
+            // WebRTC does not like nulled properties!
+            for (let server of this.iceServers) {
+                for (let property in server) {
+                    if (server[property] === null) {
+                        server[property] = undefined;
+                    }
+                }
             }
         }
 
@@ -459,18 +472,13 @@ class RtcManager {
         }
 
         // apply rtc config
-        const config: RTCConfiguration = {
-            iceServers: [{
-                urls: "stun:stun.l.google.com:19302"
-            },
-            //{
-            //    urls: ["stun:numb.viagenie.ca", "turn:numb.viagenie.ca"],
-            //    username: "",
-            //    credentialType: "password",
-            //    credential: ""
-            //}
-            ]
-        };
+        let config: RTCConfiguration | undefined;
+        if (this.iceServers?.length) {
+            config = {
+                iceServers: this.iceServers
+            };
+            console.log("Ice Config", this.iceServers);
+        }
         await wrapCallWithTimeout(null, async () => this.connection = new RTCPeerConnection(config));
 
         // assign connection to local tracks

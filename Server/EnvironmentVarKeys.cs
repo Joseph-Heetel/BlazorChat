@@ -5,6 +5,7 @@
         public const string AZURECOSMOSCONNECTIONSTRING = "AzureCosmosConnectionString";
         public const string AZUREBLOBCONNECTIONSTRING = "AzureBlobConnectionString";
         public const string ADMINAPIBEARERTOKEN = "AdminApiBearerToken";
+        public const string ICECONFIGURATIONS = "IceConfigurations";
 
         public static void CheckEnvironment(out bool enableBlob)
         {

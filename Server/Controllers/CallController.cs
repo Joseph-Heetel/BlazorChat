@@ -135,5 +135,29 @@ namespace BlazorChat.Server.Controllers
 
             return Ok();
         }
+
+        [Route("ice/{callIdStr}")]
+        [HttpGet]
+        public async Task<ActionResult<IceConfiguration[]>> GetIceConfigurations(string? callIdStr)
+        {
+            // check authorization, get user Id
+            if (!User.GetUserLogin(out ItemId userId))
+            {
+                return Unauthorized();
+            }
+
+            if (!ItemId.TryParse(callIdStr, out ItemId callId))
+            {
+                return BadRequest("Could not parse call id!");
+            }
+
+            var isincall = await _callService.IsInCall(callId, userId);
+            if (!isincall)
+            {
+                return BadRequest("Invalid call id!");
+            }
+
+            return await _callService.GetIceConfigurations();
+        }
     }
 }

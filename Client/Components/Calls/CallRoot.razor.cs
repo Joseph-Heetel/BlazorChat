@@ -33,6 +33,8 @@ namespace BlazorChat.Client.Components.Calls
         private List<Device> _availableVideoDevices = new List<Device>();
         private Device? __videoDevice;
         private Device? _previouslyUsedVideoDevice;
+
+        private string _localVideoStyle => $"max-width: calc(100% - 1rem); {(_videoDevice == null ? "display: none;" : "")}";
         private bool _canTransmitVideo => _availableVideoDevices.Count > 0;
         private Device? _videoDevice
         {

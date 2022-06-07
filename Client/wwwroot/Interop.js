@@ -191,9 +191,10 @@ class RtcManager {
         this.makingOffer = false;
         this.remoteTransmitState = null;
         this.remoteTracks = new Array();
+        this.iceServers = new Array();
     }
     // Setup pre call
-    init(dnetobj, userid, videoDeviceId, audioDeviceId) {
+    init(dnetobj, userid, videoDeviceId, audioDeviceId, iceServers) {
         return __awaiter(this, void 0, void 0, function* () {
             this.dnetobj = dnetobj;
             this.userId = userid;
@@ -224,6 +225,17 @@ class RtcManager {
                     const localvideo = localVideoTracks[0];
                     this.localCameraTrack = new LocalTrack("camera", { id: videoDeviceId, label: localvideo.label }, localvideo, this.localUserMediaStream);
                     this.localCameraTrack.enabled = true;
+                }
+            }
+            if (iceServers) {
+                this.iceServers = iceServers;
+                // WebRTC does not like nulled properties!
+                for (let server of this.iceServers) {
+                    for (let property in server) {
+                        if (server[property] === null) {
+                            server[property] = undefined;
+                        }
+                    }
                 }
             }
             this.handleTransmitStateChanged();
@@ -332,23 +344,19 @@ class RtcManager {
     }
     // build the rtc connection
     buildRtcConnection() {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             if (this.connection) {
                 throw ["RtcManager.buildRtcConnection: connection == true!"];
             }
             // apply rtc config
-            const config = {
-                iceServers: [{
-                        urls: "stun:stun.l.google.com:19302"
-                    },
-                    //{
-                    //    urls: ["stun:numb.viagenie.ca", "turn:numb.viagenie.ca"],
-                    //    username: "",
-                    //    credentialType: "password",
-                    //    credential: ""
-                    //}
-                ]
-            };
+            let config;
+            if ((_a = this.iceServers) === null || _a === void 0 ? void 0 : _a.length) {
+                config = {
+                    iceServers: this.iceServers
+                };
+                console.log("Ice Config", this.iceServers);
+            }
             yield wrapCallWithTimeout(null, () => __awaiter(this, void 0, void 0, function* () { return this.connection = new RTCPeerConnection(config); }));
             // assign connection to local tracks
             if (this.localCameraTrack) {
