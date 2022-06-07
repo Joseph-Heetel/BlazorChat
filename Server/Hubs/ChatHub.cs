@@ -1,5 +1,6 @@
 ﻿using BlazorChat.Server.Services;
 using BlazorChat.Shared;
+using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.SignalR;
 using System.Globalization;
 using System.Text.Json;
@@ -12,62 +13,92 @@ namespace BlazorChat.Server.Hubs
     {
         private readonly IChannelDataService _channelService;
         private readonly ICallSupportService _callService;
+        private readonly ILogger _logger;
 
-        public ChatHub(IChannelDataService channelData, ICallSupportService callSupport)
+        public ChatHub(IChannelDataService channelData, ICallSupportService callSupport, ILoggerFactory loggerFactory)
         {
             _channelService = channelData;
             _callService = callSupport;
+            _logger = loggerFactory.CreateLogger(nameof(ChatHub));
         }
+
+        public static string MakeChannelGroup(ItemId channelId) { return $"Channel-{channelId}"; }
+        public static string MakeUserGroup(ItemId userId) { return $"Channel-{userId}"; }
 
         public override async Task OnConnectedAsync()
         {
-            Console.WriteLine($"User connected to hub: {Context.UserIdentifier}");
-            if (ItemId.TryParse(Context.UserIdentifier, out ItemId userId))
+            try
             {
-                bool wasOnlineBefore = await ConnectionMap.Users.IsConnected(userId);
-
-                List<Task> tasks = new List<Task>();
-                ItemId[] channelIds = await _channelService.GetChannels(userId);
-                string[] channelIdstrs = channelIds.Select(x => x.ToString()).ToArray();
-
-                // Add connection to all channel groups
-                foreach (ItemId channelId in channelIds)
+                if (ItemId.TryParse(Context.UserIdentifier, out ItemId userId))
                 {
-                    tasks.Add(Groups.AddToGroupAsync(Context.ConnectionId, channelId.ToString()));
-                    tasks.Add(ConnectionMap.Channels.RegisterConnection(channelId, Context.ConnectionId));
-                }
+                    bool wasOnlineBefore = await ConnectionMap.Users.IsConnected(userId);
 
-                tasks.Add(ConnectionMap.Users.RegisterConnection(userId, Context.ConnectionId));
-                await Task.WhenAll(tasks);
-                if (!wasOnlineBefore)
-                {
-                    await Clients.Groups(channelIdstrs).SendAsync(SignalRConstants.USER_PRESENCE, userId, true);
+                    List<Task> tasks = new List<Task>();
+                    ItemId[] channelIds = await _channelService.GetChannels(userId);
+                    string[] hubgroups = channelIds.Select(x => MakeChannelGroup(x)).ToArray();
+
+                    // Add connection to all channel groups
+                    foreach (string hubgroup in hubgroups)
+                    {
+                        tasks.Add(Groups.AddToGroupAsync(Context.ConnectionId, hubgroup));
+                    }
+
+                    tasks.Add(Groups.AddToGroupAsync(Context.ConnectionId, MakeUserGroup(userId)));
+
+                    tasks.Add(ConnectionMap.Users.RegisterConnection(userId, Context.ConnectionId));
+                    await Task.WhenAll(tasks);
+                    if (!wasOnlineBefore)
+                    {
+                        await Clients.Groups(hubgroups).SendAsync(SignalRConstants.USER_PRESENCE, userId, true);
+                    }
+
+                    _logger.LogWarning($"[+] User \"{Context.UserIdentifier}/{Context.ConnectionId}\" connected");
                 }
+                else
+                {
+                    _logger.LogWarning($"Connect: User \"{Context.UserIdentifier}/{Context.ConnectionId}\" not parsed to user Id!");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception connecting {Context.UserIdentifier}/{Context.ConnectionId} : {ex}");
+                throw;
             }
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            List<Task> tasks = new List<Task>();
-            if (ItemId.TryParse(Context.UserIdentifier, out ItemId userId))
+            try
             {
-                tasks.Add(ConnectionMap.Users.UnregisterConnection(userId, Context.ConnectionId));
-
-                ItemId[] channelIds = await _channelService.GetChannels(userId);
-                string[] channelIdstrs = channelIds.Select(x => x.ToString()).ToArray();
-
-                // Add connection to all channel groups
-                foreach (ItemId channelId in channelIds)
+                if (ItemId.TryParse(Context.UserIdentifier, out ItemId userId))
                 {
-                    tasks.Add(ConnectionMap.Channels.UnregisterConnection(channelId, Context.ConnectionId));
+                    await ConnectionMap.Users.UnregisterConnection(userId, Context.ConnectionId);
+
+
+                    ItemId[] channelIds = await _channelService.GetChannels(userId);
+                    string[] hubgroups = channelIds.Select(x => MakeChannelGroup(x)).ToArray();
+
+
+                    // Remove connection from all channel groups
+                    if (!await ConnectionMap.Users.IsConnected(userId))
+                    {
+                        await Clients.Groups(hubgroups).SendAsync(SignalRConstants.USER_PRESENCE, userId, false);
+                    }
+
+                    _logger.LogWarning($"[-] User \"{userId}/{Context.ConnectionId}\" disconnected: {exception?.Message}");
                 }
-                await Task.WhenAll(tasks);
-                if (!await ConnectionMap.Users.IsConnected(userId))
+                else
                 {
-                    await Clients.Groups(channelIdstrs).SendAsync(SignalRConstants.USER_PRESENCE, userId, false);
+                    _logger.LogWarning($"Disconnect: User \"{Context.UserIdentifier}/{Context.ConnectionId}\" not parsed to user Id!");
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception disconnecting \"{Context.UserIdentifier}/{Context.ConnectionId}\" : {ex}");
+                throw;
+            }
+
             await base.OnDisconnectedAsync(exception);
         }
 

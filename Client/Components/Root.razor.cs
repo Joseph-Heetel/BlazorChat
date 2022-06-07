@@ -66,7 +66,6 @@ namespace BlazorChat.Client.Components
             }
             else
             {
-                Console.WriteLine("Submit " + DateTimeOffset.UtcNow.ToString());
                 errorMessage = "Login failed. Login or password may be incorrect!";
                 success = await ChatApiService.Login(_login, _password);
             }

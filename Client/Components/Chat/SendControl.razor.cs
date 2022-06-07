@@ -72,7 +72,6 @@ namespace BlazorChat.Client.Components.Chat
                     _Snackbar.Add("Unable to upload file", Severity.Error);
                     error = true;
                 }
-                Console.WriteLine($"Upload complete: {JsonSerializer.Serialize(attachment)}");
             }
             if (!error)
             {

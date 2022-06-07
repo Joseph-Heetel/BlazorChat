@@ -74,16 +74,20 @@ namespace BlazorChat.Client.Components.Forms
             this.StateHasChanged();
         }
 
-        private async void Submit()
+        private async Task Submit()
         {
             Validate();
             if (FormRequest != null && _formRoot != null && _validation.IsSuccess)
             {
                 _state = EState.Uploading;
-                Console.WriteLine($"Submitting: {JsonSerializer.Serialize(_formRoot)}");
                 await Api.PostFormResponse(FormRequest.Id, _formRoot);
                 MudDialog?.Close();
             }
+        }
+
+        private void Close()
+        {
+            MudDialog?.Close();
         }
 
         private void Validate()

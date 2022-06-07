@@ -99,7 +99,13 @@ namespace BlazorChat.Client.Services
             }
             else if (_hubConnection != null)
             {
-                _ = Task.Run(_hubConnection.DisposeAsync);
+                HubConnection connection = _hubConnection;
+                _hubConnection = null;
+                _ = Task.Run(async () =>
+                {
+                    await connection.StopAsync();
+                    await connection.DisposeAsync();
+                });
             }
         }
 
@@ -117,7 +123,7 @@ namespace BlazorChat.Client.Services
 
             public TimeSpan? NextRetryDelay(RetryContext retryContext)
             {
-                long index = Math.Max(retryContext.PreviousRetryCount, (long)retryDelays.Length - 1);
+                long index = Math.Min(retryContext.PreviousRetryCount, (long)retryDelays.Length - 1);
                 TimeSpan delay = retryDelays[index];
 #if HUBDEBUGLOGGING
                 Console.WriteLine($"Hub Connection Retry attempt #{retryContext.PreviousRetryCount} in {delay.TotalSeconds} seconds)");
@@ -161,7 +167,7 @@ namespace BlazorChat.Client.Services
         private Task Hub_CallTerminated(ItemId callId)
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine($"{SignalRConstants.CALL_TERMINATED} : {callId}");
+            Console.WriteLine($"{SignalRConstants.CALL_TERMINATED} : {callId}");
 #endif
             return OnCallTerminated?.InvokeAsync(callId) ?? Task.CompletedTask;
         }
@@ -169,7 +175,7 @@ namespace BlazorChat.Client.Services
         private Task Hub_CallsNegotiation(ItemId callId, ItemId senderId, NegotiationMessage msg)
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine($"{SignalRConstants.CALL_NEGOTIATION} : {callId}, {senderId}, {JsonSerializer.Serialize(msg)}");
+            Console.WriteLine($"{SignalRConstants.CALL_NEGOTIATION} : {callId}, {senderId}, {JsonSerializer.Serialize(msg)}");
 #endif
             return OnCallNegotiation?.InvokeAsync(callId, senderId, msg) ?? Task.CompletedTask;
         }
@@ -177,7 +183,7 @@ namespace BlazorChat.Client.Services
         private Task Hub_PendingCallsListChanged()
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine($"{SignalRConstants.CALLS_PENDINGCALLSLISTCHANGED}");
+            Console.WriteLine($"{SignalRConstants.CALLS_PENDINGCALLSLISTCHANGED}");
 #endif
             return OnPendingCallsListChanged?.InvokeAsync() ?? Task.CompletedTask;
         }
@@ -185,7 +191,7 @@ namespace BlazorChat.Client.Services
         private Task Hub_MessagesRead(ItemId channelId, ItemId userId, long timestamp)
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine($"{SignalRConstants.CHANNEL_MESSAGESREAD} : C {channelId} U {userId} T {DateTimeOffset.FromUnixTimeMilliseconds(timestamp)}");
+            Console.WriteLine($"{SignalRConstants.CHANNEL_MESSAGESREAD} : C {channelId} U {userId} T {DateTimeOffset.FromUnixTimeMilliseconds(timestamp)}");
 #endif
             return OnMessageReadUpdate?.InvokeAsync(channelId, userId, timestamp) ?? Task.CompletedTask;
         }
@@ -193,7 +199,7 @@ namespace BlazorChat.Client.Services
         private Task Hub_MessageUpdated(Message message)
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine($"{SignalRConstants.MESSAGE_UPDATED} : {JsonSerializer.Serialize(message)}");
+            Console.WriteLine($"{SignalRConstants.MESSAGE_UPDATED} : {JsonSerializer.Serialize(message)}");
 #endif
             return OnMessageUpdated?.InvokeAsync(message) ?? Task.CompletedTask;
         }
@@ -201,7 +207,7 @@ namespace BlazorChat.Client.Services
         private Task Hub_MessageIncoming(Message message)
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine($"{SignalRConstants.MESSAGE_INCOMING} : {JsonSerializer.Serialize(message)}");
+            Console.WriteLine($"{SignalRConstants.MESSAGE_INCOMING} : {JsonSerializer.Serialize(message)}");
 #endif
             return OnMessageReceived?.InvokeAsync(message) ?? Task.CompletedTask;
         }
@@ -209,7 +215,7 @@ namespace BlazorChat.Client.Services
         private Task Hub_MessageDeleted(ItemId channelId, ItemId messageId)
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine($"{SignalRConstants.MESSAGE_DELETED} : {messageId}");
+            Console.WriteLine($"{SignalRConstants.MESSAGE_DELETED} : {messageId}");
 #endif
             return OnMessageDeleted?.InvokeAsync(channelId, messageId) ?? Task.CompletedTask;
         }
@@ -217,7 +223,7 @@ namespace BlazorChat.Client.Services
         private Task Hub_ChannelListChanged()
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine(SignalRConstants.CHANNEL_LISTCHANGED);
+            Console.WriteLine(SignalRConstants.CHANNEL_LISTCHANGED);
 #endif
             return OnChannellistChanged?.InvokeAsync() ?? Task.CompletedTask;
         }
@@ -225,14 +231,14 @@ namespace BlazorChat.Client.Services
         private Task Hub_ChannelUpdated(ItemId channelId)
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine($"{SignalRConstants.CHANNEL_UPDATED} : {channelId}");
+            Console.WriteLine($"{SignalRConstants.CHANNEL_UPDATED} : {channelId}");
 #endif
             return OnChannelUpdated?.InvokeAsync(channelId) ?? Task.CompletedTask;
         }
         private Task Hub_UserUpdated(ItemId userId)
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine($"{SignalRConstants.USER_UPDATED} : {userId}");
+            Console.WriteLine($"{SignalRConstants.USER_UPDATED} : {userId}");
 #endif
             return OnUserUpdated?.InvokeAsync(userId) ?? Task.CompletedTask;
         }
@@ -240,7 +246,7 @@ namespace BlazorChat.Client.Services
         private Task Hub_UserPresence(ItemId userId, bool online)
         {
 #if HUBDEBUGLOGGING
-                Console.WriteLine($"{SignalRConstants.USER_PRESENCE} : {userId}, {online}");
+            Console.WriteLine($"{SignalRConstants.USER_PRESENCE} : {userId}, {online}");
 #endif
             return OnUserPresence?.InvokeAsync(userId, online) ?? Task.CompletedTask;
         }

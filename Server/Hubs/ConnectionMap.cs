@@ -51,10 +51,6 @@ namespace BlazorChat.Server.Hubs
         /// Maps connections to user Ids
         /// </summary>
         public static readonly ConnectionMap Users = new ConnectionMap();
-        /// <summary>
-        /// Maps connections to channel Ids
-        /// </summary>
-        public static readonly ConnectionMap Channels = new ConnectionMap();
 
         private ConcurrentDictionary<ItemId, ConnectionBag> _connections = new ConcurrentDictionary<ItemId, ConnectionBag>();
 

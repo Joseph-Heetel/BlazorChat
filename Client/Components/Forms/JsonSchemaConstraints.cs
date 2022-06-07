@@ -214,7 +214,6 @@ namespace BlazorChat.Client.Components.Forms
         public const string Id = "pattern";
         public void Init(JsonElement value)
         {
-            //Console.WriteLine($"Initialize regex with \"{value.GetString()}\"")
             Pattern = new Regex(value.GetString() ?? "^$");
         }
         public Regex Pattern { get; set; } = new Regex("^$");

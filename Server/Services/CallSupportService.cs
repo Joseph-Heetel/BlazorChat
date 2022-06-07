@@ -78,7 +78,7 @@ namespace BlazorChat.Server.Services
             {
                 _pendingCalls.Add(call.Id, call);
             }
-            await _HubContext.Clients.Clients(await getCalleeConnections(call)).SendAsync(SignalRConstants.CALLS_PENDINGCALLSLISTCHANGED);
+            await _HubContext.Clients.Groups(getCalleeGroup(call)).SendAsync(SignalRConstants.CALLS_PENDINGCALLSLISTCHANGED);
             return call.Id;
         }
 
@@ -125,7 +125,7 @@ namespace BlazorChat.Server.Services
                 if (_pendingCalls.TryGetValue(callId, out PendingCallModel? callModel))
                 {
                     _pendingCalls.Remove(callId);
-                    await _HubContext.Clients.Clients(await getParticipantConnections(callModel)).SendAsync(SignalRConstants.CALL_TERMINATED, callId);
+                    await _HubContext.Clients.Groups(getParticipantGroups(callModel)).SendAsync(SignalRConstants.CALL_TERMINATED, callId);
                     return;
                 }
 
@@ -135,7 +135,7 @@ namespace BlazorChat.Server.Services
                 if (_ongoingCalls.TryGetValue(callId, out CallModel? callModel))
                 {
                     _ongoingCalls.Remove(callId);
-                    await _HubContext.Clients.Clients(await getParticipantConnections(callModel)).SendAsync(SignalRConstants.CALL_TERMINATED, callId);
+                    await _HubContext.Clients.Groups(getParticipantGroups(callModel)).SendAsync(SignalRConstants.CALL_TERMINATED, callId);
                     return;
                 }
             }
@@ -151,7 +151,7 @@ namespace BlazorChat.Server.Services
             }
             if (callModel != null)
             {
-                await _HubContext.Clients.Clients(await getCalleeConnections(callModel)).SendAsync(SignalRConstants.CALLS_PENDINGCALLSLISTCHANGED);
+                await _HubContext.Clients.Group(getCalleeGroup(callModel)).SendAsync(SignalRConstants.CALLS_PENDINGCALLSLISTCHANGED);
                 using (var disposablelock = await _ongoingListSemaphore.WaitAsyncDisposable())
                 {
                     _ongoingCalls.Add(callId, callModel);
@@ -159,50 +159,24 @@ namespace BlazorChat.Server.Services
             }
         }
 
-        private static async Task<List<string>> getParticipantConnections(CallModel callModel)
+        private static List<string> getParticipantGroups(CallModel callModel)
         {
-            List<string> connections = new List<string>();
-            using (var userConnections = await ConnectionMap.Users.GetConnections(callModel.CalleeId))
+            List<string> connections = new List<string>()
             {
-                if (userConnections != null)
-                {
-                    connections.AddRange(userConnections);
-                }
-            }
-            using (var userConnections = await ConnectionMap.Users.GetConnections(callModel.CallerId))
-            {
-                if (userConnections != null)
-                {
-                    connections.AddRange(userConnections);
-                }
-            }
+                ChatHub.MakeUserGroup(callModel.CalleeId),
+                ChatHub.MakeUserGroup(callModel.CallerId)
+            };
             return connections;
         }
 
-        private static async Task<List<string>> getCalleeConnections(CallModel callModel)
+        private static string getCalleeGroup(CallModel callModel)
         {
-            List<string> connections = new List<string>();
-            using (var userConnections = await ConnectionMap.Users.GetConnections(callModel.CalleeId))
-            {
-                if (userConnections != null)
-                {
-                    connections.AddRange(userConnections);
-                }
-            }
-            return connections;
+            return ChatHub.MakeUserGroup(callModel.CalleeId);
         }
 
-        private static async Task<List<string>> getCallerConnections(CallModel callModel)
+        private static string getCallerGroup(CallModel callModel)
         {
-            List<string> connections = new List<string>();
-            using (var userConnections = await ConnectionMap.Users.GetConnections(callModel.CallerId))
-            {
-                if (userConnections != null)
-                {
-                    connections.AddRange(userConnections);
-                }
-            }
-            return connections;
+            return ChatHub.MakeUserGroup(callModel.CallerId);
         }
 
         private async Task checkExpirations()

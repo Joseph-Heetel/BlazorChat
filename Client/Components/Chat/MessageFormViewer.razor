@@ -58,6 +58,12 @@
         {
             { nameof(FormDialog.FormRequest), _formRequest }
         };
-        Dialogs.Show<FormDialog>("", parameters);
+        DialogOptions options = new DialogOptions()
+            {
+                FullScreen = true,
+                NoHeader = true,
+                CloseOnEscapeKey = true,
+            };
+        Dialogs.Show<FormDialog>("", parameters, options);
     }
 }

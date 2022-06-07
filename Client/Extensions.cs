@@ -59,6 +59,7 @@ namespace BlazorChat.Client
             {
                 return await response.Content.ReadFromJsonAsync<Tout>();
             }
+#if APIDEBUGLOGGING
             else if (response != null)
             {
                 Console.WriteLine($"HTTP Post+Get \"{path}\" error <{response.StatusCode}> content \"{await response.Content.ReadAsStringAsync()}\"");
@@ -67,6 +68,7 @@ namespace BlazorChat.Client
             {
                 Console.WriteLine($"HTTP Post+Get \"{path}\" error {nameof(HttpClient)}.{nameof(HttpClient.SendAsync)} return null");
             }
+#endif
             return default;
         }
         public static async Task<string?> PostGetStringAsync<Tin>(this HttpClient client, string path, Tin requestContent)

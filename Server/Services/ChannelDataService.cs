@@ -183,13 +183,14 @@ namespace BlazorChat.Server.Services
                     LastRead = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
                 };
                 memberShipTasks.Add(_membersTable.CreateItemAsync(membership));
+                string hubgroup = ChatHub.MakeChannelGroup(channelId);
                 using (var connections = await ConnectionMap.Users.GetConnections(memberId))
                 {
                     if (connections != null)
                     {
                         foreach (var connection in connections)
                         {
-                            memberShipTasks.Add(_hubContext.Groups.AddToGroupAsync(connection, channelIdStr));
+                            memberShipTasks.Add(_hubContext.Groups.AddToGroupAsync(connection, hubgroup));
                         }
                     }
                 }
@@ -197,7 +198,7 @@ namespace BlazorChat.Server.Services
             await Task.WhenAll(memberShipTasks);
 
             // Notify hub group that they have new channel available
-            await _hubContext.Clients.Group(channelIdStr).SendAsync(SignalRConstants.CHANNEL_LISTCHANGED);
+            await _hubContext.Clients.Group(ChatHub.MakeChannelGroup(channelId)).SendAsync(SignalRConstants.CHANNEL_LISTCHANGED);
             return channel;
         }
 
@@ -221,32 +222,34 @@ namespace BlazorChat.Server.Services
                 var deleteBlobTasks = _storageService.DeleteContainer(channelId);
 
                 // Notify channel members that the channels available to them have changed
-                var notifyChannelMembersTask = _hubContext.Clients.Group(channelId.ToString()).SendAsync(SignalRConstants.CHANNEL_LISTCHANGED);
+                var notifyChannelMembersTask = _hubContext.Clients.Group(ChatHub.MakeChannelGroup(channelId)).SendAsync(SignalRConstants.CHANNEL_LISTCHANGED);
 
                 // Clear the hub group. For some (stupid or otherwise) reason SignalR hubs don't allow killing a whole group. So we do it manually.
                 // Leaving the group to persist would be workable if the server is expected to restart regularly,
                 // or if Users aren't expected to persist for long durations
-                var clearHubGroupTask = Task.Run(async () =>
-                {
-                    List<Task> tasks = new List<Task>();
-                    using (var connections = await ConnectionMap.Channels.GetConnections(channelId))
-                    {
-                        if (connections != null)
-                        {
-                            foreach (var connection in connections)
-                            {
-                                tasks.Add(_hubContext.Groups.RemoveFromGroupAsync(connection, channelIdstr));
-                            }
-                        }
-                    }
-                    await Task.WhenAll(tasks);
-                });
+
+                // Disabled to reduce complexity
+
+                //var clearHubGroupTask = Task.Run(async () =>
+                //{
+                //    List<Task> tasks = new List<Task>();
+                //    using (var connections = await ConnectionMap.Channels.GetConnections(channelId))
+                //    {
+                //        if (connections != null)
+                //        {
+                //            foreach (var connection in connections)
+                //            {
+                //                tasks.Add(_hubContext.Groups.RemoveFromGroupAsync(connection, channelIdstr));
+                //            }
+                //        }
+                //    }
+                //    await Task.WhenAll(tasks);
+                //});
 
                 await Task.WhenAll(
                     deleteMessagesTask,
                     deleteMembershipsTask,
-                    deleteBlobTasks,
-                    clearHubGroupTask);
+                    deleteBlobTasks);
                 return true;
             }
             return false;
@@ -269,8 +272,9 @@ namespace BlazorChat.Server.Services
                 List<Task> tasks = new List<Task>();
 
                 // Notify members that the channel has been updated
-                tasks.Add(_hubContext.Clients.Group(channelIdStr).SendAsync(SignalRConstants.CHANNEL_UPDATED, channelId));
+                tasks.Add(_hubContext.Clients.Group(ChatHub.MakeChannelGroup(channelId)).SendAsync(SignalRConstants.CHANNEL_UPDATED, channelId));
 
+                string hubgroup = ChatHub.MakeChannelGroup(channelId);
                 // Add all user connections to the channel group,
                 // and notify each connection that new channel is available
                 using (var connections = await ConnectionMap.Users.GetConnections(userId))
@@ -279,11 +283,11 @@ namespace BlazorChat.Server.Services
                     {
                         foreach (var connection in connections)
                         {
-                            tasks.Add(_hubContext.Groups.AddToGroupAsync(connection, channelIdStr));
-                            tasks.Add(_hubContext.Clients.Client(connection).SendAsync(SignalRConstants.CHANNEL_LISTCHANGED));
+                            tasks.Add(_hubContext.Groups.AddToGroupAsync(connection, hubgroup));
                         }
                     }
                 }
+                tasks.Add(_hubContext.Clients.Group(ChatHub.MakeUserGroup(userId)).SendAsync(SignalRConstants.CHANNEL_LISTCHANGED));
                 await Task.WhenAll(tasks);
             }
             return response.IsSuccess;
@@ -299,7 +303,9 @@ namespace BlazorChat.Server.Services
                 List<Task> tasks = new List<Task>();
 
                 // Notify members that the channel has been updated
-                tasks.Add(_hubContext.Clients.Group(channelIdStr).SendAsync(SignalRConstants.CHANNEL_UPDATED, channelId));
+                tasks.Add(_hubContext.Clients.Group(ChatHub.MakeChannelGroup(channelId)).SendAsync(SignalRConstants.CHANNEL_UPDATED, channelId));
+
+                string hubgroup = ChatHub.MakeChannelGroup(channelId);
 
                 // Remove all user connections to the channel group,
                 // and notify each connection that a channel is no longer available
@@ -309,11 +315,11 @@ namespace BlazorChat.Server.Services
                     {
                         foreach (var connection in connections)
                         {
-                            tasks.Add(_hubContext.Groups.RemoveFromGroupAsync(connection, channelIdStr));
-                            tasks.Add(_hubContext.Clients.Client(connection).SendAsync(SignalRConstants.CHANNEL_LISTCHANGED));
+                            tasks.Add(_hubContext.Groups.RemoveFromGroupAsync(connection, hubgroup));
                         }
                     }
                 }
+                tasks.Add(_hubContext.Clients.Group(ChatHub.MakeUserGroup(userId)).SendAsync(SignalRConstants.CHANNEL_LISTCHANGED));
                 await Task.WhenAll(tasks);
             }
             return response.IsSuccess;
@@ -344,7 +350,7 @@ namespace BlazorChat.Server.Services
             if (result.IsSuccess)
             {
                 // Notify members that the channel was updated
-                await _hubContext.Clients.Group(channelIdstr).SendAsync(SignalRConstants.CHANNEL_UPDATED, channelId);
+                await _hubContext.Clients.Group(ChatHub.MakeChannelGroup(channelId)).SendAsync(SignalRConstants.CHANNEL_UPDATED, channelId);
             }
             return result.IsSuccess;
         }
@@ -367,7 +373,7 @@ namespace BlazorChat.Server.Services
                 return false;
             }
 
-            await _hubContext.Clients.Group(channelId.ToString()).SendAsync(SignalRConstants.CHANNEL_MESSAGESREAD, channelId, userId, timeOfReadMessage);
+            await _hubContext.Clients.Group(ChatHub.MakeChannelGroup(channelId)).SendAsync(SignalRConstants.CHANNEL_MESSAGESREAD, channelId, userId, timeOfReadMessage);
 
             return true;
         }

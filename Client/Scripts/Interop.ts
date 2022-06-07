@@ -172,7 +172,6 @@ class MediaTrack {
         this.track.contentHint = this.type;
         this.stream = stream;
         this.track.onunmute = () => {
-            //console.log(`${this.type} track "${this.name}" unmuted`);
             if (this.element) {
                 this._element.srcObject = this.stream;
                 this._element.autoplay = true;
@@ -180,7 +179,6 @@ class MediaTrack {
             }
         };
         this.track.onmute = () => {
-            //console.log(`${this.type} track "${this.name}" muted`);
             if (this.element) {
                 this.element.srcObject = null;
             }
@@ -477,7 +475,6 @@ class RtcManager {
             config = {
                 iceServers: this.iceServers
             };
-            console.log("Ice Config", this.iceServers);
         }
         await wrapCallWithTimeout(null, async () => this.connection = new RTCPeerConnection(config));
 
@@ -525,7 +522,6 @@ class RtcManager {
                     }
                     //this.mapRemoteTracks();
                 }
-                console.warn("Recv Video track", e.track.id, e.streams[0].id);
             }
             this.setElements(null);
         };
@@ -565,9 +561,7 @@ class RtcManager {
         try {
             this.makingOffer = true;
             const offer = await wrapCallWithTimeout(this.connection, this.connection.createOffer);
-            //offer.sdp = this.encodeMediaTypes(offer.sdp, ["smokeweed", "everyday"]);
             await wrapCallWithTimeout(this.connection, this.connection.setLocalDescription, offer);
-            //console.log(this.connection.localDescription.sdp);
             this.sendRtcSignal({ type: "offer", sdp: this.connection.localDescription.sdp })
         } finally {
             this.makingOffer = false;
@@ -632,8 +626,6 @@ class RtcManager {
         if (typeof data === "string") {
             const obj: TransmitState = JSON.parse(data) as TransmitState;
             this.remoteTransmitState = obj;
-            //this.mapRemoteTracks();
-            console.warn("Transmitstate update", obj);
         }
     }
 
@@ -725,11 +717,6 @@ class RtcManager {
         if (ignoreOffer) {
             return;
         }
-        for (const line of offer.sdp.split("\n")) {
-            if (line.startsWith("a=msid")) {
-                console.warn("SDP MSID", line);
-            }
-        }
         await wrapCallWithTimeout(this.connection, this.connection.setRemoteDescription, offer);
 
         let answer: RTCSessionDescriptionInit | null = null;
@@ -750,29 +737,6 @@ class RtcManager {
             return;
         }
         await wrapCallWithTimeout(this.connection, this.connection.setRemoteDescription, answer);
-    }
-
-    // #endregion
-
-    // #region SDP manipulation
-
-    private encodeMediaTypes(sdp: string, types: string[]): string {
-        let result: string = "";
-        let seekmsid = false;
-        for (let line of sdp.split("\n")) {
-            if (line.startsWith("m=video")) {
-                seekmsid = true;
-            }
-            if (seekmsid && line.startsWith("a=msid")) {
-                line = `a=msid:{${types[0]}} {${types[0]}}`
-                types.splice(0, 1);
-                seekmsid = false;
-            }
-            result += line + "\n";
-        }
-
-        console.log(result);
-        return result;
     }
 
     // #endregion
@@ -830,7 +794,6 @@ async function wrapCall(thisArg: any, call: any, ...args: any[]): Promise<any> {
 
 // Queries mediaDevices
 async function queryDevices(): Promise<DeviceQuery> {
-    console.log("Query devices ...");
 
     const result: DeviceQuery = {
         videoDevices: new Array<Device>(),
@@ -881,8 +844,6 @@ async function queryDevices(): Promise<DeviceQuery> {
             result.videoDevices.push(makeDevice(device));
         }
     }
-
-    console.log("Device Query", result);
 
     return result;
 }

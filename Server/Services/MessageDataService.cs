@@ -49,7 +49,7 @@ namespace BlazorChat.Server.Services
             {
                 await _channelService.UpdateReadHorizon(channelId, authorId, message.Created);
                 await _channelService.PatchLastMessageTimestamp(channelId, message.Created);
-                await _hubContext.Clients.Group(channelId.ToString()).SendAsync(SignalRConstants.MESSAGE_INCOMING, message.ToApiType());
+                await _hubContext.Clients.Group(ChatHub.MakeChannelGroup(channelId)).SendAsync(SignalRConstants.MESSAGE_INCOMING, message.ToApiType());
                 return message.ToApiType();
             }
             return null;
@@ -102,7 +102,7 @@ namespace BlazorChat.Server.Services
             if (response.IsSuccess)
             {
                 // Notify hub group that message was deleted
-                await _hubContext.Clients.Group(channelIdstr).SendAsync(SignalRConstants.MESSAGE_DELETED, channelId, messageId);
+                await _hubContext.Clients.Group(ChatHub.MakeChannelGroup(channelId)).SendAsync(SignalRConstants.MESSAGE_DELETED, channelId, messageId);
             }
             return response.IsSuccess;
         }
@@ -190,7 +190,7 @@ namespace BlazorChat.Server.Services
             var replaceResponse = await _messagesTable.ReplaceItemAsync(model);
             if (replaceResponse.IsSuccess)
             {
-                await _hubContext.Clients.Group(channelId.ToString()).SendAsync(SignalRConstants.MESSAGE_UPDATED, model.ToApiType());
+                await _hubContext.Clients.Group(ChatHub.MakeChannelGroup(channelId)).SendAsync(SignalRConstants.MESSAGE_UPDATED, model.ToApiType());
             }
             return replaceResponse.IsSuccess;
         }

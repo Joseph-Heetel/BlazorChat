@@ -68,7 +68,6 @@ class MediaTrack {
         this.track.contentHint = this.type;
         this.stream = stream;
         this.track.onunmute = () => {
-            //console.log(`${this.type} track "${this.name}" unmuted`);
             if (this.element) {
                 this._element.srcObject = this.stream;
                 this._element.autoplay = true;
@@ -76,7 +75,6 @@ class MediaTrack {
             }
         };
         this.track.onmute = () => {
-            //console.log(`${this.type} track "${this.name}" muted`);
             if (this.element) {
                 this.element.srcObject = null;
             }
@@ -355,7 +353,6 @@ class RtcManager {
                 config = {
                     iceServers: this.iceServers
                 };
-                console.log("Ice Config", this.iceServers);
             }
             yield wrapCallWithTimeout(null, () => __awaiter(this, void 0, void 0, function* () { return this.connection = new RTCPeerConnection(config); }));
             // assign connection to local tracks
@@ -402,7 +399,6 @@ class RtcManager {
                         }
                         //this.mapRemoteTracks();
                     }
-                    console.warn("Recv Video track", e.track.id, e.streams[0].id);
                 }
                 this.setElements(null);
             };
@@ -441,9 +437,7 @@ class RtcManager {
             try {
                 this.makingOffer = true;
                 const offer = yield wrapCallWithTimeout(this.connection, this.connection.createOffer);
-                //offer.sdp = this.encodeMediaTypes(offer.sdp, ["smokeweed", "everyday"]);
                 yield wrapCallWithTimeout(this.connection, this.connection.setLocalDescription, offer);
-                //console.log(this.connection.localDescription.sdp);
                 this.sendRtcSignal({ type: "offer", sdp: this.connection.localDescription.sdp });
             }
             finally {
@@ -511,8 +505,6 @@ class RtcManager {
         if (typeof data === "string") {
             const obj = JSON.parse(data);
             this.remoteTransmitState = obj;
-            //this.mapRemoteTracks();
-            console.warn("Transmitstate update", obj);
         }
     }
     //private mapRemoteTracks() {
@@ -606,11 +598,6 @@ class RtcManager {
             if (ignoreOffer) {
                 return;
             }
-            for (const line of offer.sdp.split("\n")) {
-                if (line.startsWith("a=msid")) {
-                    console.warn("SDP MSID", line);
-                }
-            }
             yield wrapCallWithTimeout(this.connection, this.connection.setRemoteDescription, offer);
             let answer = null;
             answer = yield wrapCallWithTimeout(this.connection, this.connection.createAnswer);
@@ -632,25 +619,6 @@ class RtcManager {
             }
             yield wrapCallWithTimeout(this.connection, this.connection.setRemoteDescription, answer);
         });
-    }
-    // #endregion
-    // #region SDP manipulation
-    encodeMediaTypes(sdp, types) {
-        let result = "";
-        let seekmsid = false;
-        for (let line of sdp.split("\n")) {
-            if (line.startsWith("m=video")) {
-                seekmsid = true;
-            }
-            if (seekmsid && line.startsWith("a=msid")) {
-                line = `a=msid:{${types[0]}} {${types[0]}}`;
-                types.splice(0, 1);
-                seekmsid = false;
-            }
-            result += line + "\n";
-        }
-        console.log(result);
-        return result;
     }
     // #endregion
     // disposes all states and resets the RtcManager 
@@ -709,7 +677,6 @@ window.webRtcHelper = new RtcManager();
 // Queries mediaDevices
 function queryDevices() {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log("Query devices ...");
         const result = {
             videoDevices: new Array(),
             audioDevices: new Array()
@@ -756,7 +723,6 @@ function queryDevices() {
                 result.videoDevices.push(makeDevice(device));
             }
         }
-        console.log("Device Query", result);
         return result;
     });
 }

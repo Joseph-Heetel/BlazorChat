@@ -28,7 +28,6 @@ namespace BlazorChat.Server.Services
             var response = await _usersTable.GetItemAsync(id.ToString());
             if (!response.IsSuccess)
             {
-                Console.WriteLine($"Get {id}: {response.Code.ToString()}");
                 return null;
             }
             UserModel userModel = response.ResultAsserted;
@@ -106,12 +105,12 @@ namespace BlazorChat.Server.Services
                 // Notify all connections that share a channel with the user
                 ItemId[] channelIds = await _channelService.GetChannels(userId);
 
-                List<string> channelIdstrs = new List<string>();
+                List<string> hubgroups = new List<string>();
                 foreach (ItemId channelId in channelIds)
                 {
-                    channelIdstrs.Add(channelId.ToString());
+                    hubgroups.Add(ChatHub.MakeChannelGroup(channelId));
                 }
-                await _hubContext.Clients.Groups(channelIdstrs).SendAsync(SignalRConstants.USER_UPDATED, userId);
+                await _hubContext.Clients.Groups(hubgroups).SendAsync(SignalRConstants.USER_UPDATED, userId);
             }
             return replaceResult.IsSuccess;
         }
@@ -152,12 +151,12 @@ namespace BlazorChat.Server.Services
                 // Notify all connections that share a channel with the user
                 ItemId[] channelIds = await _channelService.GetChannels(userId);
 
-                List<string> channelIdstrs = new List<string>();
+                List<string> hubgroups = new List<string>();
                 foreach (ItemId channelId in channelIds)
                 {
-                    channelIdstrs.Add(channelId.ToString());
+                    hubgroups.Add(ChatHub.MakeChannelGroup(channelId));
                 }
-                await _hubContext.Clients.Groups(channelIdstrs).SendAsync(SignalRConstants.USER_UPDATED, userId);
+                await _hubContext.Clients.Groups(hubgroups).SendAsync(SignalRConstants.USER_UPDATED, userId);
             }
             return result.IsSuccess;
         }

@@ -30,7 +30,6 @@ namespace BlazorChat.Server.Controllers
             // check authorization, get user Id
             if (!User.GetUserLogin(out ItemId userId))
             {
-                Console.WriteLine($"Session Get failed - no auth");
                 return Unauthorized();
             }
 
@@ -38,7 +37,6 @@ namespace BlazorChat.Server.Controllers
             User? user = await _userService.GetUser(userId);
             if (user == null)
             {
-                Console.WriteLine($"Session Get failed - no user");
                 return Unauthorized();
             }
 

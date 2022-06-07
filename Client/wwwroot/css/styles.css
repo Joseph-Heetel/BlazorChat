@@ -119,3 +119,18 @@ div.enlargedialogchild > div.outline-none {
     width: 100%;
     height: 100%;
 }
+
+div.mud-dialog-fullscreen > div.outline-none {
+    width: 100%;
+    height: 100%;
+    max-width: unset;
+    max-height: unset;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+div.mud-dialog-fullscreen > div.outline-none > div.mud-dialog-content {
+    flex: 0 1 100%;
+    min-height: 0;
+}
+

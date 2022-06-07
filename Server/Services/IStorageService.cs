@@ -52,7 +52,6 @@ namespace BlazorChat.Server.Services
             BlobClient blobClient = containerClient.GetBlobClient(remotefilename);
             using MemoryStream stream = new MemoryStream(file.Data);
             var response = await blobClient.UploadAsync(stream, true);
-            Console.WriteLine($"Uploaded to \"{blobClient.Uri.AbsoluteUri}\"");
             return fileId;
         }
 
