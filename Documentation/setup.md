@@ -2,7 +2,7 @@
 
 # Clone
 ```
-git clone https://github.com/Joseph-Heetel/BlazorChat
+git clone https://github.com/Soloplan-Innovation-Lab/BlazorChat
 ```
 # Setup CosmosDB Emulator
 

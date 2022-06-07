@@ -40,10 +40,6 @@ Encapsulated behind services are multiple Microsoft Azure products:
 
 These are encapsulated such that replacing with alternatives should be relatively simple
 
-## Client <-> Server communication
-- A REST Api allows the client to fetch data from the server
-- A SignalR Hub is used for all paths of communications initiated by the server, enabling realtime communication
-
 # Cloning and Configuration
 
 **⚠ As described in [Limits](./Documentation/limits.md) this project is merely a proof of concept prototype, and not fit for production use!**
