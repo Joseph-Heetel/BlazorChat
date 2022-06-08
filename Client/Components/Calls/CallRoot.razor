@@ -11,26 +11,26 @@
     </MudAppBar>
     <MudMainContent Class="restrictheight row_container">
         <div class="column_container gap" style="flex: 0 0 12rem; height: 100%; overflow-y: auto">
-            <div class="flexspacer"/>
+            <div class="flexspacer" />
             <UserView Params=_localUser Size=@(Size.Medium) />
             <!-- Video -->
             <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
                 @if (_canTransmitVideo)
                 {
                     <Video Id="LocalVideo" Style=@(_localVideoStyle) />
-                    <MudButton StartIcon=@(_videoDeviceButtonIcon) IconColor=@(_videoDeviceButtonIconColor) OnClick=@(toggleVideoMute)>@(_videoDeviceButtonText)</MudButton>
+                    <MudButton Variant=@(Variant.Filled) StartIcon=@(_videoDeviceButtonIcon) IconColor=@(_videoDeviceButtonIconColor) OnClick=@(toggleVideoMute)>@(_videoDeviceButtonText)</MudButton>
                     @if (_videoDevice != null && _availableVideoDevices.Count > 1)
                     {
                         <MudSelect T=Device Label="Camera" @bind-Value=_videoDevice>
                             @foreach (var device in _availableVideoDevices)
                             {
-                                <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                                <MudSelectItem T=Device Value=device>@(device.Label)</MudSelectItem>
                             }
                         </MudSelect>
                     }
                     else if (_videoDevice != null)
                     {
-                        <MudText>@(_videoDevice.label)</MudText>
+                        <MudText>@(_videoDevice.Label)</MudText>
                     }
                 }
                 else
@@ -42,19 +42,19 @@
             <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
                 @if (_canTransmitAudio)
                 {
-                    <MudButton StartIcon=@(_audioDeviceButtonIcon) IconColor=@(_audioDeviceButtonIconColor) OnClick=@(toggleAudioMute)>@(_audioDeviceButtonText)</MudButton>
+                    <MudButton Variant=@(Variant.Filled) StartIcon=@(_audioDeviceButtonIcon) IconColor=@(_audioDeviceButtonIconColor) OnClick=@(toggleAudioMute)>@(_audioDeviceButtonText)</MudButton>
                     @if (_audioDevice != null && _availableAudioDevices.Count > 1)
                     {
                         <MudSelect T=Device Label="Audio" @bind-Value=_audioDevice>
                             @foreach (var device in _availableAudioDevices)
                             {
-                                <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                                <MudSelectItem T=Device Value=device>@(device.Label)</MudSelectItem>
                             }
                         </MudSelect>
                     }
                     else if (_audioDevice != null)
                     {
-                        <MudText>@(_audioDevice.label)</MudText>
+                        <MudText>@(_audioDevice.Label)</MudText>
                     }
                 }
                 else
@@ -67,11 +67,11 @@
                 @if (!string.IsNullOrEmpty(_screenshare))
                 {
                     <MudText>Sharing @(_screenshare)</MudText>
-                    <MudButton StartIcon=@(Icons.Filled.Stop) OnClick=endScreenShare>Stop Sharing</MudButton>
+                    <MudButton Variant=@(Variant.Filled) StartIcon=@(Icons.Filled.Stop) OnClick=endScreenShare>Stop Sharing</MudButton>
                 }
                 else
                 {
-                    <MudButton StartIcon=@(Icons.Filled.ScreenShare) OnClick=beginScreenShare>Screen Share</MudButton>
+                    <MudButton Variant=@(Variant.Filled) StartIcon=@(Icons.Filled.ScreenShare) OnClick=beginScreenShare>Screen Share</MudButton>
                 }
                 <div class="maxflex" />
             </MudCard>
@@ -81,15 +81,33 @@
                 @if (_state == Services.ECallState.Ongoing)
                 {
                     <UserView Params=_remoteUser />
+                    @if (_remoteTransmitState != null)
+                    {
+                        @if (_remoteTransmitState.Audio)
+                        {
+                            <MudIcon Icon=@(Icons.Filled.Mic) />
+                        }
+                        @if (_remoteTransmitState.Camera)
+                        {
+                            <MudIcon Icon=@(Icons.Filled.Videocam) />
+                        }
+                        @if (_remoteTransmitState.Capture)
+                        {
+                            <MudIcon Icon=@(Icons.Filled.ScreenShare) />
+                        }
+                    }
                 }
                 else
                 {
                     <MudText>@(_state)</MudText>
                 }
             </MudCard>
-            <MudButton Style="position:absolute; right: 1rem; bottom: 1rem; width: 8rem; height: auto" OnClick=@(swapVideoElements)>
-                <Video Id="RemoteVideoPreview" />
-            </MudButton>
+            @if (_multipleVideos)
+            {
+                <MudButton Style="position:absolute; right: 1rem; bottom: 1rem; width: 8rem; height: auto" OnClick=@(swapVideoElements)>
+                    <Video Id="RemoteVideoPreview" />
+                </MudButton>
+            }
         </Video>
         <audio id="RemoteAudio" autoplay style="display: none" />
     </MudMainContent>

@@ -1,6 +1,7 @@
 ﻿using BlazorChat.Shared;
 using Microsoft.JSInterop;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BlazorChat.Client.Services
 {
@@ -13,19 +14,33 @@ namespace BlazorChat.Client.Services
 
     public class Device
     {
-        public string id { get; set; } = "";
-        public string label { get; set; } = "";
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = "";
+        [JsonPropertyName("label")]
+        public string Label { get; set; } = "";
         public override string ToString()
         {
-            return label;
+            return Label;
         }
     }
 
     public class DeviceQuery
     {
-        public Device[] videoDevices { get; set; } = Array.Empty<Device>();
-        public Device[] audioDevices { get; set; } = Array.Empty<Device>();
+        [JsonPropertyName("videoDevices")]
+        public Device[] VideoDevices { get; set; } = Array.Empty<Device>();
+        [JsonPropertyName("audioDevices")]
+        public Device[] AudioDevices { get; set; } = Array.Empty<Device>();
     }
+
+    public class TransmitState
+    {
+        [JsonPropertyName("audio")]
+        public bool Audio { get; set; }
+        [JsonPropertyName("camera")]
+        public bool Camera { get; set; }
+        [JsonPropertyName("capture")]
+        public bool Capture { get; set; }
+    };
 
     /// <summary>
     /// Service maintaining call state and handling communication with JS and the browser API
@@ -56,6 +71,7 @@ namespace BlazorChat.Client.Services
         /// Current state of audio transmit
         /// </summary>
         IReadOnlyObservable<bool> AudioTransmitEnabled { get; }
+        IReadOnlyObservable<TransmitState?> RemoteTransmitState { get; }
 
         /// <summary>
         /// Initiate a call to remote peer
@@ -135,12 +151,14 @@ namespace BlazorChat.Client.Services
         private readonly Observable<bool> audioTransmitEnabled = new Observable<bool>(false);
         private readonly Observable<Device?> videoDevice = new Observable<Device?>(null);
         private readonly Observable<Device?> audioDevice = new Observable<Device?>(null);
+        private readonly Observable<TransmitState?> remoteTransmitState = new Observable<TransmitState?>(null);
         public IReadOnlyObservable<ItemId> CallId => callId;
         public IReadOnlyObservable<ECallState> Status => status;
         public IReadOnlyObservable<ItemId> RemotePeerId => remotePeerId;
         public IReadOnlyObservable<Device?> VideoDevice => videoDevice;
         public IReadOnlyObservable<Device?> AudioDevice => audioDevice;
         public IReadOnlyObservable<bool> AudioTransmitEnabled => audioTransmitEnabled;
+        public IReadOnlyObservable<TransmitState?> RemoteTransmitState => remoteTransmitState;
 
 
         public WebRTCCallservice(IChatApiService api, IChatHubService hub, IJSRuntime js)
@@ -173,8 +191,8 @@ namespace BlazorChat.Client.Services
                     "webRtcHelper.init",
                     dnetObjRef,
                     _apiService.SelfUser.State!.Id.ToString(),
-                    videoDevice.State?.id ?? null,
-                    audioDevice.State?.id ?? null,
+                    videoDevice.State?.Id ?? null,
+                    audioDevice.State?.Id ?? null,
                     iceConfigs
                 );
         }
@@ -203,13 +221,13 @@ namespace BlazorChat.Client.Services
 
         public async Task SetAudioDevice(Device? device)
         {
-            await _jsRuntime.InvokeVoidAsync("webRtcHelper.setAudioDevice", device?.id);
+            await _jsRuntime.InvokeVoidAsync("webRtcHelper.setAudioDevice", device?.Id);
             audioDevice.State = device;
         }
 
         public async Task SetVideoDevice(Device? device)
         {
-            await _jsRuntime.InvokeVoidAsync("webRtcHelper.setVideoDevice", device?.id);
+            await _jsRuntime.InvokeVoidAsync("webRtcHelper.setVideoDevice", device?.Id);
             videoDevice.State = device;
         }
 
@@ -276,6 +294,14 @@ namespace BlazorChat.Client.Services
             }
         }
 
+        [JSInvokable]
+        public void remoteTransmitStateChanged(TransmitState? state)
+        {
+            if (state != null)
+            {
+                remoteTransmitState.State = state;
+            }
+        }
         public async Task<DeviceQuery> QueryDevices()
         {
             return await _jsRuntime.InvokeAsync<DeviceQuery>("window.queryDevices");

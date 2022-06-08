@@ -69,6 +69,8 @@ namespace BlazorChat.Client.Components.Calls
         private string _videoDeviceButtonIcon => _videoDevice == null ? Icons.Filled.Videocam : Icons.Filled.VideocamOff;
         private Color _videoDeviceButtonIconColor => _videoDevice == null ? Color.Success : Color.Error;
 
+        private TransmitState? _remoteTransmitState;
+        private bool _multipleVideos => _remoteTransmitState != null && _remoteTransmitState.Camera && _remoteTransmitState.Capture;
         private void toggleAudioMute()
         {
             if (_audioDevice != null)
@@ -115,9 +117,17 @@ namespace BlazorChat.Client.Components.Calls
             VideoDevice_StateChanged(Calls.VideoDevice.State);
             Calls.AudioDevice.StateChanged += AudioDevice_StateChanged;
             AudioDevice_StateChanged(Calls.AudioDevice.State);
+            Calls.RemoteTransmitState.StateChanged += RemoteTransmitState_StateChanged;
+            RemoteTransmitState_StateChanged(Calls.RemoteTransmitState.State);
             Api.SelfUser.StateChanged += SelfUser_StateChanged;
             SelfUser_StateChanged(Api.SelfUser.State);
             base.OnInitialized();
+        }
+
+        private void RemoteTransmitState_StateChanged(TransmitState? value)
+        {
+            _remoteTransmitState = value;
+            this.StateHasChanged();
         }
 
         private void AudioDevice_StateChanged(Device? value)
@@ -174,7 +184,7 @@ namespace BlazorChat.Client.Components.Calls
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             List<Task> tasks = new List<Task>();
-            if (_videoElementsSwapped)
+            if (_videoElementsSwapped && _multipleVideos)
             {
                 tasks.Add(Calls.SetVideoElements("LocalVideo", "RemoteAudio", "RemoteVideoPreview", "RemoteVideoLarge"));
             }
@@ -188,9 +198,9 @@ namespace BlazorChat.Client.Components.Calls
                 {
                     var devices = await Calls.QueryDevices();
                     this._availableVideoDevices.Clear();
-                    this._availableVideoDevices.AddRange(devices.videoDevices);
+                    this._availableVideoDevices.AddRange(devices.VideoDevices);
                     this._availableAudioDevices.Clear();
-                    this._availableAudioDevices.AddRange(devices.audioDevices);
+                    this._availableAudioDevices.AddRange(devices.AudioDevices);
                     this.StateHasChanged();
                 }));
             }

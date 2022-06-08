@@ -26,7 +26,7 @@
                     <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
                     @foreach (var device in _videoInputs)
                     {
-                        <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                        <MudSelectItem T=Device Value=device>@(device.Label)</MudSelectItem>
                     }
                 </MudSelect>
             }
@@ -35,7 +35,7 @@
                 <MudSwitch T=bool
                    Checked=@(_videoDevice != null)
                    CheckedChanged=@((v) => _videoDevice = v ? _videoInputs.First() : null)>
-                    @(_videoInputs.First().label)
+                    @(_videoInputs.First().Label)
                 </MudSwitch>
             }
             @if (_audioInputs.Length > 1)
@@ -44,7 +44,7 @@
                     <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
                     @foreach (var device in _audioInputs)
                     {
-                        <MudSelectItem T=Device Value=device>@(device.label)</MudSelectItem>
+                        <MudSelectItem T=Device Value=device>@(device.Label)</MudSelectItem>
                     }
                 </MudSelect>
             }
@@ -53,7 +53,7 @@
                 <MudSwitch T=bool
                    Checked=@(_audioDevice != null)
                    CheckedChanged=@((v) => _audioDevice = v ? _audioInputs.First() : null)>
-                    @(_audioInputs.First().label)
+                    @(_audioInputs.First().Label)
                 </MudSwitch>
             }            
         }

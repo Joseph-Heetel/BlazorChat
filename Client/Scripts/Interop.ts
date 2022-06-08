@@ -121,9 +121,9 @@ interface RtcMessage {
 }
 
 interface TransmitState {
-    audio: string | null;
-    camera: string | null;
-    capture: string | null;
+    audio: boolean;
+    camera: boolean;
+    capture: boolean;
 }
 
 interface RemoteTrack {
@@ -390,32 +390,31 @@ class RtcManager {
             this.localCameraTrack.dispose();
             this.localCameraTrack = null;
         }
-        if (!id) {
-            return; // bail if video is to be disabled
-        }
-        const constraints: MediaStreamConstraints = {
-            video: {
-                deviceId: id
+        if (id) {
+            const constraints: MediaStreamConstraints = {
+                video: {
+                    deviceId: id
+                }
+            };
+
+            // get local media
+            this.localUserMediaStream = await wrapCallWithTimeout(navigator.mediaDevices, navigator.mediaDevices.getUserMedia, constraints);
+
+            // setup video
+            const localVideoTracks: MediaStreamTrack[] = this.localUserMediaStream.getVideoTracks();
+            if (localVideoTracks.length) {
+                const localvideo = localVideoTracks[0];
+                this.localCameraTrack = new LocalTrack(
+                    "camera",
+                    { id: id, label: localvideo.label },
+                    localvideo, this.localUserMediaStream);
+                this.localCameraTrack.connection = this.connection;
+                this.localCameraTrack.enabled = true;
             }
-        };
 
-        // get local media
-        this.localUserMediaStream = await wrapCallWithTimeout(navigator.mediaDevices, navigator.mediaDevices.getUserMedia, constraints);
-
-        // setup video
-        const localVideoTracks: MediaStreamTrack[] = this.localUserMediaStream.getVideoTracks();
-        if (localVideoTracks.length) {
-            const localvideo = localVideoTracks[0];
-            this.localCameraTrack = new LocalTrack(
-                "camera",
-                { id: id, label: localvideo.label },
-                localvideo, this.localUserMediaStream);
-            this.localCameraTrack.connection = this.connection;
-            this.localCameraTrack.enabled = true;
+            // set local elements
+            this.setElements(null);
         }
-
-        // set local elements
-        this.setElements(null);
         await this.handleTransmitStateChanged();
     }
 
@@ -431,32 +430,31 @@ class RtcManager {
             this.localAudioTrack.dispose();
             this.localAudioTrack = null;
         }
-        if (!id) {
-            return; // bail if video is to be disabled
-        }
-        const constraints: MediaStreamConstraints = {
-            audio: {
-                deviceId: id
+        if (id) {
+            const constraints: MediaStreamConstraints = {
+                audio: {
+                    deviceId: id
+                }
+            };
+
+            // get local media
+            this.localUserMediaStream = await wrapCallWithTimeout(navigator.mediaDevices, navigator.mediaDevices.getUserMedia, constraints);
+
+            // setup video
+            const localAudioTracks: MediaStreamTrack[] = this.localUserMediaStream.getAudioTracks();
+            if (localAudioTracks.length) {
+                const localaudio = localAudioTracks[0];
+                this.localAudioTrack = new LocalTrack(
+                    "audio",
+                    { id: id, label: localaudio.label },
+                    localaudio, this.localUserMediaStream);
+                this.localAudioTrack.connection = this.connection;
+                this.localAudioTrack.enabled = true;
             }
-        };
 
-        // get local media
-        this.localUserMediaStream = await wrapCallWithTimeout(navigator.mediaDevices, navigator.mediaDevices.getUserMedia, constraints);
-
-        // setup video
-        const localAudioTracks: MediaStreamTrack[] = this.localUserMediaStream.getAudioTracks();
-        if (localAudioTracks.length) {
-            const localaudio = localAudioTracks[0];
-            this.localAudioTrack = new LocalTrack(
-                "audio",
-                { id: id, label: localaudio.label },
-                localaudio, this.localUserMediaStream);
-            this.localAudioTrack.connection = this.connection;
-            this.localAudioTrack.enabled = true;
+            // set local elements
+            this.setElements(null);
         }
-
-        // set local elements
-        this.setElements(null);
         await this.handleTransmitStateChanged();
     }
 
@@ -509,6 +507,12 @@ class RtcManager {
                     this.remoteAudioTrack = new MediaTrack("audio", e.track, e.streams[0])
                 }
                 else {
+
+                    // There is no way of flagging tracks going local -> remote
+                    // which survives transport and works with all clients.
+                    // Current solution is to just map incoming tracks incrementally 
+                    // to track elements and allow user to switch
+
                     if (this.remoteVideo0Track?.track && !this.remoteVideo0Track.track.muted) {
                         this.remoteVideo1Track?.dispose();
                         this.remoteVideo1Track = new MediaTrack("camera", e.track, e.streams[0]);
@@ -517,7 +521,6 @@ class RtcManager {
                         this.remoteVideo0Track?.dispose();
                         this.remoteVideo0Track = new MediaTrack("camera", e.track, e.streams[0]);
                     }
-                    //this.mapRemoteTracks();
                 }
             }
             this.setElements(null);
@@ -575,6 +578,7 @@ class RtcManager {
         const constraints: DisplayMediaStreamConstraints = {
             video: true
         };
+        let result: string | null = null;
         try {
             const stream = await navigator.mediaDevices.getDisplayMedia(constraints);
             const track = stream.getVideoTracks()[0];
@@ -582,18 +586,20 @@ class RtcManager {
                 this.localCaptureTrack = new LocalTrack("capture", { id: track.id, label: track.label }, track, stream);
                 this.localCaptureTrack.connection = this.connection;
                 this.setElements(null);
-                return track.label;
+                result = track.label;
             }
         }
         catch (e) {
             console.error("Could not grab screen", e);
         }
-        return null;
+        await this.handleTransmitStateChanged();
+        return result;
     }
 
-    public endScreenShare() {
+    public async endScreenShare(): Promise<void> {
         this.localCaptureTrack?.dispose();
         this.localCaptureTrack = null;
+        await this.handleTransmitStateChanged();
     }
 
     // #region Datachannel
@@ -602,19 +608,10 @@ class RtcManager {
         if (this.datachannel?.readyState === "open") {
             const transmitstate: TransmitState =
             {
-                audio: null,
-                camera: null,
-                capture: null
+                audio: this.localAudioTrack?.track?.enabled,
+                camera: this.localCameraTrack?.track?.enabled,
+                capture: this.localCaptureTrack?.track?.enabled
             };
-            if (this.localAudioTrack?.track?.enabled) {
-                transmitstate.audio = this.localAudioTrack.stream.id;
-            }
-            if (this.localCameraTrack?.track?.enabled) {
-                transmitstate.camera = this.localCameraTrack.stream.id;
-            }
-            if (this.localCaptureTrack?.track?.enabled) {
-                transmitstate.capture = this.localCaptureTrack.stream.id;
-            }
             await this.sendDatachannelMessage(transmitstate);
         }
     }
@@ -623,6 +620,16 @@ class RtcManager {
         if (typeof data === "string") {
             const obj: TransmitState = JSON.parse(data) as TransmitState;
             this.remoteTransmitState = obj;
+            if (this.remoteTransmitState.audio === undefined) {
+                this.remoteTransmitState.audio = false;
+            }
+            if (this.remoteTransmitState.camera === undefined) {
+                this.remoteTransmitState.camera = false;
+            }
+            if (this.remoteTransmitState.capture === undefined) {
+                this.remoteTransmitState.capture = false;
+            }
+            this.dnetobj.invokeMethodAsync("remoteTransmitStateChanged", this.remoteTransmitState);
         }
     }
 
@@ -754,7 +761,7 @@ async function wrapCallWithTimeout(thisArg: any, call: any, ...args: any[]): Pro
     }
 }
 
-// Wraps any function allowing successful catching of rejection and "getting stuck". Very useful for debugging use of Web API
+// Wraps any function allowing successful catching of rejection. Very useful for debugging use of Web API
 async function wrapCall(thisArg: any, call: any, ...args: any[]): Promise<any> {
     try {
         return await call.apply(thisArg, args);

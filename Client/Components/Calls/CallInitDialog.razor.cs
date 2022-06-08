@@ -94,8 +94,8 @@ namespace BlazorChat.Client.Components.Calls
                 if (_videoInputs.Length == 0 && _audioInputs.Length == 0)
                 {
                     var devices = await Calls.QueryDevices();
-                    _videoInputs = devices.videoDevices;
-                    _audioInputs = devices.audioDevices;
+                    _videoInputs = devices.VideoDevices;
+                    _audioInputs = devices.AudioDevices;
                     _videoDevice = _videoInputs.FirstOrDefault();
                     _audioDevice = _audioInputs.FirstOrDefault();
                     if (_videoInputs.Length == 0 && _audioInputs.Length == 0)
