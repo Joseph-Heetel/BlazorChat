@@ -6,76 +6,17 @@
 
 <MudLayout Class="restrictheight">
     <MudAppBar ToolBarClass="row_container gap">
-        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.CallEnd" Color="Color.Secondary" OnClick=hangup />
-        <MudText Typo=@(Typo.h5) Class="maxflex">Peer to Peer Call</MudText>
-    </MudAppBar>
-    <MudMainContent Class="restrictheight row_container">
-        <div class="column_container gap" style="flex: 0 0 12rem; height: 100%; overflow-y: auto">
-            <div class="flexspacer" />
-            <UserView Params=_localUser Size=@(Size.Medium) />
-            <!-- Video -->
-            <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
-                @if (_canTransmitVideo)
-                {
-                    <Video Id="LocalVideo" Style=@(_localVideoStyle) />
-                    <MudButton Variant=@(Variant.Filled) StartIcon=@(_videoDeviceButtonIcon) IconColor=@(_videoDeviceButtonIconColor) OnClick=@(toggleVideoMute)>@(_videoDeviceButtonText)</MudButton>
-                    @if (_videoDevice != null && _availableVideoDevices.Count > 1)
-                    {
-                        <MudSelect T=Device Label="Camera" @bind-Value=_videoDevice>
-                            @foreach (var device in _availableVideoDevices)
-                            {
-                                <MudSelectItem T=Device Value=device>@(device.Label)</MudSelectItem>
-                            }
-                        </MudSelect>
-                    }
-                    else if (_videoDevice != null)
-                    {
-                        <MudText>@(_videoDevice.Label)</MudText>
-                    }
-                }
-                else
-                {
-                    <MudText>No Camera Detected!</MudText>
-                }
-            </MudCard>
-            <!-- Audio -->
-            <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
-                @if (_canTransmitAudio)
-                {
-                    <MudButton Variant=@(Variant.Filled) StartIcon=@(_audioDeviceButtonIcon) IconColor=@(_audioDeviceButtonIconColor) OnClick=@(toggleAudioMute)>@(_audioDeviceButtonText)</MudButton>
-                    @if (_audioDevice != null && _availableAudioDevices.Count > 1)
-                    {
-                        <MudSelect T=Device Label="Audio" @bind-Value=_audioDevice>
-                            @foreach (var device in _availableAudioDevices)
-                            {
-                                <MudSelectItem T=Device Value=device>@(device.Label)</MudSelectItem>
-                            }
-                        </MudSelect>
-                    }
-                    else if (_audioDevice != null)
-                    {
-                        <MudText>@(_audioDevice.Label)</MudText>
-                    }
-                }
-                else
-                {
-                    <MudText>No Microphone Detected!</MudText>
-                }
-            </MudCard>
-            <!-- Screenshare -->
-            <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
-                @if (!string.IsNullOrEmpty(_screenshare))
-                {
-                    <MudText>Sharing @(_screenshare)</MudText>
-                    <MudButton Variant=@(Variant.Filled) StartIcon=@(Icons.Filled.Stop) OnClick=endScreenShare>Stop Sharing</MudButton>
-                }
-                else
-                {
-                    <MudButton Variant=@(Variant.Filled) StartIcon=@(Icons.Filled.ScreenShare) OnClick=beginScreenShare>Screen Share</MudButton>
-                }
-                <div class="maxflex" />
-            </MudCard>
+        <MudIconButton Variant=@(Variant.Filled) Icon=@(Icons.Filled.Settings) OnClick=@(toggleVideoControls) />
+        <div class="row_container gap">
+            <MudText Typo=@(Typo.h6)>Calling</MudText>
+            <UserView Params=_remoteUser Size=@(Size.Medium) />
         </div>
+        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.CallEnd" Edge=@(Edge.End) Color="Color.Secondary" OnClick=hangup />
+    </MudAppBar>
+    <MudDrawer @bind-Open=@(_showControls) Class="column_container gap" Style="height: 100%; overflow-y: auto">
+        <InputControls />
+    </MudDrawer>
+    <MudMainContent Class="restrictheight row_container">
         <Video Id="RemoteVideoLarge" Style="flex: 1 1 100%; height: 100%; position: relative">
             <MudCard Style="position:absolute; left: 1rem; top: 1rem">
                 @if (_state == Services.ECallState.Ongoing)

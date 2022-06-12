@@ -30,93 +30,23 @@ namespace BlazorChat.Client.Components.Calls
         private UserViewParams _remoteUser;
         private UserViewParams _localUser;
 
-        private List<Device> _availableVideoDevices = new List<Device>();
-        private Device? __videoDevice;
-        private Device? _previouslyUsedVideoDevice;
-
-        private string _localVideoStyle => $"max-width: calc(100% - 1rem); {(_videoDevice == null ? "display: none;" : "")}";
-        private bool _canTransmitVideo => _availableVideoDevices.Count > 0;
-        private Device? _videoDevice
-        {
-            get
-            {
-                return __videoDevice;
-            }
-            set
-            {
-                Calls.SetVideoDevice(value);
-            }
-        }
-        private List<Device> _availableAudioDevices = new List<Device>();
-        private Device? __audioDevice;
-        private Device? _previouslyUsedAudioDevice;
-        private bool _canTransmitAudio => _availableAudioDevices.Count > 0;
-        private Device? _audioDevice
-        {
-            get
-            {
-                return __audioDevice;
-            }
-            set
-            {
-                Calls.SetAudioDevice(value);
-            }
-        }
-        private string _audioDeviceButtonText => _audioDevice == null ? "Enable Microphone" : "Mute Microphone";
-        private string _audioDeviceButtonIcon => _audioDevice == null ? Icons.Filled.Mic : Icons.Filled.MicOff;
-        private Color _audioDeviceButtonIconColor => _audioDevice == null ? Color.Success : Color.Error;
-        private string _videoDeviceButtonText => _videoDevice == null ? "Enable Camera" : "Disable Camera";
-        private string _videoDeviceButtonIcon => _videoDevice == null ? Icons.Filled.Videocam : Icons.Filled.VideocamOff;
-        private Color _videoDeviceButtonIconColor => _videoDevice == null ? Color.Success : Color.Error;
 
         private TransmitState? _remoteTransmitState;
         private bool _multipleVideos => _remoteTransmitState != null && _remoteTransmitState.Camera && _remoteTransmitState.Capture;
-        private void toggleAudioMute()
+
+        private bool _showControls = false;
+
+        void toggleVideoControls()
         {
-            if (_audioDevice != null)
-            {
-                _previouslyUsedAudioDevice = _audioDevice;
-                _audioDevice = null;
-            }
-            else
-            {
-                Device? device = _previouslyUsedAudioDevice ?? _availableAudioDevices.FirstOrDefault();
-                if (device != null)
-                {
-                    _audioDevice = device;
-                }
-            }
+            _showControls = !_showControls;
+            this.StateHasChanged();
         }
-
-        private void toggleVideoMute()
-        {
-            if (_videoDevice != null)
-            {
-                _previouslyUsedVideoDevice = _videoDevice;
-                _videoDevice = null;
-            }
-            else
-            {
-                Device? device = _previouslyUsedVideoDevice ?? _availableVideoDevices.FirstOrDefault();
-                if (device != null)
-                {
-                    _videoDevice = device;
-                }
-            }
-        }
-
-        private string? _screenshare = "";
-
         protected override void OnInitialized()
         {
             Calls.Status.StateChanged += Status_StateChanged;
             Status_StateChanged(Calls.Status.State);
             Calls.RemotePeerId.StateChanged += RemotePeerId_StateChanged;
             RemotePeerId_StateChanged(Calls.RemotePeerId.State);
-            Calls.VideoDevice.StateChanged += VideoDevice_StateChanged;
-            VideoDevice_StateChanged(Calls.VideoDevice.State);
-            Calls.AudioDevice.StateChanged += AudioDevice_StateChanged;
-            AudioDevice_StateChanged(Calls.AudioDevice.State);
             Calls.RemoteTransmitState.StateChanged += RemoteTransmitState_StateChanged;
             RemoteTransmitState_StateChanged(Calls.RemoteTransmitState.State);
             Api.SelfUser.StateChanged += SelfUser_StateChanged;
@@ -127,26 +57,6 @@ namespace BlazorChat.Client.Components.Calls
         private void RemoteTransmitState_StateChanged(TransmitState? value)
         {
             _remoteTransmitState = value;
-            this.StateHasChanged();
-        }
-
-        private void AudioDevice_StateChanged(Device? value)
-        {
-            this.__audioDevice = value;
-            if (this.__audioDevice != null && this._availableAudioDevices.Count == 0)
-            {
-                this._availableAudioDevices.Add(this.__audioDevice);
-            }
-            this.StateHasChanged();
-        }
-
-        private void VideoDevice_StateChanged(Device? value)
-        {
-            this.__videoDevice = value;
-            if (this.__videoDevice != null && this._availableVideoDevices.Count == 0)
-            {
-                this._availableVideoDevices.Add(this.__videoDevice);
-            }
             this.StateHasChanged();
         }
 
@@ -192,18 +102,6 @@ namespace BlazorChat.Client.Components.Calls
             {
                 tasks.Add(Calls.SetVideoElements("LocalVideo", "RemoteAudio", "RemoteVideoLarge", "RemoteVideoPreview"));
             }
-            if (firstRender)
-            {
-                tasks.Add(Task.Run(async () =>
-                {
-                    var devices = await Calls.QueryDevices();
-                    this._availableVideoDevices.Clear();
-                    this._availableVideoDevices.AddRange(devices.VideoDevices);
-                    this._availableAudioDevices.Clear();
-                    this._availableAudioDevices.AddRange(devices.AudioDevices);
-                    this.StateHasChanged();
-                }));
-            }
             await Task.WhenAll(tasks);
         }
 
@@ -220,17 +118,6 @@ namespace BlazorChat.Client.Components.Calls
             {
                 await Calls.SetVideoElements("LocalVideo", "RemoteAudio", "RemoteVideoLarge", "RemoteVideoPreview");
             }
-        }
-
-        private async Task beginScreenShare()
-        {
-            this._screenshare = await Calls.BeginScreenCapture();
-        }
-
-        private async Task endScreenShare()
-        {
-            await Calls.EndScreenCapture();
-            this._screenshare = null;
         }
 
         private async Task hangup()

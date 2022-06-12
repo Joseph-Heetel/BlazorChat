@@ -1,0 +1,64 @@
+﻿@using BlazorChat.Client.Services
+@inject ICallService _calls
+<!-- Video -->
+<MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
+    @if (_canTransmitVideo)
+    {
+        <Video Id="LocalVideo" Style=@(_localVideoStyle) />
+        <MudButton Variant=@(Variant.Filled) StartIcon=@(_videoDeviceButtonIcon) IconColor=@(_videoDeviceButtonIconColor) OnClick=@(toggleVideoMute)>@(_videoDeviceButtonText)</MudButton>
+        @if (_videoDevice != null && _availableVideoDevices.Count > 1)
+        {
+            <MudSelect T=Device Label="Camera" @bind-Value=_videoDevice>
+                @foreach (var device in _availableVideoDevices)
+                {
+                    <MudSelectItem T=Device Value=device>@(device.Label)</MudSelectItem>
+                }
+            </MudSelect>
+        }
+        else if (_videoDevice != null)
+        {
+            <MudText>@(_videoDevice.Label)</MudText>
+        }
+    }
+    else
+    {
+        <MudText>No Camera Detected!</MudText>
+    }
+</MudCard>
+<!-- Audio -->
+<MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
+    @if (_canTransmitAudio)
+    {
+        <MudButton Variant=@(Variant.Filled) StartIcon=@(_audioDeviceButtonIcon) IconColor=@(_audioDeviceButtonIconColor) OnClick=@(toggleAudioMute)>@(_audioDeviceButtonText)</MudButton>
+        @if (_audioDevice != null && _availableAudioDevices.Count > 1)
+        {
+            <MudSelect T=Device Label="Audio" @bind-Value=_audioDevice>
+                @foreach (var device in _availableAudioDevices)
+                {
+                    <MudSelectItem T=Device Value=device>@(device.Label)</MudSelectItem>
+                }
+            </MudSelect>
+        }
+        else if (_audioDevice != null)
+        {
+            <MudText>@(_audioDevice.Label)</MudText>
+        }
+    }
+    else
+    {
+        <MudText>No Microphone Detected!</MudText>
+    }
+</MudCard>
+<!-- Screenshare -->
+<MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
+    @if (!string.IsNullOrEmpty(_screenshare))
+    {
+        <MudText>Sharing @(_screenshare)</MudText>
+        <MudButton Variant=@(Variant.Filled) StartIcon=@(Icons.Filled.Stop) OnClick=endScreenShare>Stop Sharing</MudButton>
+    }
+    else
+    {
+        <MudButton Variant=@(Variant.Filled) StartIcon=@(Icons.Filled.ScreenShare) OnClick=beginScreenShare>Screen Share</MudButton>
+    }
+    <div class="maxflex" />
+</MudCard>
