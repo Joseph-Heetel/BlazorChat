@@ -20,7 +20,7 @@ namespace BlazorChat.Server.Services
     public class PendingCallModel : CallModel
     {
         public DateTimeOffset Initiated { get; set; }
-        public DateTimeOffset Expires { get => Initiated + TimeSpan.FromMinutes(5); }
+        public DateTimeOffset Expires { get => Initiated + ChatConstants.PENDINGCALLTIMEOUT; }
     }
 
     public class CallModel : ItemBase
@@ -39,13 +39,15 @@ namespace BlazorChat.Server.Services
 
         private readonly IIdGeneratorService _idGenService;
         private readonly IHubContext<ChatHub> _HubContext;
+        private readonly ILogger<CallSupportService> _logger;
 
         private IceConfiguration[]? _iceConfigs;
 
-        public CallSupportService(IIdGeneratorService idgen, IHubContext<ChatHub> hub)
+        public CallSupportService(IIdGeneratorService idgen, IHubContext<ChatHub> hub, ILoggerFactory loggerFactory)
         {
             _idGenService = idgen;
             _HubContext = hub;
+            _logger = loggerFactory.CreateLogger<CallSupportService>();
             _ = Task.Run(checkExpirations);
         }
 
@@ -187,20 +189,28 @@ namespace BlazorChat.Server.Services
             while (true)
             {
                 await Task.Delay(TimeSpan.FromSeconds(1));
-                using (var disposableLock = await _pendingListSemaphore.WaitAsyncDisposable())
+                try
                 {
                     List<ItemId> toremove = new List<ItemId>();
-                    foreach (var call in _pendingCalls.Values)
+                    using (var disposableLock = await _pendingListSemaphore.WaitAsyncDisposable())
                     {
-                        if (call.Expires < DateTimeOffset.UtcNow)
+                        foreach (var call in _pendingCalls.Values)
                         {
-                            toremove.Add(call.Id);
+                            if (call.Expires < DateTimeOffset.UtcNow)
+                            {
+                                toremove.Add(call.Id);
+                            }
                         }
                     }
                     foreach (var call in toremove)
                     {
-                        _pendingCalls.Remove(call);
+                        await TerminateCall(call);
                     }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"{nameof(CallSupportService)}.{nameof(checkExpirations)} failed: {ex}");
+
                 }
             }
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlazorChat.Shared
 {
-    public class ChatConstants
+    public static class ChatConstants
     {
         public const int MESSAGE_BODY_MAX = 2048;
         public const int MESSAGE_BODY_MIN = 1;
@@ -20,5 +20,6 @@ namespace BlazorChat.Shared
         public const int MESSAGE_FETCH_DEFAULT = 32;
         public const int MESSAGE_STORE_MAX = 128;
         public const int USER_FETCH_MAX = 50;
+        public static readonly TimeSpan PENDINGCALLTIMEOUT = TimeSpan.FromMinutes(2);
     }
 }

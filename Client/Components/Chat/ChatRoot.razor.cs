@@ -32,6 +32,7 @@ namespace BlazorChat.Client.Components.Chat
         private ChannelInfoParams _channelInfoParams = default;
 
         private Snackbar? _connectionLostSnackbar { get; set; } = null;
+        private Snackbar? _callIncomingSnackbar { get; set; } = null;
 
         #region Init
 
@@ -70,14 +71,18 @@ namespace BlazorChat.Client.Components.Chat
 
         private void PendingCalls_StateChanged(IReadOnlyCollection<PendingCall> value)
         {
+            if (_callIncomingSnackbar != null)
+            {
+                _Snackbar.Remove(_callIncomingSnackbar);
+                _callIncomingSnackbar?.Dispose();
+                _callIncomingSnackbar = null;
+            }
             if (value.Count > 0)
             {
                 PendingCall call = value.First();
-                string username = $"[{call.CallerId}]";
                 if (ChatStateService.UserCache.State.TryGetValue(call.CallerId, out User? user))
                 {
-                    username = user.Name;
-                    var snackbar = _Snackbar.Add($"{username} is calling you!", Severity.Success, options =>
+                    _callIncomingSnackbar = _Snackbar.Add($"{user.Name} is calling you!", Severity.Success, options =>
                     {
                         options.Onclick = (_) =>
                         {
@@ -90,6 +95,8 @@ namespace BlazorChat.Client.Components.Chat
                             }
                             return Task.CompletedTask;
                         };
+                        options.Icon = Icons.Filled.Call;
+                        options.VisibleStateDuration = int.MaxValue;
                     });
                 }
             }

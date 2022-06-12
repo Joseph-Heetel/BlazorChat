@@ -141,7 +141,8 @@ namespace BlazorChat.Client.Services
             this._hubService.OnUserUpdated += ChatHub_OnUserUpdated;
             this._hubService.OnChannelUpdated += ChatHub_OnChannelUpdated;
             this._hubService.OnUserPresence += ChatHub_OnUserPresence;
-            this._hubService.OnPendingCallsListChanged += ChatHub_OnPendingCallsListChanged;
+            this._hubService.OnPendingCallsListChanged += RefreshPendingCalls;
+            this._hubService.OnCallTerminated += ChatHub_OnCallTerminated;
             this._navManager.LocationChanged += NavManager_LocationChanged;
         }
 
@@ -302,6 +303,8 @@ namespace BlazorChat.Client.Services
 
             // If URI query included a channel setting we catch it and navigate to it
             onNavLocationChanged(_navManager.Uri);
+
+            await RefreshPendingCalls();
         }
 
         /// <summary>
@@ -662,10 +665,16 @@ namespace BlazorChat.Client.Services
             return Task.CompletedTask;
         }
 
-        private async Task ChatHub_OnPendingCallsListChanged()
+        private Task ChatHub_OnCallTerminated(ItemId arg)
+        {
+            return RefreshPendingCalls();
+        }
+
+        private async Task RefreshPendingCalls()
         {
             var calls = await _apiService.GetCalls();
             this._pendingCalls.State = calls;
+            Console.WriteLine(JsonSerializer.Serialize(_pendingCalls.State));
         }
 
 
@@ -695,7 +704,8 @@ namespace BlazorChat.Client.Services
             this._hubService.OnUserUpdated -= ChatHub_OnUserUpdated;
             this._hubService.OnChannelUpdated -= ChatHub_OnChannelUpdated;
             this._hubService.OnUserPresence -= ChatHub_OnUserPresence;
-            this._hubService.OnPendingCallsListChanged -= ChatHub_OnPendingCallsListChanged;
+            this._hubService.OnPendingCallsListChanged -= RefreshPendingCalls;
+            this._hubService.OnCallTerminated -= ChatHub_OnCallTerminated;
             this._navManager.LocationChanged -= NavManager_LocationChanged;
             return ValueTask.CompletedTask;
         }
