@@ -24,6 +24,10 @@
                 </div>
             </CardHeaderContent>
             <CardHeaderActions>
+                @if(_text.Length > 0)
+                {
+                    <MudIconButton Icon=@(Icons.Filled.Translate) OnClick=@(translate) />
+                }
                 @if (!string.IsNullOrEmpty(_attachmentUrl))
                 {
                     <MudIconButton Icon=@(Icons.Filled.Download) Link=@(_attachmentUrl)></MudIconButton>

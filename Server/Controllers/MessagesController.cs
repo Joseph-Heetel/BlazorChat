@@ -10,11 +10,13 @@ namespace BlazorChat.Server.Controllers
     {
         private readonly IChannelDataService _channelService;
         private readonly IMessageDataService _messageService;
+        private readonly ITranslationService? _translationService;
 
-        public MessagesController(IChannelDataService channelData, IMessageDataService messageData)
+        public MessagesController(IChannelDataService channelData, IMessageDataService messageData, IServiceProvider provider)
         {
             _channelService = channelData;
             _messageService = messageData;
+            _translationService = provider.GetService<ITranslationService>();
         }
 
         /// <summary>
@@ -165,6 +167,61 @@ namespace BlazorChat.Server.Controllers
 
             Message? message = await _messageService.GetMessage(channelId, messageId);
             return message != null ? Ok(message) : NotFound("Could not find message.");
+        }
+
+        [Route("translate/{channelIdstr}/{messageIdstr}/{languageCode}")]
+        [HttpGet]
+        public async Task<ActionResult<Message>> GetTranslated(string channelIdstr, string messageIdstr, string languageCode)
+        {
+            // check authorization, get user Id
+            if (!User.GetUserLogin(out ItemId userId))
+            {
+                return Unauthorized();
+            }
+
+            if (!ItemId.TryParse(channelIdstr, out ItemId channelId))
+            {
+                return BadRequest("Unable to parse channel Id.");
+            }
+
+            if (!ItemId.TryParse(messageIdstr, out ItemId messageId))
+            {
+                return BadRequest("Unable to parse message Id.");
+            }
+
+            if (string.IsNullOrEmpty(languageCode))
+            {
+                return BadRequest("Provide language code!");
+            }
+
+            if (_translationService == null)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, "Translation service not configured!");
+            }
+
+            // Make sure channel exists and requesting user is a member
+            if (!await _channelService.IsMember(channelId, userId))
+            {
+                return NotFound("Could not find message.");
+            }
+
+            Message? message = await _messageService.GetMessage(channelId, messageId);
+
+            if (message == null)
+            {
+                return NotFound("Could not find message.");
+            }
+
+            string? translated = await _translationService.Translate(message.Body, languageCode);
+
+            if (translated == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            message.Body = translated;
+
+            return Ok(message);
         }
     }
 }

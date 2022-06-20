@@ -15,7 +15,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 // Add services to the container.
 
-EnvironmentVarKeys.CheckEnvironment(out bool enableBlob);
+EnvironmentVarKeys.CheckEnvironment(out bool enableBlob, out bool enableTranslation);
 
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 {
@@ -47,6 +47,10 @@ builder.Services.AddSingleton<IAdminAuthService, NoAuthAdminAuthService>();
 if (enableBlob)
 {
     builder.Services.AddTransient<IStorageService, AzureBlobStorageService>();
+}
+if (enableTranslation)
+{
+    builder.Services.AddSingleton<ITranslationService, AzureTranslatorService>();
 }
 
 builder.Services.AddResponseCompression(opts =>

@@ -10,6 +10,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Net.Http.Headers;
 using System.Text.Json.Nodes;
+using System.Globalization;
 
 namespace BlazorChat.Client.Services
 {
@@ -169,6 +170,7 @@ namespace BlazorChat.Client.Services
         /// <param name="response"></param>
         /// <returns></returns>
         public Task<bool> PostFormResponse(ItemId requestId, JsonNode response);
+        public Task<Message?> GetMessageTranslated(ItemId channelId, ItemId messageId, string? languageCode = null);
     }
 
     public class ChatApiService : IChatApiService
@@ -536,6 +538,20 @@ namespace BlazorChat.Client.Services
         {
             var result = (await getHttpClient().GetFromJSONAsyncNoExcept<IceConfiguration[]>($"api/calls/ice/{callId}"));
             return result ?? Array.Empty<IceConfiguration>();
+        }
+
+        public async Task<Message?> GetMessageTranslated(ItemId channelId, ItemId messageId, string? languageCode = null)
+        {
+            languageCode ??= CultureInfo.CurrentCulture.Name;
+#if APIDEBUGLOGGING
+            Console.WriteLine($"[Get] api/messages/translate/{channelId}/{messageId}/{languageCode}");
+#endif
+            var message = await getHttpClient().GetFromJSONAsyncNoExcept<Message>($"api/messages/translate/{channelId}/{messageId}/{languageCode}");
+            if (message != null)
+            {
+                await _cacheService.UpdateItem(message);
+            }
+            return message;
         }
     }
 }

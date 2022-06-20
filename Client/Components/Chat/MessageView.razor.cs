@@ -165,5 +165,10 @@ namespace BlazorChat.Client.Components.Chat
                 _cardClass = "darkenedcard";
             }
         }
+
+        void translate()
+        {
+            _ = Task.Run(() => ChatStateService.TranslateMessage(Params.Message.ChannelId, Params.Message.Id));
+        }
     }
 }

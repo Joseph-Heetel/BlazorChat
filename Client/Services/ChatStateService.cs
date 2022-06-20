@@ -75,6 +75,7 @@ namespace BlazorChat.Client.Services
         /// </summary>
         /// <returns></returns>
         Task ClearHighlightedMessage();
+        Task TranslateMessage(ItemId channelId, ItemId messageId);
     }
 
     public sealed class ChatStateService : IChatStateService, IAsyncDisposable
@@ -422,7 +423,7 @@ namespace BlazorChat.Client.Services
         /// </summary>
         /// <param name="messages">new messages</param>
         /// <param name="truncateOlder">if true, older messages are truncated if max message storage limit is exceeded. Otherwise, newer messages are removed instead.</param>
-        private async Task integrateMessages(IReadOnlyCollection<Message> messages, bool truncateOlder)
+        private async Task integrateMessages(IReadOnlyCollection<Message> messages, bool truncateOlder, bool replaceOld = false)
         {
             bool alreadyHadMessages = this._loadedMessagesIds.Count > 0;
 
@@ -435,7 +436,7 @@ namespace BlazorChat.Client.Services
                 {
                     this._loadedMessagesSorted.Add(message.CreatedTS, message);
                 }
-                else
+                else if (replaceOld)
                 {
                     this._loadedMessagesSorted[message.CreatedTS] = message;
                 }
@@ -593,12 +594,9 @@ namespace BlazorChat.Client.Services
 
         private Task ChatHub_OnMessageUpdated(Message arg)
         {
-            if (_currentChannel.State?.Id == arg.ChannelId && _loadedMessagesIds.Count > 0)
+            if (_currentChannel.State?.Id == arg.ChannelId && _loadedMessagesIds.Contains(arg.Id))
             {
-                if (arg.Created > _oldest && arg.Created < _newest)
-                {
-                    return integrateMessages(new Message[] { arg }, true);
-                }
+                return integrateMessages(new Message[] { arg }, true, true);
             }
             return Task.CompletedTask;
         }
@@ -708,6 +706,15 @@ namespace BlazorChat.Client.Services
             this._hubService.OnCallTerminated -= ChatHub_OnCallTerminated;
             this._navManager.LocationChanged -= NavManager_LocationChanged;
             return ValueTask.CompletedTask;
+        }
+
+        public async Task TranslateMessage(ItemId channelId, ItemId messageId)
+        {
+            Message? message = await _apiService.GetMessageTranslated(channelId, messageId);
+            if (message != null && _loadedMessagesIds.Contains(messageId))
+            {
+                await integrateMessages(new Message[] { message }, true, true);
+            }
         }
     }
 }
