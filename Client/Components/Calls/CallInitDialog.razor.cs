@@ -87,8 +87,8 @@ namespace BlazorChat.Client.Components.Calls
 
         protected override void OnParametersSet()
         {
-            _cancelString = PendingCall == null ? "Cancel" : "Decline";
-            _acceptString = PendingCall == null ? "Call" : "Accept";
+            _cancelString = Loc[PendingCall == null ? "cancel" : "cinit_decline"];
+            _acceptString = Loc[PendingCall == null ? "cinit_init" : "cinit_accept"];
             _ = Task.Run(async () =>
             {
                 if (_videoInputs.Length == 0 && _audioInputs.Length == 0)
@@ -100,7 +100,7 @@ namespace BlazorChat.Client.Components.Calls
                     _audioDevice = _audioInputs.FirstOrDefault();
                     if (_videoInputs.Length == 0 && _audioInputs.Length == 0)
                     {
-                        _errorMessage = "Failed to detect input devices!";
+                        _errorMessage = Loc["cinit_error_devices"];
                     }
                     _devicesLoaded = true;
                     this.StateHasChanged();

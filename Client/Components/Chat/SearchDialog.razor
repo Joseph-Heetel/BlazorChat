@@ -2,51 +2,55 @@
 @using System.Collections
 @inject Services.IChatStateService ChatStateService
 @inject Services.IChatApiService ChatApiService
+@inject IStringLocalizer<Pages.Chat> Loc
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo="Typo.h6">Search in @(_currentChannel.Name)</MudText>
+        <MudText Typo="Typo.h6">@(string.Format(Loc["search_title"], _currentChannel.Name))</MudText>
     </TitleContent>
     <DialogContent>
         @switch (_state)
         {
             case EState.Config:
                 {
-                                <MudTextField Label="Search Text" @bind-Value=@(_searchStr)></MudTextField>
-                                <MudSelect @bind-Value=@(_author) Label="Message created by" Placeholder="Any Author">
-                                    <MudSelectItem Value=@(null) T=User>Any</MudSelectItem>
+                    <MudTextField Label=@(Loc["search_body"]) @bind-Value=@(_searchStr)></MudTextField>
+                    <MudSelect @bind-Value=@(_author) Label=@(Loc["search_author"]) Placeholder=@(Loc["search_author_any"])>
+                        <MudSelectItem Value=@(null) T=User>Any</MudSelectItem>
                         @foreach (var user in _availableUsers)
                         {
-                    <MudSelectItem Value=@(user.User)><UserView Params=user /></MudSelectItem>
+                            <MudSelectItem Value=@(user.User)><UserView Params=user /></MudSelectItem>
                         }
-        </MudSelect>
-                                <MudSwitch Label="Show time range select" @bind-Checked=@(DisplayRangePicker)>
-                                </MudSwitch>
+                    </MudSelect>
+                    <MudSwitch Label=@(Loc[DisplayRangePicker ? "search_time_range_hide" : "search_time_range_show"]) @bind-Checked=@(DisplayRangePicker)>
+                    </MudSwitch>
                     @if (DisplayRangePicker)
                     {
-                                        <MudDateRangePicker @bind-DateRange=@(_range) Label="Message created at ... dates"></MudDateRangePicker>
+                        <MudDateRangePicker @bind-DateRange=@(_range) Label=@(Loc["search_time_range"])></MudDateRangePicker>
                     }
                     break;
                 }
             case EState.Fetch:
                 {
-                                <MudProgressCircular Indeterminate="true" />
+                    <MudProgressCircular Indeterminate="true" />
                     break;
                 }
             case EState.Result:
                 {
-                                <MudText Typo="Typo.body1">
-                                    Query: "@(_searchStr)" @(_author == null ? "" : $"from {_author.Name}")
-                                </MudText>
-                                <MudText Typo="Typo.body1">@(_results.Count) results</MudText>
-                                <MudList SelectedValue=@(_selectedResult) SelectedValueChanged=@((object value) => this._selectedResult = value as Message) Clickable=true Style="max-height: 300px; overflow-y: auto">
+                    @*
+                        <MudText Typo="Typo.body1">
+                        Query: "@(_searchStr)" @(_author == null ? "" : $"from {_author.Name}")
+                        </MudText>
+
+                    *@
+                    <MudText Typo="Typo.body1">@(string.Format(Loc["search_result_count"], _results.Count))</MudText>
+                    <MudList SelectedValue=@(_selectedResult) SelectedValueChanged=@((object value) => this._selectedResult = value as Message) Clickable=true Style="max-height: 300px; overflow-y: auto">
                         @foreach (var message in _results)
                         {
-                                            <MudListItem Value=@(message.Message)>
-                                                <MessageView Params=message />
-                                            </MudListItem>
+                            <MudListItem Value=@(message.Message)>
+                                <MessageView Params=message />
+                            </MudListItem>
                         }
-                                </MudList>
+                    </MudList>
                     break;
                 }
         }
@@ -54,16 +58,16 @@
     <DialogActions>
         @if (_state != EState.Fetch)
         {
-                <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton OnClick="Cancel">@(Loc["cancel"])</MudButton>
         }
         @if (_state == EState.Config)
         {
-                <MudButton Color="Color.Primary" OnClick="Search" Disabled=@(string.IsNullOrWhiteSpace(_searchStr))>Dispatch Search</MudButton>
+            <MudButton Color="Color.Primary" OnClick="Search" Disabled=@(string.IsNullOrWhiteSpace(_searchStr))>@(Loc["search_dispatch"])</MudButton>
         }
         @if (_state == EState.Result)
         {
-                <MudButton OnClick="Reset">New Search</MudButton>
-                <MudButton Color="Color.Primary" OnClick="JumpToMessage" Disabled=@(_selectedResult == null)>Jump To Message</MudButton>
+            <MudButton OnClick="Reconfigure">@(Loc["search_reconfigure"])</MudButton>
+            <MudButton Color="Color.Primary" OnClick="JumpToMessage" Disabled=@(_selectedResult == null)>@(Loc["search_jump"])</MudButton>
         }
     </DialogActions>
 </MudDialog>

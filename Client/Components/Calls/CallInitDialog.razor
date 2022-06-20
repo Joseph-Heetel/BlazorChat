@@ -1,10 +1,11 @@
 ﻿@using BlazorChat.Client.Services
 @inject Services.ICallService Calls
 @inject Services.IChatApiService Api
+@inject IStringLocalizer<Pages.Chat> Loc
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo=@(Typo.h6)>Call @(RemoteUser?.Name ?? "?")</MudText>
+        <MudText Typo=@(Typo.h6)>@(string.Format(Loc["cinit_title"], RemoteUser?.Name ?? "?"))</MudText>
     </TitleContent>
     <DialogContent>
         @if (!_devicesLoaded)
@@ -22,8 +23,8 @@
         {
             @if (_videoInputs.Length > 1)
             {
-                <MudSelect T="Device" @bind-Value=_videoDevice Label="Select Video Input">
-                    <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
+                <MudSelect T="Device" @bind-Value=_videoDevice Label=@(Loc["cinit_selectvideo"]) Placeholder=@(Loc["cinit_disabled"])>
+                    <MudSelectItem T=Device Value=null>@(Loc["cinit_disabled"])</MudSelectItem>
                     @foreach (var device in _videoInputs)
                     {
                         <MudSelectItem T=Device Value=device>@(device.Label)</MudSelectItem>
@@ -40,8 +41,8 @@
             }
             @if (_audioInputs.Length > 1)
             {
-                <MudSelect T="Device" @bind-Value=_audioDevice Label="Select Audio Input">
-                    <MudSelectItem T=Device Value=null>Disabled</MudSelectItem>
+                <MudSelect T="Device" @bind-Value=_audioDevice Label=@(Loc["cinit_selectaudio"]) Placeholder=@(Loc["cinit_disabled"])>
+                    <MudSelectItem T=Device Value=null>@(Loc["cinit_disabled"])</MudSelectItem>
                     @foreach (var device in _audioInputs)
                     {
                         <MudSelectItem T=Device Value=device>@(device.Label)</MudSelectItem>
@@ -59,7 +60,7 @@
         }
         else
         {
-            <MudText Color=@(Color.Warning)>GetUserMedia did not detect any valid inputs on your device!</MudText>
+            <MudText Color=@(Color.Warning)>@(_errorMessage)</MudText>
         }
     </DialogContent>
     <DialogActions>

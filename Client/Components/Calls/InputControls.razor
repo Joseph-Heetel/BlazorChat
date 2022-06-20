@@ -1,5 +1,7 @@
 ﻿@using BlazorChat.Client.Services
 @inject ICallService _calls
+@inject IStringLocalizer<Pages.Chat> Loc
+
 <!-- Video -->
 <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
     @if (_canTransmitVideo)
@@ -22,7 +24,7 @@
     }
     else
     {
-        <MudText>No Camera Detected!</MudText>
+        <MudText>@(Loc["call_nocamera"])</MudText>
     }
 </MudCard>
 <!-- Audio -->
@@ -46,7 +48,7 @@
     }
     else
     {
-        <MudText>No Microphone Detected!</MudText>
+        <MudText>@(Loc["call_nomic"])</MudText>
     }
 </MudCard>
 <!-- Screenshare -->
@@ -54,11 +56,11 @@
     @if (!string.IsNullOrEmpty(_screenshare))
     {
         <MudText>Sharing @(_screenshare)</MudText>
-        <MudButton Variant=@(Variant.Filled) StartIcon=@(Icons.Filled.Stop) OnClick=endScreenShare>Stop Sharing</MudButton>
+        <MudButton Variant=@(Variant.Filled) StartIcon=@(Icons.Filled.Stop) OnClick=endScreenShare>@(Loc["call_screenshare_stop"])</MudButton>
     }
     else
     {
-        <MudButton Variant=@(Variant.Filled) StartIcon=@(Icons.Filled.ScreenShare) OnClick=beginScreenShare>Screen Share</MudButton>
+        <MudButton Variant=@(Variant.Filled) StartIcon=@(Icons.Filled.ScreenShare) OnClick=beginScreenShare>@(Loc["call_screenshare_start"])</MudButton>
     }
     <div class="maxflex" />
 </MudCard>

@@ -96,7 +96,7 @@ namespace BlazorChat.Client.Components.Chat
                 await ChatStateService.SetHighlightedMessage(_selectedResult.ChannelId, _selectedResult.Id);
             MudDialog.Close(DialogResult.Ok(_selectedResult?.Id ?? default));
         }
-        private void Reset()
+        private void Reconfigure()
         {
             _state = EState.Config;
             _results.Clear();

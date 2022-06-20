@@ -3,6 +3,7 @@
 @inject IChatApiService ApiService
 @inject IDialogService DialogService
 @inject ISnackbar SnackbarService
+@inject IStringLocalizer<Pages.Chat> Loc
 
 <div class="bottomtoolbar">
     @if (_showOptions)
@@ -13,7 +14,7 @@
                        IconColor=@(Color.Error)
                        FullWidth
                        OnClick=@(logout)>
-                    Logout
+                    @(Loc["logout"])
                 </MudButton>
                 <MudButton StartIcon=@(_themeModeIcon)
                        FullWidth
@@ -23,7 +24,7 @@
                 <MudButton StartIcon=@(Icons.Filled.Edit)
                        FullWidth
                        OnClick=@(editUserProfile)>
-                    Edit Profile
+                    @(Loc["edit_profile"])
                 </MudButton>
             </div>
         </MudPaper>

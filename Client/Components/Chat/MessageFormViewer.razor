@@ -4,6 +4,7 @@
 @using BlazorChat.Shared
 @inject IDialogService Dialogs
 @inject IChatApiService Api
+@inject IStringLocalizer<Pages.Chat> Loc
 
 <MudButton OnClick=@(displayDialog) Disabled=_buttonDisabled>@(_buttonText)</MudButton>
 @code {
@@ -28,25 +29,25 @@
         {
             _checkingRequestId = FormRequestId;
             _buttonDisabled = true;
-            _buttonText = "Loading ...";
+            _buttonText = Loc["form_loading"];
             this.StateHasChanged();
             _formRequest = await Api.GetFormRequest(FormRequestId);
             if (_formRequest == null)
             {
-                _buttonText = "Invalid Form";
+                _buttonText = Loc["form_invalid"];
             }
             else if (_formRequest.AnswerCount > 0 && !_formRequest.AllowMultipleAnswers)
             {
-                _buttonText = "No further responses allowed";
+                _buttonText = Loc["form_noanswer_count"];
             }
             else if (_formRequest.Expires < DateTimeOffset.Now)
             {
-                _buttonText = "Expired";
+                _buttonText = Loc["form_noanswer_expired"];
             }
             else
             {
                 _buttonDisabled = false;
-                _buttonText = "Submit Form";
+                _buttonText = Loc["form_createanswer"];
             }
             this.StateHasChanged();
         }

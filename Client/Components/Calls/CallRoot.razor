@@ -3,12 +3,13 @@
 @inject ICallService Calls
 @inject IChatApiService Api
 @inject IChatStateService State
+@inject IStringLocalizer<Pages.Chat> Loc
 
 <MudLayout Class="restrictheight">
     <MudAppBar ToolBarClass="row_container gap">
         <MudIconButton Variant=@(Variant.Filled) Icon=@(Icons.Filled.Settings) OnClick=@(toggleVideoControls) />
         <div class="row_container gap">
-            <MudText Typo=@(Typo.h6)>Calling</MudText>
+            <MudText Typo=@(Typo.h6)>@(Loc["call_title"])</MudText>
             <UserView Params=_remoteUser Size=@(Size.Medium) />
         </div>
         <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.CallEnd" Edge=@(Edge.End) Color="Color.Secondary" OnClick=hangup />

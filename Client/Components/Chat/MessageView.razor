@@ -5,6 +5,7 @@
 @inject IChatApiService ChatApiService
 @inject IMediaResolverService MediaResolver
 @inject IDialogService _dialogService
+@inject IStringLocalizer<Pages.Chat> Loc
 
 <div class="messagecontainer @(_alignRight ? "alignright" : "alignleft")" id=@(Params.Message.Id)>
     @if (Params.ShowAuthor)
@@ -18,7 +19,7 @@
                     <MudText Typo=@(Typo.caption) Style="flex: 0 1 100%">@(_timedisplay)</MudText>
                     @if (Params.TotalCount > 0)
                     {
-                        <MudText Typo=@(Typo.caption) Style="flex: 0 1 100%; text-align: right">Read by @(Params.ReadCount) / @(Params.TotalCount)</MudText>
+                        <MudText Typo=@(Typo.caption) Style="flex: 0 1 100%; text-align: right">@(Loc["read_by"]) @(Params.ReadCount) / @(Params.TotalCount)</MudText>
                     }
                 </div>
             </CardHeaderContent>

@@ -27,7 +27,7 @@ namespace BlazorChat.Client.Components
 
         private string _buttonIcon => _showOptions ? Icons.Filled.ArrowDropDown : Icons.Filled.ArrowDropUp;
         private string _themeModeIcon => _isDarkMode ? Icons.Filled.LightMode : Icons.Filled.DarkMode;
-        private string _themeModeButtonText => _isDarkMode ? "Light Mode" : "Dark Mode";
+        private string _themeModeButtonText => _isDarkMode ? Loc["light_mode"] : Loc["dark_mode"];
 
         protected override void OnInitialized()
         {

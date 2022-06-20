@@ -4,10 +4,11 @@
 @inject IChatStateService ChatStateService
 @inject IChatApiService ChatApiService
 @inject IMediaResolverService MediaService
+@inject IStringLocalizer<Pages.Chat> Loc
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo="Typo.h6">Edit User Profile
+        <MudText Typo="Typo.h6">@(Loc["pedit_title"])
         </MudText>
         <div class="flexspacer"/>
             <UserView Params=@(_selfUserParams) />
@@ -17,8 +18,8 @@
         @if (string.IsNullOrEmpty(_process))
         {
             <div class="row_container">
-                <MudTextField T=string Label="Edit Username" @bind-Text=@(_userName)></MudTextField>
-                <MudButton OnClick=@(updateUserName)>Apply</MudButton>
+                <MudTextField T=string Label="@(Loc["pedit_name"])" @bind-Text=@(_userName)></MudTextField>
+                <MudButton OnClick=@(updateUserName)>@(Loc["apply"])</MudButton>
             </div>
             <MudButton HtmlTag="label"
                    Variant="Variant.Outlined"
@@ -28,7 +29,7 @@
                     <img class="avatarpreview" src=@(_avatarUrl) />
                     <div class="flexspacer" />
                 }
-                <MudText>Upload Avatar</MudText>
+                <MudText>@(Loc["pedit_upload"])</MudText>
             </MudButton>
         }
         else
@@ -38,7 +39,7 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick=@(exit)>Done</MudButton>
+        <MudButton OnClick=@(exit)>@(Loc["close"])</MudButton>
     </DialogActions>
 </MudDialog>
 

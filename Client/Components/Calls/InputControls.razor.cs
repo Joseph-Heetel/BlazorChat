@@ -53,10 +53,10 @@ namespace BlazorChat.Client.Components.Calls
                 _calls.SetAudioDevice(value);
             }
         }
-        private string _audioDeviceButtonText => _audioDevice == null ? "Enable Microphone" : "Mute Microphone";
+        private string _audioDeviceButtonText => Loc[_audioDevice == null ? "call_micon" : "call_micoff"];
         private string _audioDeviceButtonIcon => _audioDevice == null ? Icons.Filled.Mic : Icons.Filled.MicOff;
         private Color _audioDeviceButtonIconColor => _audioDevice == null ? Color.Success : Color.Error;
-        private string _videoDeviceButtonText => _videoDevice == null ? "Enable Camera" : "Disable Camera";
+        private string _videoDeviceButtonText => Loc[_videoDevice == null ? "call_camon" : "call_camoff"];
         private string _videoDeviceButtonIcon => _videoDevice == null ? Icons.Filled.Videocam : Icons.Filled.VideocamOff;
         private Color _videoDeviceButtonIconColor => _videoDevice == null ? Color.Success : Color.Error;
 

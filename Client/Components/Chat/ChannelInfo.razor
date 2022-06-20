@@ -1,18 +1,20 @@
-﻿@if (_hasChannel)
+﻿@inject IStringLocalizer<Pages.Chat> Loc
+
+@if (_hasChannel)
 {
     <div class="container">
         <div class="entry">
-            <span class="key">Id</span>
+            <span class="key">@(Loc["id"])</span>
             <span class="spacer" />
             <span class="value">@(_id)</span>
         </div>
         <div class="entry">
-            <span class="key">Created</span>
+            <span class="key">@(Loc["date_created"])</span>
             <span class="spacer" />
             <span class="value">@(_created)</span>
         </div>
         <div class="entry">
-            <span class="key">Users</span>
+            <span class="key">@(Loc["users"])</span>
             <span class="spacer" />
             <span class="value">@(_users)</span>
         </div>

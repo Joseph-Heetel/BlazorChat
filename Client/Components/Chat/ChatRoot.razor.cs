@@ -188,7 +188,7 @@ namespace BlazorChat.Client.Components.Chat
             }
             else
             {
-                _connectionLostSnackbar = this._Snackbar.Add("Connection to server lost. The application will automatically reconnect as soon as possible.", Severity.Warning, (config) =>
+                _connectionLostSnackbar = this._Snackbar.Add(Loc["reconnect_snackbar"], Severity.Warning, (config) =>
                 {
                     config.CloseAfterNavigation = false;
                     config.ShowCloseIcon = false;

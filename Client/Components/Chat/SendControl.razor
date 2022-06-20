@@ -1,17 +1,17 @@
 ﻿@inject ISnackbar _Snackbar
 @inject Services.IChatApiService ChatApiService
 @inject Services.IChatStateService ChatStateService
+@inject IStringLocalizer<Pages.Chat> Loc
 
 <div>
     @if (_file != null)
     {
         <MudPaper Style="margin-left: 1em; margin-right: 1em" Class="darkenedcard">
             <div class="file">
-                <MudText Typo=(Typo.body1) Style="flex: 100% 0 1">File: @(getFileInfo())</MudText>
+                <MudText Typo=(Typo.body1) Style="flex: 100% 0 1">@(Loc["send_file"]) @(getFileInfo())</MudText>
                 <MudIconButton Variant="Variant.Filled"
                            Color="Color.Error"
                            Icon="@Icons.Filled.Cancel"
-                           
                            OnClick=@(() => clearFile()) />
             </div>
         </MudPaper>

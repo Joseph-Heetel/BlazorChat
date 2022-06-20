@@ -10,6 +10,7 @@ using Blazored.LocalStorage;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Text.Json;
+using System.Globalization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -43,7 +44,7 @@ builder.Services.AddMudServices(config =>
 builder.Services.AddAuthorizationCore();
 //"CustomBlazorChat", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 builder.Services.RemoveAll<IHttpMessageHandlerBuilderFilter>();
-
+builder.Services.AddLocalization();
 
 var host = builder.Build();
 await host.RunAsync();
