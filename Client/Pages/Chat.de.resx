@@ -273,6 +273,12 @@
   <data name="send_file" xml:space="preserve">
     <value>Datei:</value>
   </data>
+  <data name="send_file_fail" xml:space="preserve">
+    <value>Hochladen der Datei fehlgeschlagen!</value>
+  </data>
+  <data name="send_message_fail" xml:space="preserve">
+    <value>Versenden der Nachricht fehlgeschlagen!</value>
+  </data>
   <data name="size" xml:space="preserve">
     <value>Größe</value>
   </data>

@@ -95,32 +95,48 @@ namespace BlazorChat.Shared
             return MakeFileNameExt(fileId, MimeTypeToExtension(mime));
         }
 
-        public static string MakeHumanReadableFileSize(long size)
+        private static string ToString3Digits(double value, string suffix)
         {
-            string fileSize = "";
-            const long oneKiB = 1024L;
-            const long oneMiB = oneKiB * 1024L;
-            const long oneGiB = oneMiB * 1024L;
-            const long oneTiB = (long)oneGiB * 1024L;
-            if (size < oneKiB)
+            if (value > 100.0)
             {
-                fileSize = $"{size} B";
+                return $"{value:0} {suffix}";
             }
-            if (size >= oneKiB &&size < oneMiB)
+            else if (value > 10.0)
             {
-                fileSize = $"{size / (double)oneKiB:0.00} KiB";
-            }
-            else if (size >= oneMiB &&size < oneGiB)
-            {
-                fileSize = $"{size / (double)oneMiB:0.00} MiB";
-            }
-            else if (size >= oneGiB &&size < oneTiB)
-            {
-                fileSize = $"{size / (double)oneGiB:0.00} GiB";
+                return $"{value: 0.0} {suffix}";
             }
             else
             {
-                fileSize = $"{size / (double)oneTiB:0.00} TiB";
+                return $"{value:0.00} {suffix}";
+            }
+        }
+
+        public static string MakeHumanReadableFileSize(long size)
+        {
+            string fileSize = "";
+            const long oneKB = 1000L;
+            const long oneMB = oneKB * 1000L;
+            const long oneGB = oneMB * 1000L;
+            const long oneTB = (long)oneGB * 1000L;
+            if (size < oneKB)
+            {
+                fileSize = ToString3Digits((double)size, "B");
+            }
+            else if (size >= oneKB &&size < oneMB)
+            {
+                fileSize = ToString3Digits((double)size / oneKB, "KB");
+            }
+            else if (size >= oneMB &&size < oneGB)
+            {
+                fileSize = ToString3Digits((double)size / oneMB, "MB");
+            }
+            else if (size >= oneGB &&size < oneTB)
+            {
+                fileSize = ToString3Digits((double)size / oneGB, "GB");
+            }
+            else
+            {
+                fileSize = ToString3Digits((double)size / oneTB, "TB");
             }
             return fileSize;
         }

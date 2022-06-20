@@ -273,6 +273,12 @@
   <data name="send_file" xml:space="preserve">
     <value>File:</value>
   </data>
+  <data name="send_file_fail" xml:space="preserve">
+    <value>Failed to upload file!</value>
+  </data>
+  <data name="send_message_fail" xml:space="preserve">
+    <value>Failed to send message!</value>
+  </data>
   <data name="size" xml:space="preserve">
     <value>Size</value>
   </data>

@@ -69,7 +69,7 @@ namespace BlazorChat.Client.Components.Chat
                 attachment = await ChatApiService.UploadFile(Params.CurrentChannelId, file);
                 if (attachment == null)
                 {
-                    _Snackbar.Add("Unable to upload file", Severity.Error);
+                    _Snackbar.Add(Loc["send_file_fail"], Severity.Error);
                     error = true;
                 }
             }
@@ -80,7 +80,7 @@ namespace BlazorChat.Client.Components.Chat
                 result = await ChatApiService.CreateMessage(Params.CurrentChannelId, messageBody, attachment);
                 if (result == null)
                 {
-                    _Snackbar.Add("Unable to send message", Severity.Error);
+                    _Snackbar.Add(Loc["send_message_fail"], Severity.Error);
                 }
             }
             _state = Params.CurrentChannelId.IsZero ? SendControlState.Disabled : SendControlState.Ready;
