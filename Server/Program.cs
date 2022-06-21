@@ -28,7 +28,6 @@ builder.Services.AddSignalRCore();
 builder.Services.AddCors();
 builder.Services.AddServerSideBlazor();
 
-builder.Services.AddSingleton<IHashService, SHAHashService>();
 builder.Services.AddSingleton<IIdGeneratorService, RandomIdGeneratorService>();
 builder.Services.AddTransient<ILoginDataService, LoginDataService>();
 builder.Services.AddTransient<IUserDataService, UserDataService>();

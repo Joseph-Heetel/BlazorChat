@@ -60,10 +60,10 @@ namespace BlazorChat.Server.Controllers
             {
                 return new UnsupportedMediaTypeResult();
             }
-            using MemoryStream mem = new MemoryStream((int)FileHelper.MAX_FILE_SIZE);
+            using MemoryStream mem = new MemoryStream((int)ChatConstants.MAX_FILE_SIZE);
             await stream.CopyToAsync(mem);
             await stream.DisposeAsync();
-            if (mem.Length > FileHelper.MAX_FILE_SIZE)
+            if (mem.Length > ChatConstants.MAX_FILE_SIZE)
             {
                 return BadRequest("File too large.");
             }
@@ -110,10 +110,10 @@ namespace BlazorChat.Server.Controllers
             {
                 return new UnsupportedMediaTypeResult();
             }
-            using MemoryStream mem = new MemoryStream((int)FileHelper.MAX_FILE_SIZE);
+            using MemoryStream mem = new MemoryStream((int)ChatConstants.MAX_AVATAR_SIZE);
             await stream.CopyToAsync(mem);
             await stream.DisposeAsync();
-            if (mem.Length > FileHelper.MAX_FILE_SIZE)
+            if (mem.Length > ChatConstants.MAX_AVATAR_SIZE)
             {
                 return BadRequest("File too large.");
             }

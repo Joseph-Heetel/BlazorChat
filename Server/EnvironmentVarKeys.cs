@@ -2,11 +2,29 @@
 {
     public static class EnvironmentVarKeys
     {
+        /// <summary>
+        /// Connection string used to connect to and authenticate with azure cosmosdb
+        /// </summary>
         public const string AZURECOSMOSCONNECTIONSTRING = "AzureCosmosConnectionString";
+        /// <summary>
+        /// Connection string used to connect to and authenticate with azure blob storage
+        /// </summary>
         public const string AZUREBLOBCONNECTIONSTRING = "AzureBlobConnectionString";
+        /// <summary>
+        /// Bearer token string used to authenticate users of the admin api
+        /// </summary>
         public const string ADMINAPIBEARERTOKEN = "AdminApiBearerToken";
+        /// <summary>
+        /// Json encoded ice configurations provided to clients when initiating calls
+        /// </summary>
         public const string ICECONFIGURATIONS = "IceConfigurations";
+        /// <summary>
+        /// Key used to authenticate with azure translator service
+        /// </summary>
         public const string AZURETRANSLATORKEY = "AzureTranslatorKey";
+        /// <summary>
+        /// Location string used to configure http requests to azure translator service
+        /// </summary>
         public const string AZURETRANSLATORLOCATION = "AzureTranslatorLocation";
 
 

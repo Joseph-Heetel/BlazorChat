@@ -1,8 +1,7 @@
 ﻿using BlazorChat.Shared;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using static BlazorChat.CosmosDBExtensions;
-using static BlazorChat.OtherExtensions;
+using static BlazorChat.MiscExtensions;
 using static BlazorChat.Shared.Extensions;
 
 namespace BlazorChat.Server.Hubs
