@@ -12,8 +12,6 @@ namespace BlazorChat.Shared
     /// </summary>
     public static class FileHelper
     {
-        public const long MAX_FILE_SIZE = 16 * 1024 * 1024;
-
         private static readonly Dictionary<string, string> mimeTypetoExtension = new Dictionary<string, string>();
         private static readonly Dictionary<string, string> extensionToMimeType = new Dictionary<string, string>();
 
@@ -36,6 +34,9 @@ namespace BlazorChat.Shared
             extensionToMimeType.Add("pdf", "application/pdf");
         }
 
+        /// <summary>
+        /// Converts a file extension to mime type (returns null if no match is found or null has been passed into function)
+        /// </summary>
         public static string? ExtensionToMimeType(string? ext)
         {
             if (ext == null)
@@ -50,33 +51,51 @@ namespace BlazorChat.Shared
             return mimeType;
         }
 
+        /// <summary>
+        /// Converts a mime type to default file extension (returns null if no match is found or null has been passed into function)
+        /// </summary>
         public static string? MimeTypeToExtension(string? mime)
         {
             mimeTypetoExtension.TryGetValue(mime ?? string.Empty, out var ext);
             return ext;
         }
 
+        /// <summary>
+        /// Returns true, if the extension is a valid recognized file extension
+        /// </summary>
         public static bool IsValidExt(string? ext)
         {
             return extensionToMimeType.ContainsKey(ext ?? string.Empty);
         }
 
+        /// <summary>
+        /// Returns true, if the extension is a valid recognized mime type
+        /// </summary>
         public static bool IsValidMimeType(string? mime)
         {
             return mimeTypetoExtension.ContainsKey(mime ?? string.Empty);
         }
 
+        /// <summary>
+        /// Returns true, if the extension is a valid image mime.
+        /// </summary>
         public static bool IsImageMime(string? mime)
         {
-            return mime?.StartsWith("image") ?? false;
+            return IsValidMimeType(mime) && (mime?.StartsWith("image") ?? false);
         }
 
+        /// <summary>
+        /// Returns true, if the extension is a valid image extension.
+        /// </summary>
         public static bool IsImageExt(string? ext)
         {
             string? mime = ExtensionToMimeType(ext);
             return IsImageMime(mime);
         }
 
+        /// <summary>
+        /// Generate file name from id and extension
+        /// </summary>
         public static string? MakeFileNameExt(ItemId fileId, string? ext)
         {
             if (fileId.IsZero || !IsValidExt(ext))
@@ -86,6 +105,9 @@ namespace BlazorChat.Shared
             return $"{fileId}.{ext}";
         }
 
+        /// <summary>
+        /// Generate file name from id and mime type (which is converted to extension)
+        /// </summary>
         public static string? MakeFileNameMime(ItemId fileId, string? mime)
         {
             if (!IsValidMimeType(mime))
@@ -95,6 +117,9 @@ namespace BlazorChat.Shared
             return MakeFileNameExt(fileId, MimeTypeToExtension(mime));
         }
 
+        /// <summary>
+        /// Helper method for printing a double value with consistent precision of 3 digits
+        /// </summary>
         private static string ToString3Digits(double value, string suffix)
         {
             if (value > 100.0)
@@ -111,6 +136,10 @@ namespace BlazorChat.Shared
             }
         }
 
+        /// <summary>
+        /// Returns a human readable string for a file size. Does not respect culture (and should not have to)
+        /// </summary>
+        /// <param name="size">File size in bytes</param>
         public static string MakeHumanReadableFileSize(long size)
         {
             string fileSize = "";
@@ -164,12 +193,7 @@ namespace BlazorChat.Shared
 
         public string FileName()
         {
-            string? ext = FileHelper.MimeTypeToExtension(MimeType);
-            if (ext == null)
-            {
-                return $"invalid";
-            }
-            return $"{Id}.{ext}";
+            return FileHelper.MakeFileNameMime(Id, MimeType) ?? "invalid";
         }
     }
 

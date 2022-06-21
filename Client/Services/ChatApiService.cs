@@ -325,11 +325,11 @@ namespace BlazorChat.Client.Services
             {
                 return null;
             }
-            if (file.Size > FileHelper.MAX_FILE_SIZE)
+            if (file.Size > ChatConstants.MAX_FILE_SIZE)
             {
                 return null;
             }
-            var fileContent = new StreamContent(file.OpenReadStream(FileHelper.MAX_FILE_SIZE));
+            var fileContent = new StreamContent(file.OpenReadStream(ChatConstants.MAX_FILE_SIZE));
             fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
 #if APIDEBUGLOGGING
             Console.WriteLine($"[Post+] api/storage/{channelId} << Uploadfile {file.Name}");
@@ -494,11 +494,11 @@ namespace BlazorChat.Client.Services
             {
                 return false;
             }
-            if (file.Size > FileHelper.MAX_FILE_SIZE)
+            if (file.Size > ChatConstants.MAX_FILE_SIZE)
             {
                 return false;
             }
-            var fileContent = new StreamContent(file.OpenReadStream(FileHelper.MAX_FILE_SIZE));
+            var fileContent = new StreamContent(file.OpenReadStream(ChatConstants.MAX_FILE_SIZE));
             fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
 #if APIDEBUGLOGGING
             Console.WriteLine($"[Post+] api/storage/avatar << Uploadfile {file.Name}");

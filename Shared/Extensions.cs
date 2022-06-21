@@ -11,7 +11,7 @@ namespace BlazorChat.Shared
     /// A helper struct result of <see cref="Extensions.WaitAsyncDisposable(SemaphoreSlim)"/>. 
     /// When disposed, releases the semaphore. 
     /// <code>using (await semaphore.WaitAsyncDisposable()){ ... }</code>
-    /// will automatically release the semaphore upon exiting the control block
+    /// will automatically release the semaphore upon exiting the control block when declared with using keyword.
     /// </summary>
     public struct SemaphoreAccessDisposable : IDisposable
     {
@@ -41,7 +41,7 @@ namespace BlazorChat.Shared
         /// <code>using (await semaphore.WaitAsyncDisposable()){ ... }</code>
         /// will automatically release the semaphore upon exiting the control block
         /// </summary>
-        public static async ValueTask<SemaphoreAccessDisposable> WaitAsyncDisposable(this SemaphoreSlim semaphore)
+        public static async Task<SemaphoreAccessDisposable> WaitAsyncDisposable(this SemaphoreSlim semaphore)
         {
             await semaphore.WaitAsync();
             return new SemaphoreAccessDisposable(semaphore);

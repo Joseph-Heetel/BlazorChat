@@ -35,7 +35,7 @@ namespace BlazorChat.Server.Controllers
 
         [Route("init/{calleeIdStr}")]
         [HttpPost]
-        public async Task<ActionResult<Call>> Initiate(string calleeIdStr)
+        public async Task<ActionResult<ItemId>> Initiate(string calleeIdStr)
         {
             // check authorization, get user Id
             if (!User.GetUserLogin(out ItemId userId))

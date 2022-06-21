@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace BlazorChat.Shared
 {
+    /// <summary>
+    /// Api-facing type describing a request for a specific user to submit an answer to a form.
+    /// </summary>
     public class FormRequest : ItemBase
     {
         [JsonConverter(typeof(ItemIdConverter))]
@@ -18,9 +21,15 @@ namespace BlazorChat.Shared
         [JsonIgnore]
         public DateTimeOffset Expires { get => DateTimeOffset.FromUnixTimeMilliseconds(ExpiresTS); set => ExpiresTS = value.ToUnixTimeMilliseconds(); }
         public bool AllowMultipleAnswers { get; set; }
+        /// <summary>
+        /// Count of already recorded answers
+        /// </summary>
         public int AnswerCount { get; set; }
     }
 
+    /// <summary>
+    /// Api-facing type detailing form answers
+    /// </summary>
     public class FormResponse
     {
 

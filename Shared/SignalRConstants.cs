@@ -62,8 +62,9 @@ namespace BlazorChat.Shared
         /// <remarks>parameters: (ItemId callId, ItemId senderId, NegotiationMessage msg)</remarks>
         public const string CALL_NEGOTIATION = "Call.Negotiation";
         /// <summary>
-        /// 
+        /// The hub side method used to forward negotiation messages to another client
         /// </summary>
+        /// <remarks>parameters: (ItemId callId, ItemId recipientId, NegotiationMessage message), returns: boolean (success)</remarks>
         public const string CALL_FORWARD_NEGOTIATION = "Call.ForwardNegotiation";
         /// <summary>
         /// The client is notified that a call has been terminated

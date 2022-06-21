@@ -8,59 +8,35 @@ using System.Threading.Tasks;
 
 namespace BlazorChat.Shared
 {
-    public class Call : ItemBase
-    {
-        public enum EState
-        {
-            Pending,
-            Negotiating,
-            Ongoing,
-            Terminated
-        }
-
-        [JsonConverter(typeof(ItemIdConverter))]
-        public ItemId Initiator { get; set; }
-        [JsonConverter(typeof(ItemIdConverter))]
-        public ItemId Recipient { get; set; }
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public EState State { get; set; }
-        public long ExpiresTS { get; set; }
-        [JsonIgnore]
-        public DateTimeOffset Expires
-        {
-            get => DateTimeOffset.FromUnixTimeMilliseconds(ExpiresTS);
-            set => ExpiresTS = value.ToUnixTimeMilliseconds();
-        }
-
-        public bool HasExpired()
-        {
-            if (State == EState.Pending)
-            {
-                return DateTimeOffset.UtcNow > Expires;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
-
+    /// <summary>
+    /// Helper type combining call Id and Id of the initiating user. Used when notifiying the receiving user.
+    /// </summary>
     public class PendingCall : ItemBase
     {
         [JsonConverter(typeof(ItemIdConverter))]
         public ItemId CallerId { get; set; }
     }
 
-
+    /// <summary>
+    /// Type for transferring Sdp negotiation messages
+    /// </summary>
     public class NegotiationMessage
     {
-        public string? type { get; set; }
-        public string? sdp { get; set; } = null;
-        public string? candidate { get; set; } = null;
-        public string? sdpMid { get; set; } = null;
-        public double sdpMLineIndex { get; set; } = 0;
+        [JsonPropertyName("type")]
+        public string? Type { get; set; }
+        [JsonPropertyName("sdp")]
+        public string? Sdp { get; set; } = null;
+        [JsonPropertyName("candidate")]
+        public string? Candidate { get; set; } = null;
+        [JsonPropertyName("sdpMid")]
+        public string? SdpMid { get; set; } = null;
+        [JsonPropertyName("sdpMLineIndex")]
+        public double SdpMLineIndex { get; set; } = 0;
     }
 
+    /// <summary>
+    /// Type for transferring Ice configurations (Stun and Turn servers)
+    /// </summary>
     public class IceConfiguration
     {
         [JsonPropertyName("credential")]

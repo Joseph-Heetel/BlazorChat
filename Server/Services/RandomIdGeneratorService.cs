@@ -14,7 +14,7 @@ namespace BlazorChat.Server.Services
     /// <remarks>
     /// This service implementation will not guarantee collision free!
     /// The collision chance is an issue for generating close to ~ 4 billion IDs (https://stackoverflow.com/a/22029380)
-    /// Using a symmetric encryption algorithm with a 64bit blocksize would be a good alternative (reasonably fast and no collisions until 2^64 ids generated),
+    /// Using a symmetric encryption algorithm with a 64bit blocksize would be a good alternative (somewhat slower, however no collisions until 2^64 ids generated),
     /// for example DES (Security concerns regarding DES security could be alleviated by using Triple-DES)
     /// </remarks>
     public class RandomIdGeneratorService : IIdGeneratorService

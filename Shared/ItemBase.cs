@@ -20,6 +20,11 @@ namespace BlazorChat.Shared
         /// Size in bytes
         /// </summary>
         public const int IDLENGTH = 8;
+        /// <summary>
+        /// The actual unique Id stored as byte array
+        /// </summary>
+        /// <remarks>C# does not have fixed size member arrays in a safe context. As a consequence this array is 
+        /// a seperate C# object even tho it is relatively small and trivially copied. Optimisation might be worth investigating.</remarks>
         public byte[]? Value { get; private set; } = new byte[IDLENGTH];
         public ItemId() { }
         public ItemId(byte[] value)
@@ -83,7 +88,7 @@ namespace BlazorChat.Shared
         /// <summary>
         /// Calculates a basic hash code by splitting the 8 byte value into two 4 byte sequences intepreted as integer and XORing both.
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>XOR is discouraged for hashcodes (as input order has no effect on the hash). It was deemed acceptable here because the underlying byte array is generated randomly</remarks>
         public override int GetHashCode()
         {
             if (Value == null)
@@ -98,6 +103,8 @@ namespace BlazorChat.Shared
 
         public override string ToString()
         {
+            // Lower invariant here probably costs a good bit of performance, but was chosen as it greatly improves readability
+            // of the resulting hex string as opposed to the default uppercase lettering.
             return Value == null ? new string('0', IDLENGTH * 2) : Convert.ToHexString(Value).ToLowerInvariant();
         }
 
@@ -232,7 +239,6 @@ namespace BlazorChat.Shared
         [JsonConverter(typeof(ItemIdConverter))]
         public ItemId Id { get; set; }
         public ItemBase() { Id = default; }
-        public ItemBase(ulong id) { this.Id = new ItemId(BitConverter.GetBytes(id)); }
         public ItemBase(ItemId id) { this.Id = id; }
 
         public int CompareTo(ItemBase? other)
@@ -267,11 +273,6 @@ namespace BlazorChat.Shared
         {
             return Id.ToString();
         }
-
-        //public static bool TryParse(string? v, out ulong id)
-        //{
-        //    return ulong.TryParse(v, System.Globalization.NumberStyles.HexNumber, null, out id);
-        //}
     }
 
     public class ItemIdConverter : JsonConverter<ItemId>

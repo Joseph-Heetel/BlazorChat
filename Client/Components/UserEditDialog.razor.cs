@@ -94,7 +94,7 @@ namespace BlazorChat.Client.Components
             {
                 return;
             }
-            if (file.Size > FileHelper.MAX_FILE_SIZE)
+            if (file.Size > ChatConstants.MAX_FILE_SIZE)
             {
                 return;
             }

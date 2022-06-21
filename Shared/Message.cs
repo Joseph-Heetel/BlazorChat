@@ -21,6 +21,9 @@ namespace BlazorChat.Shared
         public DateTimeOffset Created { get => DateTimeOffset.FromUnixTimeMilliseconds(CreatedTS); set => CreatedTS = value.ToUnixTimeMilliseconds(); }
         public string Body { get; set; } = string.Empty;
         public FileAttachment? Attachment { get; set; } = null;
+        /// <summary>
+        /// If non-zero this message has a form request attached
+        /// </summary>
         public ItemId FormRequestId { get; set; } = default;
 
         public Message() { }
@@ -46,6 +49,9 @@ namespace BlazorChat.Shared
         }
     }
 
+    /// <summary>
+    /// Api-facing type the client uses to request messages from the server
+    /// </summary>
     public class MessageGetInfo
     {
         [JsonConverter(typeof(ItemIdConverter))]
@@ -57,6 +63,9 @@ namespace BlazorChat.Shared
         public int Limit { get; set; }
     }
 
+    /// <summary>
+    /// Api-facing type the client uses to create a message
+    /// </summary>
     public class MessageCreateInfo
     {
         [JsonConverter(typeof(ItemIdConverter))]
@@ -65,6 +74,9 @@ namespace BlazorChat.Shared
         public FileAttachment? Attachment { get; set; } = default;
     }
 
+    /// <summary>
+    /// Api-facing type the client uses to describe a filtered search query
+    /// </summary>
     public class MessageSearchQuery
     {
         public string Search { get; set; } = "";
@@ -76,17 +88,5 @@ namespace BlazorChat.Shared
         public DateTimeOffset Before { get => DateTimeOffset.FromUnixTimeMilliseconds(BeforeTS); set => BeforeTS = value.ToUnixTimeMilliseconds(); }
         [JsonIgnore]
         public DateTimeOffset After { get => DateTimeOffset.FromUnixTimeMilliseconds(AfterTS); set => AfterTS = value.ToUnixTimeMilliseconds(); }
-    }
-
-    public class MessageBlock
-    {
-        [JsonPropertyName("id")]
-        public ItemId Id { get; set; } = default;
-        public long OldestTimestamp { get; set; } = 0;
-        public long NewestTimestamp { get; set; } = 0;
-        public ItemId OlderBlock { get; set; } = default;
-        public ItemId NewerBlock { get; set; } = default;
-        public ItemId ChannelId { get; set; } = default;
-        public List<Message> Messages { get; set; } = new List<Message>();
     }
 }

@@ -28,8 +28,13 @@ namespace BlazorChat.Shared
     /// </summary>
     public class Session
     {
-
-        public DateTimeOffset Expires { get; set; } = default;
+        public long ExpiresTS { get; set; } = default;
+        [JsonIgnore]
+        public DateTimeOffset Expires
+        {
+            get => DateTimeOffset.FromUnixTimeMilliseconds(ExpiresTS);
+            set => ExpiresTS = value.ToUnixTimeMilliseconds();
+        }
         public User? User { get; set; }
 
         public Session() { }
