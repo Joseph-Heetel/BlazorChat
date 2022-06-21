@@ -82,7 +82,7 @@ namespace BlazorChat.Server.Controllers
                 return Unauthorized();
             }
 
-           bool success = await _userService.UpdateUserName(userId, name);
+            bool success = await _userService.UpdateUserName(userId, name);
             if (!success)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);

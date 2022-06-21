@@ -12,14 +12,18 @@ namespace BlazorChat.Server.Controllers
         private readonly IStorageService? _storageService;
         private readonly IChannelDataService _channelService;
         private readonly IUserDataService _userService;
-        public StorageController(IStorageService storage, IChannelDataService channelData, IUserDataService userData)
+        public StorageController(IServiceProvider serviceProvider, IChannelDataService channelData, IUserDataService userData)
         {
-            _storageService = storage;
+            _storageService = serviceProvider.GetService<IStorageService>();
             _channelService = channelData;
             _userService = userData;
         }
 
-
+        /// <summary>
+        /// Endpoint for file upload. Expects hmtl request body containing data marked with proper mime type
+        /// </summary>
+        /// <param name="channelIdstr"></param>
+        /// <returns></returns>
         [Route("{channelIdstr}")]
         [HttpPost]
         public async Task<ActionResult<FileAttachment>> Upload(string channelIdstr)
@@ -32,7 +36,7 @@ namespace BlazorChat.Server.Controllers
 
             if (_storageService == null)
             {
-                return StatusCode(StatusCodes.Status410Gone);
+                return StatusCode(StatusCodes.Status503ServiceUnavailable);
             }
 
             if (!ItemId.TryParse(channelIdstr, out ItemId channelId))
@@ -60,9 +64,13 @@ namespace BlazorChat.Server.Controllers
             {
                 return new UnsupportedMediaTypeResult();
             }
+
+            // In order to do useful work with the data and verify the size, we need to copy it into a continous memory buffer
+
             using MemoryStream mem = new MemoryStream((int)ChatConstants.MAX_FILE_SIZE);
             await stream.CopyToAsync(mem);
             await stream.DisposeAsync();
+
             if (mem.Length > ChatConstants.MAX_FILE_SIZE)
             {
                 return BadRequest("File too large.");
@@ -92,7 +100,7 @@ namespace BlazorChat.Server.Controllers
 
             if (_storageService == null)
             {
-                return StatusCode(StatusCodes.Status410Gone);
+                return StatusCode(StatusCodes.Status503ServiceUnavailable);
             }
 
             var stream = Request.Body;
@@ -118,6 +126,11 @@ namespace BlazorChat.Server.Controllers
                 return BadRequest("File too large.");
             }
 
+            // Only one avatar is supposed to be uploaded at one time, so we just delete all files
+            // associated with the user. This operation is expected to fail if the user
+            // didn't have an avatar uploaded before, so we don't check the result.
+            await _storageService.DeleteContainer(userId);
+
             var fileId = await _storageService.UploadFile(userId, new FileUploadInfo() { Data = mem.ToArray(), MimeType = mimetype });
             if (fileId.IsZero)
             {
@@ -136,6 +149,12 @@ namespace BlazorChat.Server.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Access to uploaded media is never granted permanently, only temporary. This endpoint generates temporary access Urls
+        /// </summary>
+        /// <param name="channelIdstr"></param>
+        /// <param name="fileNamestr"></param>
+        /// <returns></returns>
         [Route("{channelIdstr}/{fileNamestr}")]
         [HttpGet]
         public async Task<ActionResult<TemporaryURL>> GetTemporaryMediaURL(string channelIdstr, string fileNamestr)
@@ -148,7 +167,7 @@ namespace BlazorChat.Server.Controllers
 
             if (_storageService == null)
             {
-                return StatusCode(StatusCodes.Status410Gone);
+                return StatusCode(StatusCodes.Status503ServiceUnavailable);
             }
 
             // Make sure channelId and fileId parse correctly
@@ -172,11 +191,12 @@ namespace BlazorChat.Server.Controllers
                 return BadRequest("Malformed URI section fileId \"api/storage/channelId/fileId.ext\"");
             }
 
-            //// Make sure channel exists and requesting user is a member
-            //if (!await _Channels.IsMember(channelId, userId))
-            //{
-            //    return NotFound("Could not find channel specified.");
-            //}
+            // Make sure channel exists and requesting user is a member.
+            // This is required as it prevents access to files of channels the user has been removed from.
+            if (!await _channelService.IsMember(channelId, userId))
+            {
+                return NotFound();
+            }
 
             var url = await _storageService.GetTemporaryFileURL(channelId, fileId, FileHelper.ExtensionToMimeType(ext)!);
             if (url == null)

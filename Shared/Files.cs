@@ -172,7 +172,7 @@ namespace BlazorChat.Shared
     }
 
     /// <summary>
-    /// Class for transferring attachment data API <-> Client
+    /// Class for transferring attachment data API <-> Client. File attachments and blob storage links have no user controlled names by design.
     /// </summary>
     public class FileAttachment : ItemBase
     {

@@ -22,8 +22,19 @@ As a consequence, it is the opinion of the author that writing the frontend with
 
 # Audio & Video Calls
 
-* A TURN server is required for NAT traversal. For testing a free service such as [Viagenie NUMB](https://numb.viagenie.ca/) can be used, but for production a dedicated solution needs to be setup (for example [coturn](https://github.com/coturn/coturn)). Right now TURN credentials are hardcoded and therefor shipped as effectively plain text as part of the client application. In a production environment, temporary credentials should be generated dynamically and provided to the client only as needed.
+* A TURN server is required for NAT traversal. For testing a free service such as [Viagenie NUMB](https://numb.viagenie.ca/) can be used, but for production a dedicated solution needs to be setup (for example [coturn](https://github.com/coturn/coturn)). Right now TURN credentials are fixed environment variables and therefor shipped as effectively plain text as part of the client application. In a production environment, temporary credentials should be generated dynamically and provided to the client only as needed.
 * The video call interface as implemented right now is very crude. The way CSS and videos interact is very complicated. A polished feature-rich UI can be expected to be a lot of work and research.
 
 # Performance
-* No effort was spent optimising the application.
+Minimal effort was spent optimising the application. Here are some ideas on how it can be improved:
+* Server side caching. Keeping frequently requested resources in memory would greatly improve server response times.
+* Sharding: Find a way to split the whole chat service across multiple servers.
+
+# Inconsistent Data
+There are multiple server side services which manipulate multiple storage domains in a sequential manner. Failure late into the process of data manipulation can cause inconsistent data across these storage domains. This in turn can cause junk data taking up database or storage space or in the worst case security issues etc.
+
+For a production environment many server side processes would have to be rewritten to feature adequate error recovery.
+
+Furthermore, the current ItemId unique Id system is by design not collision proof. Collisions are extremely unlikely however. In a production environment special attention should be given to the consequences of collisions, or a Id scheme with even less collision chance or none at all should be used. Some ideas:
+* GUIDs offer double the size of randomly generated Id compared to the currently used system of 64bit Ids
+* A symmetric encryption algorithm configured with a secret key and fed with an incrementing number would generate seemingly random but guaranteed unique Ids (until exhaustion of the Id space, but that's a given)

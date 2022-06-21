@@ -8,7 +8,7 @@ namespace BlazorChat.Server.Services
 {
     public interface IStorageService
     {
-        public Task<bool> DeleteContainer(ItemId channelId);
+        public Task<bool> DeleteContainer(ItemId domainId);
         public Task<ItemId> UploadFile(ItemId domainId, FileUploadInfo file);
         public Task<TemporaryURL?> GetTemporaryFileURL(ItemId channelId, ItemId fileId, string mimeType);
     }
@@ -40,7 +40,7 @@ namespace BlazorChat.Server.Services
             return containerclient;
         }
 
-        public async Task<ItemId> UploadFile(ItemId channelId, FileUploadInfo file)
+        public async Task<ItemId> UploadFile(ItemId domainId, FileUploadInfo file)
         {
             ItemId fileId = _idGenService.Generate();
             string? remotefilename = FileHelper.MakeFileNameMime(fileId, file.MimeType);
@@ -48,17 +48,17 @@ namespace BlazorChat.Server.Services
             {
                 return default;
             }
-            BlobContainerClient containerClient = await GetOrCreateContainerAsync(channelId);
+            BlobContainerClient containerClient = await GetOrCreateContainerAsync(domainId);
             BlobClient blobClient = containerClient.GetBlobClient(remotefilename);
             using MemoryStream stream = new MemoryStream(file.Data);
             var response = await blobClient.UploadAsync(stream, true);
             return fileId;
         }
 
-        public async Task<bool> DeleteContainer(ItemId channelId)
+        public async Task<bool> DeleteContainer(ItemId domainId)
         {
             Debug.Assert(_blobServiceClient != null);
-            var response = await _blobServiceClient.DeleteBlobContainerAsync(channelId.ToString());
+            var response = await _blobServiceClient.DeleteBlobContainerAsync(domainId.ToString());
             return response.Status == 200;
         }
 
