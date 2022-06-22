@@ -171,6 +171,7 @@ namespace BlazorChat.Client.Services
         /// <returns></returns>
         public Task<bool> PostFormResponse(ItemId requestId, JsonNode response);
         public Task<Message?> GetMessageTranslated(ItemId channelId, ItemId messageId, string? languageCode = null);
+        Task<TemporaryURL?> GetTemporaryAvatarURL(ItemId userId, FileAttachment attachment);
     }
 
     public class ChatApiService : IChatApiService
@@ -355,6 +356,14 @@ namespace BlazorChat.Client.Services
             Console.WriteLine($"[Get] {attachment.TemporaryFileRequestURL(channelId)}");
 #endif
             return await getHttpClient().GetFromJSONAsyncNoExcept<TemporaryURL>(attachment.TemporaryFileRequestURL(channelId));
+        }
+
+        public async Task<TemporaryURL?> GetTemporaryAvatarURL(ItemId userId, FileAttachment attachment)
+        {
+#if APIDEBUGLOGGING
+            Console.WriteLine($"[Get] {attachment.TemporaryAvatarRequestURL(channelId)}");
+#endif
+            return await getHttpClient().GetFromJSONAsyncNoExcept<TemporaryURL>(attachment.TemporaryAvatarRequestURL(userId));
         }
 
         public async Task<Channel?> GetChannel(ItemId id)

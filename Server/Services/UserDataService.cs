@@ -13,13 +13,15 @@ namespace BlazorChat.Server.Services
         private readonly ITableService<UserModel> _usersTable;
         private readonly IIdGeneratorService _idGenService;
         private readonly IHubContext<ChatHub> _hubContext;
+        private readonly IHubManager _hubManager;
         private readonly IChannelDataService _channelService;
 
-        public UserDataService(IDatabaseConnection db, IIdGeneratorService idgen, IHubContext<ChatHub> hub, IChannelDataService channels)
+        public UserDataService(IDatabaseConnection db, IIdGeneratorService idgen, IHubContext<ChatHub> hub, IHubManager hubManager, IChannelDataService channels)
         {
             _usersTable = db.GetTable<UserModel>(DatabaseConstants.USERSTABLE);
             _idGenService = idgen;
             _hubContext = hub;
+            _hubManager = hubManager;
             _channelService = channels;
         }
         /// <inheritdoc/>
@@ -32,7 +34,7 @@ namespace BlazorChat.Server.Services
             }
             UserModel userModel = response.ResultAsserted;
             User user = userModel.ToApiType();
-            user.Online = await ConnectionMap.Users.IsConnected(id);
+            user.Online = await _hubManager.IsOnline(id);
             return user;
         }
 
@@ -67,7 +69,7 @@ namespace BlazorChat.Server.Services
                     if (userModel.CheckWellFormed())
                     {
                         User user = userModel.ToApiType();
-                        user.Online = await ConnectionMap.Users.IsConnected(userModel.Id);
+                        user.Online = await _hubManager.IsOnline(userModel.Id);
                         result.Add(user);
                     }
                 }
@@ -108,7 +110,7 @@ namespace BlazorChat.Server.Services
                 List<string> hubgroups = new List<string>();
                 foreach (ItemId channelId in channelIds)
                 {
-                    hubgroups.Add(ChatHub.MakeChannelGroup(channelId));
+                    hubgroups.Add(IHubManager.ChannelGroupName(channelId));
                 }
                 await _hubContext.Clients.Groups(hubgroups).SendAsync(SignalRConstants.USER_UPDATED, userId);
             }
@@ -154,7 +156,7 @@ namespace BlazorChat.Server.Services
                 List<string> hubgroups = new List<string>();
                 foreach (ItemId channelId in channelIds)
                 {
-                    hubgroups.Add(ChatHub.MakeChannelGroup(channelId));
+                    hubgroups.Add(IHubManager.ChannelGroupName(channelId));
                 }
                 await _hubContext.Clients.Groups(hubgroups).SendAsync(SignalRConstants.USER_UPDATED, userId);
             }

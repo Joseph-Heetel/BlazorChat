@@ -19,7 +19,11 @@ namespace BlazorChat.Server.Controllers
             this._formService = forms;
         }
 
-
+        /// <summary>
+        /// Endpoint which returns a form (Json Schema encoded data)
+        /// </summary>
+        /// <param name="formIdStr"></param>
+        /// <returns></returns>
         [Route("{formIdStr}")]
         [HttpGet]
         public async Task<ActionResult<JsonNode>> GetForm(string formIdStr)
@@ -35,6 +39,8 @@ namespace BlazorChat.Server.Controllers
                 return BadRequest("Could not parse form id!");
             }
 
+            // TODO: Perhaps access to scopes should be restricted to active form requests?
+
             var form = await _formService.GetForm(formId);
             if (form == null)
             {
@@ -43,6 +49,11 @@ namespace BlazorChat.Server.Controllers
             return form;
         }
 
+        /// <summary>
+        /// Gets a request given a request id
+        /// </summary>
+        /// <param name="requestidstr"></param>
+        /// <returns></returns>
         [Route("request/{requestidstr}")]
         [HttpGet]
         public async Task<ActionResult<FormRequest>> GetRequest(string requestidstr)
@@ -67,6 +78,11 @@ namespace BlazorChat.Server.Controllers
             return formRequest;
         }
 
+        /// <summary>
+        /// Endpoint for providing a response
+        /// </summary>
+        /// <param name="requestidstr"></param>
+        /// <returns></returns>
         [Route("response/{requestidstr}")]
         [HttpPost]
         public async Task<ActionResult> PostResponse(string requestidstr)

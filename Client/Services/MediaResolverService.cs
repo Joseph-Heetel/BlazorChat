@@ -12,17 +12,27 @@ namespace BlazorChat.Client.Services
         public DateTimeOffset Expires { get; private set; }
         public FileAttachment Attachment { get; }
         public ItemId DomainId { get; }
+        public bool UseAvatarEndpoint { get; }
 
-        public ObservedMedia(ItemId domainId, FileAttachment attachment)
+        public ObservedMedia(ItemId domainId, FileAttachment attachment, bool avatar)
         {
-            this.DomainId = domainId;
-            this.Attachment = attachment;
-            this.Expires = DateTimeOffset.MinValue;
+            DomainId = domainId;
+            Attachment = attachment;
+            Expires = DateTimeOffset.MinValue;
+            UseAvatarEndpoint = avatar;
         }
 
         public async Task<bool> Resolve(IChatApiService apiservice)
         {
-            var tempUrl = await apiservice.GetTemporaryURL(DomainId, Attachment);
+            TemporaryURL? tempUrl;
+            if (UseAvatarEndpoint)
+            {
+                tempUrl = await apiservice.GetTemporaryAvatarURL(DomainId, Attachment);
+            }
+            else
+            {
+                tempUrl = await apiservice.GetTemporaryURL(DomainId, Attachment);
+            }
             if (tempUrl == null)
             {
                 Expires = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(30);
@@ -47,7 +57,7 @@ namespace BlazorChat.Client.Services
         /// Automatically initiates fetching of a new temporary url, calling <paramref name="callback"/> as soon as it's available
         /// </summary>
         /// <returns>An empty string or a temporary url, if the media object was already resolved previously</returns>
-        public string GetAndSubscribe(ItemId domainId, FileAttachment attachment, Action<string> callback);
+        public string GetAndSubscribe(ItemId domainId, FileAttachment attachment, Action<string> callback, bool isAvatar = false);
         /// <summary>
         /// Removes <paramref name="callback"/> from listening to updates to the attachment identified by <paramref name="attachmentId"/>
         /// </summary>
@@ -91,7 +101,7 @@ namespace BlazorChat.Client.Services
             _cts.Dispose();
         }
 
-        public string GetAndSubscribe(ItemId domainId, FileAttachment attachment, Action<string> callback)
+        public string GetAndSubscribe(ItemId domainId, FileAttachment attachment, Action<string> callback, bool avatar = false)
         {
             if (_media.TryGetValue(attachment.Id, out ObservedMedia? value))
             {
@@ -100,7 +110,7 @@ namespace BlazorChat.Client.Services
             }
             else
             {
-                ObservedMedia media = new ObservedMedia(domainId, attachment);
+                ObservedMedia media = new ObservedMedia(domainId, attachment, avatar);
                 media.UriChanged += callback;
                 _media.Add(attachment.Id, media);
                 return "";

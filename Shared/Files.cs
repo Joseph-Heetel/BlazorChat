@@ -191,6 +191,11 @@ namespace BlazorChat.Shared
             return $"api/storage/{channelId}/{FileName()}";
         }
 
+        public string TemporaryAvatarRequestURL(ItemId userId)
+        {
+            return $"api/storage/avatar/{userId}/{FileName()}";
+        }
+
         public string FileName()
         {
             return FileHelper.MakeFileNameMime(Id, MimeType) ?? "invalid";

@@ -71,5 +71,7 @@ namespace BlazorChat.Shared
         /// </summary>
         /// <remarks>parameters: (ItemId callId)</remarks>
         public const string CALL_TERMINATED = "Call.Terminated";
+        public const string CLIENTKEEPALIVE = "Client.KeepAlive";
+        public const string HUBKEEPALIVE = "Hub.KeepAlive";
     }
 }

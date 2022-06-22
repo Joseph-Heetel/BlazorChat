@@ -165,20 +165,20 @@ namespace BlazorChat.Server.Services
         {
             List<string> connections = new List<string>()
             {
-                ChatHub.MakeUserGroup(callModel.CalleeId),
-                ChatHub.MakeUserGroup(callModel.CallerId)
+                IHubManager.UserGroupName(callModel.CalleeId),
+                IHubManager.UserGroupName(callModel.CallerId)
             };
             return connections;
         }
 
         private static string getCalleeGroup(CallModel callModel)
         {
-            return ChatHub.MakeUserGroup(callModel.CalleeId);
+            return IHubManager.UserGroupName(callModel.CalleeId);
         }
 
         private static string getCallerGroup(CallModel callModel)
         {
-            return ChatHub.MakeUserGroup(callModel.CallerId);
+            return IHubManager.UserGroupName(callModel.CallerId);
         }
 
         private async Task checkExpirations()

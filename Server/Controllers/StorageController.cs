@@ -205,5 +205,76 @@ namespace BlazorChat.Server.Controllers
             }
             return url;
         }
+
+        [Route("avatar/{avatarUserIdstr}/{fileNamestr}")]
+        [HttpGet]
+        public async Task<ActionResult<TemporaryURL>> GetTemporaryAvatarURL(string avatarUserIdstr, string fileNamestr)
+        {
+            // check authorization, get user Id
+            if (!User.GetUserLogin(out ItemId userId))
+            {
+                return Unauthorized();
+            }
+
+            if (_storageService == null)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable);
+            }
+
+            // Make sure channelId and fileId parse correctly
+            if (!ItemId.TryParse(avatarUserIdstr, out ItemId avatarUserId))
+            {
+                return BadRequest("Malformed URI section channelId \"api/storage/channelId/fileId.ext\"");
+            }
+            if (string.IsNullOrEmpty(fileNamestr))
+            {
+                return BadRequest("Malformed URI section fileId \"api/storage/channelId/fileId.ext\"");
+            }
+            string[] sections = fileNamestr.Split('.');
+            if (sections.Length != 2)
+            {
+                return BadRequest("Malformed URI section fileId \"api/storage/channelId/fileId.ext\"");
+            }
+            string fileIdstr = sections[0];
+            string ext = sections[1];
+            if (!ItemId.TryParse(fileIdstr, out ItemId fileId) || !FileHelper.IsValidExt(ext))
+            {
+                return BadRequest("Malformed URI section fileId \"api/storage/channelId/fileId.ext\"");
+            }
+
+            // Make sure channel exists and requesting user is a member.
+            // Make sure they share a channel
+            if (avatarUserId != userId)
+            {
+                // Get all channels the requesting user is member of
+                var test = await _channelService.GetChannels(userId);
+                if (test == null)
+                {
+                    return NotFound();
+                }
+                bool found = false;
+                foreach (var channelId in test)
+                {
+                    // Test membership of the requested other user for all channels, break if membership exists
+                    if (await _channelService.IsMember(channelId, avatarUserId))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    return NotFound();
+                }
+            }
+
+            var url = await _storageService.GetTemporaryFileURL(avatarUserId, fileId, FileHelper.ExtensionToMimeType(ext)!);
+            if (url == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            return url;
+        }
     }
 }

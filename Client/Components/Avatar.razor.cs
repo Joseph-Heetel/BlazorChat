@@ -59,7 +59,7 @@ namespace BlazorChat.Client.Components
                     if (Params.User.Avatar != null && Params.User.Avatar.Id != _avatarId)
                     {
                         _avatarId = Params.User.Avatar.Id;
-                        _imageUrl = MediaResolver.GetAndSubscribe(Params.UserId, Params.User.Avatar, AvatarUrlChanged);
+                        _imageUrl = MediaResolver.GetAndSubscribe(Params.UserId, Params.User.Avatar, AvatarUrlChanged, true);
                     }
                     if (!string.IsNullOrEmpty(Params.User.Name))
                     {

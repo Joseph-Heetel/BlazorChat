@@ -29,13 +29,14 @@ builder.Services.AddCors();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSingleton<IIdGeneratorService, RandomIdGeneratorService>();
-builder.Services.AddTransient<ILoginDataService, LoginDataService>();
-builder.Services.AddTransient<IUserDataService, UserDataService>();
-builder.Services.AddTransient<IChannelDataService, ChannelDataService>();
-builder.Services.AddTransient<IMessageDataService, MessageDataService>();
-builder.Services.AddTransient<IFormDataService, FormDataService>();
+builder.Services.AddSingleton<ILoginDataService, LoginDataService>();
+builder.Services.AddSingleton<IUserDataService, UserDataService>();
+builder.Services.AddSingleton<IChannelDataService, ChannelDataService>();
+builder.Services.AddSingleton<IMessageDataService, MessageDataService>();
+builder.Services.AddSingleton<IFormDataService, FormDataService>();
 builder.Services.AddSingleton<ICallSupportService, CallSupportService>();
 builder.Services.AddSingleton<IDatabaseConnection, CosmosDatabaseConnection>();
+builder.Services.AddSingleton<IHubManager, HubManager>();
 
 #if ENABLE_ADMINAPI_AUTH
 builder.Services.AddSingleton<IAdminAuthService, BearerCompareAdminAuthService>();

@@ -12,12 +12,14 @@ namespace BlazorChat.Server.Controllers
     {
         private readonly ICallSupportService _callService;
         private readonly IChannelDataService _channelService;
+        private readonly IHubManager _hubManager;
 
 
-        public CallController(ICallSupportService callsupport, IChannelDataService channelService)
+        public CallController(ICallSupportService callsupport, IChannelDataService channelService, IHubManager hubManager)
         {
             _callService = callsupport;
             _channelService = channelService;
+            _hubManager = hubManager;
         }
 
         [Route("")]
@@ -75,7 +77,7 @@ namespace BlazorChat.Server.Controllers
                 return NotFound();
             }
 
-            var online = await ConnectionMap.Users.IsConnected(calleeId);
+            var online = await _hubManager.IsOnline(calleeId);
             if (!online)
             {
                 return NotFound("User offline!");

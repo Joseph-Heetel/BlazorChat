@@ -154,6 +154,7 @@ namespace BlazorChat.Client.Services
             _hubConnection.On(SignalRConstants.CALLS_PENDINGCALLSLISTCHANGED, () => Hub_PendingCallsListChanged());
             _hubConnection.On<ItemId, ItemId, NegotiationMessage>(SignalRConstants.CALL_NEGOTIATION, (cid, sid, msg) => Hub_CallsNegotiation(cid, sid, msg));
             _hubConnection.On<ItemId>(SignalRConstants.CALL_TERMINATED, (id) => Hub_CallTerminated(id));
+            _hubConnection.On(SignalRConstants.CLIENTKEEPALIVE, () => Hub_RespondKeepAlive());
 
             _hubConnection.Reconnecting += HubConnection_Reconnecting;
             _hubConnection.Reconnected += HubConnection_Reconnected;
@@ -162,6 +163,14 @@ namespace BlazorChat.Client.Services
             await _hubConnection.StartAsync();
             _connected.State = true;
 
+        }
+
+        private Task Hub_RespondKeepAlive()
+        {
+#if HUBDEBUGLOGGING
+            Console.WriteLine($"{SignalRConstants.CLIENTKEEPALIVE}");
+#endif
+            return _hubConnection?.InvokeAsync(SignalRConstants.HUBKEEPALIVE) ?? Task.CompletedTask;
         }
 
         private Task Hub_CallTerminated(ItemId callId)
