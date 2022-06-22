@@ -28,6 +28,10 @@ namespace BlazorChat.Client.Components
         private User? _selfUser = null;
         private UserViewParams _selfUserParams = default;
         private string _userName = "";
+        private string _oldPassword = "";
+        private string _newPassword = "";
+        private string _newPasswordRepeat = "";
+        private string _passwordError = "";
         private string _avatarUrl = "";
         private ItemId _avatarId = default;
         private string _process = "";
@@ -80,6 +84,55 @@ namespace BlazorChat.Client.Components
             this.StateHasChanged();
             await ChatApiService.UpdateUsername(_userName);
             _process = "";
+            this.StateHasChanged();
+        }
+
+        private void processPasswordFeedback()
+        {
+            string oldError = _passwordError;
+            _passwordError = "";
+            if (!string.IsNullOrEmpty(_oldPassword) && !string.IsNullOrEmpty(_newPassword) && !string.IsNullOrEmpty(_newPasswordRepeat))
+            {
+                if (_newPassword.Length < ChatConstants.PASSWORD_MIN)
+                {
+                    _passwordError = Loc["pedit_tooshort"];
+                }
+                else if (_newPassword != _newPasswordRepeat)
+                {
+                    _passwordError = Loc["pedit_nomatch"];
+                }
+            }
+            if (oldError != _passwordError)
+            {
+                Console.WriteLine(_passwordError);
+                this.StateHasChanged();
+            }
+        }
+
+        private async Task updatePassword()
+        {
+            if (string.IsNullOrEmpty(_oldPassword) || string.IsNullOrEmpty(_newPassword) || string.IsNullOrEmpty(_newPasswordRepeat))
+            {
+                return;
+            }
+            if (!string.IsNullOrEmpty(_passwordError))
+            {
+                return;
+            }
+            _process = "Updating Password ...";
+            this.StateHasChanged();
+            bool success = await ChatApiService.UpdatePassword(_oldPassword, _newPassword);
+            _process = "";
+            if (!success)
+            {
+                Snackbar.Add(Loc["pedit_pwfail"], Severity.Error);
+            }
+            else
+            {
+                _oldPassword = "";
+                _newPassword = "";
+                _newPasswordRepeat = "";
+            }
             this.StateHasChanged();
         }
 

@@ -5,38 +5,56 @@
 @inject IChatApiService ChatApiService
 @inject IMediaResolverService MediaService
 @inject IStringLocalizer<Pages.Chat> Loc
+@inject ISnackbar Snackbar
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo="Typo.h6">@(Loc["pedit_title"])
+        <MudText Typo="Typo.h6">
+            @(Loc["pedit_title"])
         </MudText>
-        <div class="flexspacer"/>
-            <UserView Params=@(_selfUserParams) />
     </TitleContent>
     <DialogContent>
-        <InputFile id="fileInput" OnChange="uploadAvatar" hidden accept=".jpg, .jpeg, .png, .pdf" />
-        @if (string.IsNullOrEmpty(_process))
-        {
-            <div class="row_container">
-                <MudTextField T=string Label="@(Loc["pedit_name"])" @bind-Text=@(_userName)></MudTextField>
-                <MudButton OnClick=@(updateUserName)>@(Loc["apply"])</MudButton>
-            </div>
-            <MudButton HtmlTag="label"
-                   Variant="Variant.Outlined"
-                   for="fileInput">
-                @if (!string.IsNullOrEmpty(_avatarUrl))
-                {
-                    <img class="avatarpreview" src=@(_avatarUrl) />
-                    <div class="flexspacer" />
-                }
-                <MudText>@(Loc["pedit_upload"])</MudText>
-            </MudButton>
-        }
-        else
-        {
-            <MudText>@(_process)</MudText>
-            <MudProgressCircular Indeterminate></MudProgressCircular>
-        }
+        <div class="content">
+            <InputFile id="fileInput" OnChange="uploadAvatar" hidden accept=".jpg, .jpeg, .png, .pdf" />
+            @if (string.IsNullOrEmpty(_process))
+            {
+                <MudText Style="margin-top: 2em">@(Loc["pedit_changename"])</MudText>
+                <div class="row_container">
+                    <MudTextField T=string Label="@(Loc["pedit_name"])" @bind-Text=@(_userName)></MudTextField>
+                    <MudButton OnClick=@(updateUserName)>@(Loc["apply"])</MudButton>
+                </div>
+                <MudText Style="margin-top: 2em">@(Loc["pedit_changepw"])</MudText>
+                <div class="content">
+                    <MudTextField T=string Label="@(Loc["pedit_oldpassword"])" InputType=@(InputType.Password) @bind-Text=@(_oldPassword)></MudTextField>
+                    <MudTextField T=string Label="@(Loc["pedit_newpassword"])" InputType=@(InputType.Password) @bind-Text=@(_newPassword) DebounceInterval=@(.2) OnDebounceIntervalElapsed=@(processPasswordFeedback)></MudTextField>
+                    <MudTextField T=string Label="@(Loc["pedit_newpassword"])" InputType=@(InputType.Password) @bind-Text=@(_newPasswordRepeat) DebounceInterval=@(.2) OnDebounceIntervalElapsed=@(processPasswordFeedback)></MudTextField>
+                    @if (string.IsNullOrEmpty(_passwordError))
+                    {
+                        <MudButton OnClick=@(updatePassword)>@(Loc["apply"])</MudButton>
+                    }
+                    else
+                    {
+                        <MudText Color=@(Color.Error)>@(_passwordError)</MudText>
+                    }
+                </div>
+                <MudText Style="margin-top: 2em">@(Loc["pedit_changeavatar"])</MudText>
+                <MudButton HtmlTag="label"
+                       Variant="Variant.Outlined"
+                       for="fileInput">
+                    @if (!string.IsNullOrEmpty(_avatarUrl))
+                    {
+                        <img class="avatarpreview" src=@(_avatarUrl) />
+                        <div class="flexspacer" />
+                    }
+                    <MudText>@(Loc["pedit_upload"])</MudText>
+                </MudButton>
+            }
+            else
+            {
+                <MudText>@(_process)</MudText>
+                <MudProgressCircular Indeterminate></MudProgressCircular>
+            }
+        </div>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick=@(exit)>@(Loc["close"])</MudButton>

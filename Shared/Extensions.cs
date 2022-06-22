@@ -64,5 +64,24 @@ namespace BlazorChat.Shared
             }
             return false;
         }
+        /// <summary>
+        /// Acquires the users user Id (which if present indicates that the user is authenticated)
+        /// </summary>
+        public static bool GetUserLogin(this ClaimsPrincipal principal, out ItemId userId, out string login)
+        {
+            userId = default;
+            login = "";
+            if (!(principal.Identity?.IsAuthenticated) ?? false)
+            {
+                return false;
+            }
+            string? userIdStr = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            login = principal.FindFirst(ClaimTypes.Email)?.Value ?? "";
+            if (ItemId.TryParse(userIdStr, out userId) && !string.IsNullOrEmpty(login))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

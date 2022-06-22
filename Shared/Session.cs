@@ -23,6 +23,12 @@ namespace BlazorChat.Shared
         public string Name { get; set; } = string.Empty;
     }
 
+    public class PasswordChangeRequest : LoginRequest
+    {
+        [JsonConverter(typeof(ByteArrayConverter))]
+        public ByteArray NewPasswordHash { get; set; } = default;
+    }
+
     /// <summary>
     /// Encodes information on a user session
     /// </summary>
@@ -36,12 +42,14 @@ namespace BlazorChat.Shared
             set => ExpiresTS = value.ToUnixTimeMilliseconds();
         }
         public User? User { get; set; }
+        public string Login { get; set; } = string.Empty;
 
         public Session() { }
         public Session(DateTimeOffset expires = default, User? user = default, string login = "")
         {
             Expires = expires;
             User = user;
+            Login = login;
         }
     }
 }

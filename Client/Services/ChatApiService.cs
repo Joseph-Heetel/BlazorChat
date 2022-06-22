@@ -96,6 +96,7 @@ namespace BlazorChat.Client.Services
         public Task<FileAttachment?> UploadFile(ItemId channelId, IBrowserFile file);
         public Task<bool> UploadAvatar(IBrowserFile file);
         public Task<bool> UpdateUsername(string username);
+        public Task<bool> UpdatePassword(string oldpassword, string newpassword);
         public Task<TemporaryURL?> GetTemporaryURL(ItemId channelId, FileAttachment attachment);
         /// <summary>
         /// Get a list of chatmessages
@@ -561,6 +562,22 @@ namespace BlazorChat.Client.Services
                 await _cacheService.UpdateItem(message);
             }
             return message;
+        }
+
+        public async Task<bool> UpdatePassword(string oldpassword, string newpassword)
+        {
+            if (_session.State == null)
+            {
+                return false;
+            }
+            PasswordChangeRequest changeRequest = new PasswordChangeRequest()
+            {
+                Login = _session.State.Login,
+                PasswordHash = new ByteArray(_hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(oldpassword))),
+                NewPasswordHash = new ByteArray(_hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(newpassword))),
+            };
+            var response = await getHttpClient().PostAsJsonAsync("api/session/changepassword", changeRequest);
+            return response.IsSuccessStatusCode;
         }
     }
 }

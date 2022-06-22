@@ -90,5 +90,23 @@ namespace BlazorChat.Server.Services
             result = await _usersTable.CreateItemAsync(user);
             return result.IsSuccess ? user.ToApiType() : null;
         }
+
+        public async Task<bool> UpdatePassword(string login, ByteArray newPasswordHash)
+        {
+            //var item = await this._dataArchService.Database.GetItem<LoginModel>(_dataArchService.LOGINS,login, _dataArchService.MakePartKeyHashed(_dataArchService.LOGINS, login));
+            var tableResult = await _loginsTable.GetItemAsync(login);
+            if (!tableResult.IsSuccess)
+            {
+                return false;
+            }
+            var model = tableResult.ResultAsserted;
+            model.Passwordhash = newPasswordHash;
+            if (!model.CheckWellFormed())
+            {
+                return false;
+            }
+            return (await _loginsTable.ReplaceItemAsync(model)).IsSuccess;
+
+        }
     }
 }

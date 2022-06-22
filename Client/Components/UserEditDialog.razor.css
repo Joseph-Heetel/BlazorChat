@@ -7,3 +7,8 @@
     min-height: 128px;
     max-height: 128px;
 }
+
+div.content {
+    display: flex;
+    flex-flow: column nowrap;
+}

@@ -16,12 +16,13 @@ namespace BlazorChat
 {
     public static class MiscExtensions { 
 
-        public static async Task<Session> SigninSession(this HttpContext context, TimeSpan? expireDelay, Shared.User user)
+        public static async Task<Session> SigninSession(this HttpContext context, TimeSpan? expireDelay, Shared.User user, string login)
         {
             // Create claim (UserId)
-            Claim claim = new Claim(ClaimTypes.NameIdentifier, user.Id.ToString());
+            Claim nameIdClaim = new Claim(ClaimTypes.NameIdentifier, user.Id.ToString());
+            Claim emailClaim = new Claim(ClaimTypes.Email, login);
             // Create claimsIdentity
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(new[] { claim }, "serverAuth");
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(new[] { nameIdClaim, emailClaim }, "serverAuth");
             // Create claimPrincipal
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             DateTimeOffset expires = DateTimeOffset.UtcNow + TimeSpan.FromHours(8);
@@ -33,7 +34,7 @@ namespace BlazorChat
                 expires = DateTimeOffset.UtcNow + expireDelay.Value;
             }
             await AuthenticationHttpContextExtensions.SignInAsync(context, claimsPrincipal, new AuthenticationProperties() { ExpiresUtc = expires });
-            return new Session(expires, user);
+            return new Session(expires, user, login);
         }
 
         /// <summary>

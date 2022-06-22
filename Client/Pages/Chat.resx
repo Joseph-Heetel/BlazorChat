@@ -219,11 +219,35 @@
   <data name="logout" xml:space="preserve">
     <value>Logout</value>
   </data>
+  <data name="pedit_changeavatar" xml:space="preserve">
+    <value>Avatar</value>
+  </data>
+  <data name="pedit_changename" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="pedit_changepw" xml:space="preserve">
+    <value>Password</value>
+  </data>
   <data name="pedit_name" xml:space="preserve">
-    <value>Edit Username</value>
+    <value>New Username</value>
+  </data>
+  <data name="pedit_newpassword" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="pedit_nomatch" xml:space="preserve">
+    <value>Passwords don't match!</value>
+  </data>
+  <data name="pedit_oldpassword" xml:space="preserve">
+    <value>Old Password</value>
+  </data>
+  <data name="pedit_pwfail" xml:space="preserve">
+    <value>Failed to update password!</value>
   </data>
   <data name="pedit_title" xml:space="preserve">
     <value>Edit Your Profile</value>
+  </data>
+  <data name="pedit_tooshort" xml:space="preserve">
+    <value>New password is too short!</value>
   </data>
   <data name="pedit_upload" xml:space="preserve">
     <value>Upload Avatar</value>

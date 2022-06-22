@@ -28,7 +28,7 @@ namespace BlazorChat.Server.Controllers
         public async Task<ActionResult<Session>> GetSession()
         {
             // check authorization, get user Id
-            if (!User.GetUserLogin(out ItemId userId))
+            if (!User.GetUserLogin(out ItemId userId, out string login))
             {
                 return Unauthorized();
             }
@@ -48,7 +48,7 @@ namespace BlazorChat.Server.Controllers
                 expires = state.Properties.ExpiresUtc.Value;
             }
 
-            return new Session(expires, user);
+            return new Session(expires, user, login);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace BlazorChat.Server.Controllers
         public async Task<ActionResult<Session>> RefreshSession()
         {
             // check authorization, get user Id
-            if (!User.GetUserLogin(out ItemId userId))
+            if (!User.GetUserLogin(out ItemId userId, out string login))
             {
                 return Unauthorized();
             }
@@ -73,7 +73,7 @@ namespace BlazorChat.Server.Controllers
             }
 
             // Renew session
-            return await HttpContext.SigninSession(null, user);
+            return await HttpContext.SigninSession(null, user, login);
         }
 
         /// <summary>
@@ -99,7 +99,31 @@ namespace BlazorChat.Server.Controllers
             }
 
             // Generate session
-            return await HttpContext.SigninSession(request.ExpireDelay, user);
+            return await HttpContext.SigninSession(request.ExpireDelay, user, request.Login);
+        }
+
+        [Route("changepassword")]
+        [HttpPost]
+        public async Task<ActionResult> ChangePassword(PasswordChangeRequest request)
+        {
+            // check authorization, get user Id
+            if (!User.GetUserLogin(out ItemId userId))
+            {
+                return Unauthorized();
+            }
+
+            var loginTest = await _loginService.TestLoginPassword(request.Login, request.PasswordHash);
+            if (loginTest != userId)
+            {
+                return Unauthorized("Login or Password are incorrect.");
+            }
+
+            if (!await _loginService.UpdatePassword(request.Login, request.NewPasswordHash))
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            return Ok();
         }
 
         /// <summary>
