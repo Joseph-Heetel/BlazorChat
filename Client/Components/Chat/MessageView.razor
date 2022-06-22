@@ -15,16 +15,16 @@
     <MudCard Elevation=1 Style="width:fit-content; min-width: 18em; max-width: 70%" Class=@(_cardClass)>
         <MudCardHeader>
             <CardHeaderContent>
-                <div class="row_container" style="align-content: stretch">
-                    <MudText Typo=@(Typo.caption) Style="flex: 0 1 100%">@(_timedisplay)</MudText>
-                    @if (Params.TotalCount > 0)
+                <div class="row_container" style="align-content: stretch; gap: 0.3em">
+                    @if (Params.TotalCount == Params.ReadCount)
                     {
-                        <MudText Typo=@(Typo.caption) Style="flex: 0 1 100%; text-align: right">@(Loc["read_by"]) @(Params.ReadCount) / @(Params.TotalCount)</MudText>
+                        <MudIcon Icon=@(Icons.Filled.DoneAll) Size=@(Size.Small)/>
                     }
+                    <MudText Typo=@(Typo.caption) Style="flex: 0 1 100%">@(_timedisplay)</MudText>
                 </div>
             </CardHeaderContent>
             <CardHeaderActions>
-                @if(_text.Length > 0)
+                @if(_text.Length > 0 && Params.Message.AuthorId != Params.SelfUserId)
                 {
                     <MudIconButton Icon=@(Icons.Filled.Translate) OnClick=@(translate) />
                 }

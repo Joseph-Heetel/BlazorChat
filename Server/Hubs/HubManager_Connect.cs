@@ -25,7 +25,6 @@ namespace BlazorChat.Server.Hubs
             using (var lockDisposable = await _onlineUsersSemaphore.WaitAsyncDisposable())
             {
                 wasOnlineBefore = !_onlineUsers.Add(userId);
-                _logger.LogWarning($"{connectionId} {wasOnlineBefore}");
             }
 
             List<Task> tasks = new List<Task>();
