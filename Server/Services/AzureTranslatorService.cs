@@ -85,7 +85,6 @@ namespace BlazorChat.Server.Services
             {
                 return null;
             }
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
             TranslateResponseContainer[]? responseContainers = await response.Content.ReadFromJsonAsync<TranslateResponseContainer[]>();
             TranslateResponseContainer? responseContainer = responseContainers?.FirstOrDefault();
             if (responseContainer == null || responseContainer.Translations == null || responseContainer.Translations.Length == 0)

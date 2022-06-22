@@ -25,7 +25,8 @@ namespace BlazorChat.Server.Hubs
         /// <summary>
         /// Maps ConnectionIds to Groups
         /// </summary>
-        /// <remarks>ConnectionId <-> Group is a N..N association. This list is dominantly accessed with the intent to read/write to it.</remarks>
+        /// <remarks>ConnectionId <-> Group is a N..N association. This list is dominantly accessed with the intent to read/write to it.
+        /// TODO: Consider double Dictionary instead</remarks>
         private readonly List<GroupAssociation> _groupAssociations = new List<GroupAssociation>();
 
         private readonly SemaphoreSlim _userAssociationsSemaphore = new SemaphoreSlim(1);
@@ -33,6 +34,7 @@ namespace BlazorChat.Server.Hubs
         /// Maps ConnectionIds to UserIds
         /// </summary>
         private readonly Dictionary<string, ItemId> _userAssociations = new Dictionary<string, ItemId>();
+        
         private readonly SemaphoreSlim _onlineUsersSemaphore = new SemaphoreSlim(1);
         /// <summary>
         /// Contains any online user
@@ -45,6 +47,9 @@ namespace BlazorChat.Server.Hubs
         /// <summary>
         /// Lazily accesses channel data service. Circumvents circular service dependency.
         /// </summary>
+        /// <remarks>No satisfying way here to resolve the circular dependency:
+        /// This service requires ChannelDataService to determine which groups a new connection needs to be added to.
+        /// ChannelDataService requires this service to manage groups whenever a user is added/removed from a channel.</remarks>
         private IChannelDataService _channelService
         {
             get
