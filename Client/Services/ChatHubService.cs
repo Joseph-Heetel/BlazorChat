@@ -144,7 +144,7 @@ namespace BlazorChat.Client.Services
                 .Build();
 
             _hubConnection.On<Message>(SignalRConstants.MESSAGE_INCOMING, (msg) => Hub_MessageIncoming(msg));
-            _hubConnection.On<Message>(SignalRConstants.MESSAGE_INCOMING, (msg) => Hub_MessageUpdated(msg));
+            _hubConnection.On<Message>(SignalRConstants.MESSAGE_UPDATED, (msg) => Hub_MessageUpdated(msg));
             _hubConnection.On<ItemId, ItemId>(SignalRConstants.MESSAGE_DELETED, (cid, mid) => Hub_MessageDeleted(cid, mid));
             _hubConnection.On(SignalRConstants.CHANNEL_LISTCHANGED, () => Hub_ChannelListChanged());
             _hubConnection.On<ItemId>(SignalRConstants.CHANNEL_UPDATED, (id) => Hub_ChannelUpdated(id));
