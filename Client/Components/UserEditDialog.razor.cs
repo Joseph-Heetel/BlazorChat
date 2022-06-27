@@ -104,7 +104,6 @@ namespace BlazorChat.Client.Components
             }
             if (oldError != _passwordError)
             {
-                Console.WriteLine(_passwordError);
                 this.StateHasChanged();
             }
         }

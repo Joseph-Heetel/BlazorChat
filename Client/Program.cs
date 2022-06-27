@@ -27,6 +27,7 @@ builder.Services.AddSingleton<IMediaResolverService, MediaResolverService>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<ILocalCacheService, LocalCacheService>();
 builder.Services.AddSingleton<IThemeService, ThemeService>();
+builder.Services.AddScoped<IDialogCloseService, DialogCloseService>();
 builder.Services.AddOptions();
 builder.Services.AddHttpClient();
 builder.Services.AddMudServices(config =>

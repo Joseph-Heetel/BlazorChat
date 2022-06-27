@@ -672,7 +672,6 @@ namespace BlazorChat.Client.Services
         {
             var calls = await _apiService.GetCalls();
             this._pendingCalls.State = calls;
-            Console.WriteLine(JsonSerializer.Serialize(_pendingCalls.State));
         }
 
 

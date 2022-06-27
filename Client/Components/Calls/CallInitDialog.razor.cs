@@ -112,6 +112,7 @@ namespace BlazorChat.Client.Components.Calls
         {
             if (MudDialog != null)
             {
+                DialogCloseHelper.CloseAll();
                 MudDialog.Close();
             }
             if (PendingCall == null)
@@ -131,6 +132,7 @@ namespace BlazorChat.Client.Components.Calls
         {
             if (MudDialog != null)
             {
+                DialogCloseHelper.CloseAll();
                 MudDialog.Close();
             }
             if (PendingCall != null)
