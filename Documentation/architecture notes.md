@@ -96,5 +96,7 @@ The order of operations in endpoint implementations always follows the same prin
 1. Return a result
 
 If any of the above fail the implementation immediately quits execution of the endpoint and returns an appropriate code. This approach minimizes area of attack and defers more expensive tasks as long as possible.
+## Translation
+See dedicated [translation notes file](./translation.md)
 ## SignalR
 See dedicated [SignalR notes file](./signalr.md)
