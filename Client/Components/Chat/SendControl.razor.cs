@@ -100,6 +100,26 @@ namespace BlazorChat.Client.Components.Chat
 #pragma warning disable CA1826 // Do not use Enumerable methods on indexable collections
             _file = e.GetMultipleFiles().FirstOrDefault();
 #pragma warning restore CA1826 // Do not use Enumerable methods on indexable collections
+            if (_file != null)
+            {
+                bool valid = true;
+                if (_file.Size > ChatConstants.MAX_FILE_SIZE)
+                {
+                    string message = string.Format(Loc["send_file_toobig"], FileHelper.MakeHumanReadableFileSize(ChatConstants.MAX_FILE_SIZE));
+                    _Snackbar.Add(message, Severity.Error);
+                    valid = false;
+                }
+                if (!FileHelper.IsValidMimeType(_file.ContentType))
+                {
+                    string message = string.Format(Loc["send_file_invalidtype"], _file.ContentType);
+                    _Snackbar.Add(message, Severity.Error);
+                    valid = false;
+                }
+                if (!valid)
+                {
+                    _file = null;
+                }
+            }
             this.StateHasChanged();
         }
 

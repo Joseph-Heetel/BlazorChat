@@ -300,6 +300,12 @@
   <data name="send_file_fail" xml:space="preserve">
     <value>Hochladen der Datei fehlgeschlagen!</value>
   </data>
+  <data name="send_file_invalidtype" xml:space="preserve">
+    <value>Dateiinhalt "{}" wird nicht unterstützt!</value>
+  </data>
+  <data name="send_file_toobig" xml:space="preserve">
+    <value>Datei ist zu groß! Maximal zulässige Größe ist {}!</value>
+  </data>
   <data name="send_message_fail" xml:space="preserve">
     <value>Versenden der Nachricht fehlgeschlagen!</value>
   </data>

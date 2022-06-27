@@ -300,6 +300,12 @@
   <data name="send_file_fail" xml:space="preserve">
     <value>Failed to upload file!</value>
   </data>
+  <data name="send_file_invalidtype" xml:space="preserve">
+    <value>Content type "{}" is not supported!</value>
+  </data>
+  <data name="send_file_toobig" xml:space="preserve">
+    <value>File too large! Maximum allowed size is {}!</value>
+  </data>
   <data name="send_message_fail" xml:space="preserve">
     <value>Failed to send message!</value>
   </data>
