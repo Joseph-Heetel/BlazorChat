@@ -1,5 +1,5 @@
-# Forms
-* Hierarchical definition of values
+# Customizable Forms
+* Hierarchical definition of input values
 * Inputs can be of various types
     * Numbers
     * Strings
@@ -11,7 +11,7 @@
 * AdminApi can attach requests targeted at a single user to messages
 * AdminApi can access and filter responses recorded
 
-# JSON Schema
+## JSON Schema
 [JSON Schema](https://json-schema.org/) was chosen as the format for defining both the layout and the validation of forms. This is by no means a new idea, similar implementations exist for angular and other UI frameworks. 
 
 <details>
@@ -102,7 +102,7 @@
 
 </details>
 
-# Intended Usage
+## Usage Procedures
 
 * Setup
     1. If not already on the server, AdminApi is used to upload the form schema
@@ -118,7 +118,7 @@
     1. The AdminApi is used to collect the response(s) filtered by request or form
     1. A generic json schema validator and/or custom tools are used to perform validation of the recorded answers
 
-# Client Side Schema Visualization
+## Client Side Schema Visualization
 
 See `Client/Components/Forms` folder
 

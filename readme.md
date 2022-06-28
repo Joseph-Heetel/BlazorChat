@@ -83,7 +83,6 @@ These are encapsulated such that replacing with alternatives should be relativel
 
 - Client
     - [State Management](Documentation/clientstates.md)
-    - [Components](Documentation/components.md)
     - [JS Interop and Infinite List](Documentation/jsinterop.md)
     - [WebRTC Implementation](Documentation/webrtc.md)
     - [Clientside Caching](Documentation/clientsidecaching.md)

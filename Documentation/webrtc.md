@@ -18,7 +18,7 @@ WebRTC is a highlevel api which allows managing a realtime connection between tw
     
     Set local/remote descriptions and Forward negotiation messages. [Useful Guide on the topic](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Perfect_negotiation).
 
-    Negotiation messages are delivered between peers via SignalR hubs.
+    Negotiation messages are transmitted between peers via the servers SignalR hub.
 ## Issues
 * Whenever the browser Api is invoked from JS interop, promise rejections or other exceptions are not guaranteed to end up in the browser console (unlike .NET WASM exceptions). As a solution browser Api calls are wrapped in try catch blocks.
 * There are instances where a browser api calls simply never return. As a solution calls to the browser api are raced against 1 second timeout.
@@ -28,3 +28,9 @@ WebRTC is a highlevel api which allows managing a realtime connection between tw
     * Changes to the Sdp string will, depending on the clients browser work, cause irrecoverable errors or are simply reset.
 
     As a consequence it is a big challenge to determine wether an incoming video stream is a camera or a screen capture. The final "solution" for this implementation was to just not label incoming streams in the UI.
+
+## STUN/TURN
+
+A [STUN](https://en.wikipedia.org/wiki/STUN) server is required for clients to discover their public Ip. Plenty of free services exist, such as `stun:stun.l.google.com:19302`. 
+
+A [TURN](https://en.wikipedia.org/wiki/Traversal_Using_Relays_around_NAT) server is required for NAT traversal. For testing a free service such as [Viagenie NUMB](https://numb.viagenie.ca/) can be used, but for production a dedicated solution needs to be setup (for example [coturn](https://github.com/coturn/coturn)). Right now TURN credentials are fixed environment variables and therefor shipped as effectively plain text as part of the client application. In a production environment, temporary credentials should be generated dynamically and provided to the client only as needed.

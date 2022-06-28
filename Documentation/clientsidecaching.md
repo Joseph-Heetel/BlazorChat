@@ -1,3 +1,4 @@
+# Client Side Caching
 As an effort to improve application launch performance, a client side cache using local storage was implemented. See `Client/Services/LocalCacheService.cs`.
 
 * The cache stores users, channels, messages

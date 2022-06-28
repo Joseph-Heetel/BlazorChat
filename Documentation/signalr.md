@@ -9,7 +9,7 @@ In the context of a chat application there are multiple such states which can ch
 
 All notification events used in this implementation are listed in `Shared/SignalRConstants.cs`
 
-# SignalR
+## SignalR
 Microsofts SignalR SDK is the chosen implementation for this, originally selected for:
 * Automatic transport negotiation
 * Highly configurable Server/Client architecture

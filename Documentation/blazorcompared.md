@@ -7,3 +7,4 @@ This article tries to compare implementing single page web apps with Blazor WASM
 * Much larger transfer sizes (most language features for Javascript are built into browsers, vs having to transfer .NET libraries for Blazor WASM)
 * Pretty much no native support for Browser Api features
 * Not as widely adopted (Less documentation, tutorials, reference implementations, libraries, ...)
+* Debugging of client side code does not work reliably

@@ -13,7 +13,7 @@ Principles
 * File name and extension are controlled by the server
 * Access to files requires authentication and access to the domain the file is bound to (enforced via temporary link generation)
 
-# File Uploading Procedures
+## File Uploading Procedures
 1. Client (see `Client/Components/Chat/SendControl.razor`)
     * Use Blazors InputFile component to scope input to valid types
     * On select: Validate file content type and size
@@ -49,7 +49,7 @@ and [OWASP](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Up
     * The file content is not being scanned for malicious content. Controlling file name and extension mitigates many vectors, but still allows exploiting **vulnerabilities in outdated client-side software**
     * The file upload endpoint is very expensive to process server side, making it ideal for **denial of service attacks** (can be mitigated somewhat by implementing rate limiting)
 
-# File Access
+## File Access
 Generally, files managed by the chat service are provided to users only temporarily:
 * Reduces chance of content escaping the control of chat services. Simply copying url is not sufficient, a separate copy needs to be shared via other services to share files to destinations outside of the chat service.
 * Significantly reduces viability of abusing the chat services upload feature as permanent file storage
