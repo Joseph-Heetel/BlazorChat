@@ -12,7 +12,7 @@
 * AdminApi can access and filter responses recorded
 
 ## JSON Schema
-[JSON Schema](https://json-schema.org/) was chosen as the format for defining both the layout and the validation of forms. This is by no means a new idea, similar implementations exist for angular and other UI frameworks. 
+[JSON Schema](https://json-schema.org/) was chosen as the format for defining both the layout and the validation of forms. This is not a new idea, similar implementations exist for angular and other UI frameworks. 
 
 <details>
 <summary>Here is an example of how it can be configured</summary>
@@ -105,7 +105,7 @@
 ## Usage Procedures
 
 * Setup
-    1. If not already on the server, AdminApi is used to upload the form schema
+    1. If not already in the database, AdminApi is used to upload the form schema
     1. AdminApi is used to send a new message into a relevant channel (create if necessary)
     1. AdminApi is used to configure and attach a form request to the message
     1. The users client is notified that the message has been updated

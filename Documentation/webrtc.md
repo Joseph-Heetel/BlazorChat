@@ -21,11 +21,11 @@ WebRTC is a highlevel api which allows managing a realtime connection between tw
     Negotiation messages are transmitted between peers via the servers SignalR hub.
 ## Issues
 * Whenever the browser Api is invoked from JS interop, promise rejections or other exceptions are not guaranteed to end up in the browser console (unlike .NET WASM exceptions). As a solution browser Api calls are wrapped in try catch blocks.
-* There are instances where a browser api calls simply never return. As a solution calls to the browser api are raced against 1 second timeout.
+* There are instances where a browser api call simply never returns. As a solution calls to the browser api are raced against a 1 second timeout.
 * RTCPeerConnection doesn't begin negotiating if there is no payload (track or datachannel) attached. A solution is to attach a datachannel by default (wether its actually used or not)
 * There is no way of marking streams attached to a RTCPeerConnection
     * Stream Ids, Track Ids, Track labels sometimes are preserved, sometimes are not depending on the clients browser.
-    * Changes to the Sdp string will, depending on the clients browser work, cause irrecoverable errors or are simply reset.
+    * Changes to the Sdp string work with some browsers, but on other browsers they cause irrecoverable errors or are simply removed.
 
     As a consequence it is a big challenge to determine wether an incoming video stream is a camera or a screen capture. The final "solution" for this implementation was to just not label incoming streams in the UI.
 

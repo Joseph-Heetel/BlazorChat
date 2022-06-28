@@ -12,4 +12,4 @@ The cache implementation is quite simplistic and has some drawbacks and shortcut
 
 * Once a maximum of entries is reached, the earliest touched items are discarded first (quite a simple caching mode)
 * After the initial setup the cache is not used to accelerate anything
-* The cache does not allow reducing the network traffic needed between server and client, as there is no way of determining the delta between cached state and actual state without transmitting the full data.
+* The cache does not allow reducing the network traffic needed between server and client, as there is no way of determining the delta between cached state and server state without transmitting the full data.

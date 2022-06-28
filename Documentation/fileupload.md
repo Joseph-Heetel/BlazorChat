@@ -30,7 +30,7 @@ Principles
     * Create/get container
     * Upload file with automatically generated file name:
         
-        `{fileId}.{ext}` where `fileId` is the internal randomly generated Id and `ext` is the extension selected with the content mime type
+        `{fileId}.{ext}` where `fileId` is the internal randomly generated Id and `ext` is the extension selected in accordance with the content mime type
 
 ## Security implications
 
@@ -45,9 +45,9 @@ and [OWASP](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Up
     These prevent attackers from uploading files which could be (accidently) executed on another clients machine.
 * No server-local storage of files prevents attacks requiring a file in the servers file system
 * Non-exhaustive list of **remaining vulnerabilities**:
-    * File content is processed in **server memory**. This effectively allows any user to upload any data to the servers memory with little restrictions. Given modern security in .NET applications this being exploitable is unlikely, but never impossible.
-    * The file content is not being scanned for malicious content. Controlling file name and extension mitigates many vectors, but still allows exploiting **vulnerabilities in outdated client-side software**
-    * The file upload endpoint is very expensive to process server side, making it ideal for **denial of service attacks** (can be mitigated somewhat by implementing rate limiting)
+    * File content is processed in server memory. This effectively allows any user to **upload any data to the servers memory** with little restrictions. Given modern security in .NET applications this being exploitable is unlikely, but can never be assumed impossible.
+    * The file content is not being scanned for malicious content. Controlling file name and extension mitigates many vectors, but it's still possible to exploit **vulnerabilities in outdated client-side software**
+    * The file upload endpoint is very expensive to process server side, making it ideal for **denial of service attacks** (could be mitigated by implementing rate limiting)
 
 ## File Access
 Generally, files managed by the chat service are provided to users only temporarily:

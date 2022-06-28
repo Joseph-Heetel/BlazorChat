@@ -9,4 +9,4 @@ Ideally translations would be saved alongside the originals, and users given som
 * A list of languages that the user is comfortable with
 * How messages detected as an "uncomfortable" language should be handled: Auto translate or translate on user request.
 
-This way costly use of third party translation services is minimized, and users can tailor their experience in a way which minimizes friction for their usecases.
+This way costly use of third party translation services is minimized, and users can tailor their experience in a way which minimizes friction for their use.
