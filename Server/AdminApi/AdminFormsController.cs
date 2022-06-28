@@ -53,6 +53,19 @@ namespace BlazorChat.Server.AdminApi
         }
 
         [Route("")]
+        [HttpGet]
+        public async Task<ActionResult<JsonNode[]>> GetForms()
+        {
+            // check authorization
+            if (!await _adminAuthService.ValidateBearer(Request))
+            {
+                return Unauthorized();
+            }
+
+            return await _formService.GetForms();
+        }
+
+        [Route("")]
         [HttpPost]
         public async Task<ActionResult<string>> CreateForm()
         {

@@ -17,6 +17,7 @@ namespace BlazorChat.Server.Services
         public Task<FormResponse[]> GetResponses();
         public Task<FormResponse[]> GetRequestResponses(ItemId requestId);
         public Task<FormResponse[]> GetFormResponses(ItemId formId);
+        public Task<JsonNode[]> GetForms();
     }
 
     public class FormDataService : IFormDataService
@@ -164,6 +165,26 @@ namespace BlazorChat.Server.Services
                 return Array.Empty<FormResponse>();
             }
             return queryResponse.ResultAsserted.Select(model => model.ToApiType()).ToArray();
+        }
+
+        public async Task<JsonNode[]> GetForms()
+        {
+            var queryResponse = await _formsTable.QueryItemsAsync();
+            List<JsonNode> forms = new List<JsonNode>();
+            if (queryResponse.IsSuccess)
+            {
+                foreach (var formResponseEntry in queryResponse.ResultAsserted)
+                {
+                    if (formResponseEntry.Form == null)
+                    {
+                        continue;
+                    }
+                    JsonNode form = formResponseEntry.Form;
+                    form["id"] = formResponseEntry.Id.ToString();
+                    forms.Add(form);
+                }
+            }
+            return forms.ToArray();
         }
     }
 }
