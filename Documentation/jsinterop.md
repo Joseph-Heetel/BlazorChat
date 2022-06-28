@@ -1,3 +1,18 @@
+# JS Interop in Blazor WASM
+Modern browser expose much of their functionality to frontend code via the Javascript Browser Api. Blazor unfortunately does a pretty bad job at providing these tools to WASM code. As a bandaid solution you are expected to provide the bridge to these tools yourself, via [Blazors JS Interop feature](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interoperability/?view=aspnetcore-6.0).
+
+## General Implementation Notes
+Whenever WASM calls to Javascript it can find Javascript objects by addressing objects attached to javascripts static window/global object. A script needs to attach objects/functions to the window object in order for WASM -> JS calls to function.
+
+If calls from JS to WASM are required, then the JS side requires a handle to the WASM object (`DotNet.DotNetObject` type in Typescript, `DotNetObjectReference<TValue>` in .NET). Ideally the first call from WASM to JS includes this reference.
+
+Whenever a .NET function calls a Javascript function or vice versa, the parameters are first serialized to JSON (using the default serializers for the respective language) and then parsed again in the other language. The same process is applied to a functions return value. This allows passing complex types, just make sure both implementations match and are (de-)serialized in an expected manner.
+
+Exceptions thrown in JS functions usually are logged to the console (but sometimes not, especially if these exceptions occur in other modules or the browser api).
+
+Microsofts Build Tools for Typescript ([Microsoft.TypeScript.MSBuild](https://www.nuget.org/packages/Microsoft.TypeScript.MSBuild/)) is usable for smaller implementations, but for large typescript codebases you would want to consider setting up a javascript package manager with typescript compiler and webpack to compact the scripts.
+
+## Infinite List
 An infinite list is a data structure which displays a large data set in smaller sections. Unlike a paged list however it seemlessly loads in adjacent sections to the currently shown sections as the user scrolls. 
 
 In the context of a chat application this is needed for messages:
@@ -6,14 +21,7 @@ In the context of a chat application this is needed for messages:
 * A paginated user interface would break the flow of conversation
 * The user is unlikely to be interested in the entire chat message history at once
 
-# Implementation
-## General
-Whenever WASM calls to Javascript it can find Javascript objects by addressing objects attached to javascripts static window/global object. A script needs to attach objects/functions to the window object in order for WASM -> JS calls to function.
-
-If calls from JS to WASM are required, then the JS side requires a handle to the WASM object (`DotNet.DotNetObject` type in Typescript, `DotNetObjectReference<TValue>` in .NET). Ideally the first call from WASM to JS includes this reference.
-
-Whenever a .NET function calls a Javascript function or vice versa, the parameters are first serialized to JSON (using the default serializers for the respective language) and then parsed again in the other language. The same process is applied to a functions return value. This allows passing complex types, just make sure both implementations match and are (de-)serialized in an expected manner.
-## Infinite List
+### Implementation Notes
 The implementation needs to be able to determine the scroll position of the user interface. 
 Blazor WASM native solutions do not work:
 * No way of knowing the scroll offset of an element
