@@ -99,7 +99,6 @@ namespace BlazorChat.Client.Components.Chat
                 await JS.InvokeVoidAsync(
                     "makeNewInfiniteListHelper",
                     _observerInteropId,
-                    "listElement",
                     "topMarker",
                     "bottomMarker",
                     _objectReference,
@@ -131,14 +130,6 @@ namespace BlazorChat.Client.Components.Chat
             _ = Task.Run(OnBottomVisible.InvokeAsync);
         }
 
-        /// <summary>
-        /// Call to the JS side to scroll the message block to a specific fraction of its scrollable size
-        /// </summary>
-        public async Task ScrollTo(float value)
-        {
-            await JS.InvokeVoidAsync(_observerInteropId + ".scrollTo", value);
-        }
-        
         /// <summary>
         /// Call to the JS side to scroll an element into view
         /// </summary>

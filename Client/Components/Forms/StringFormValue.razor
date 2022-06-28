@@ -2,6 +2,9 @@
 @using System.Text.RegularExpressions
 @inherits FormValueBase<string?>
 
+@* This component displays input controls for a text form value *@
+
+
 @if (_paramsValid)
 {
     <MudTextField T=string @bind-Text=_value

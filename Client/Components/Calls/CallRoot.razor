@@ -5,6 +5,8 @@
 @inject IChatStateService State
 @inject IStringLocalizer<Pages.Chat> Loc
 
+@* This component provides the maincontent layout for call mode *@
+
 <MudLayout Class="restrictheight">
     <MudAppBar ToolBarClass="row_container gap">
         <MudIconButton Variant=@(Variant.Filled) Icon=@(Icons.Filled.Settings) OnClick=@(toggleVideoControls) />

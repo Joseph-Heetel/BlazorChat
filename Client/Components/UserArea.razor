@@ -5,6 +5,9 @@
 @inject ISnackbar SnackbarService
 @inject IStringLocalizer<Pages.Chat> Loc
 
+@* This component displays the logged in user and a toggleable menu with a 
+   logout button, a display mode toggle and access to the profile edit dialog *@
+
 <div class="bottomtoolbar">
     @if (_showOptions)
     {

@@ -6,10 +6,7 @@ using System.Text.RegularExpressions;
 namespace BlazorChat.Client.Components.Forms
 {
     // https://github.com/dotnet/runtime/issues/64472
-    // TL;DR: Json Nodes suck, because they're strongly typed internally (which does not function well with Json, which is not strongly typed)
-    // This makes it impossible to reliably get a value representation via Node.GetValue<>(). Therefore we work with .ToJsonString().
-    // 
-    // That is not very efficient, but it works
+    // TL;DR: Json Nodes suck. It is important with numbers specifically that a node value is always accessed as the same type (even tho Json itself does not differentiate)
 
     /// <summary>
     /// Represents a constraint which can be used to validate a json node

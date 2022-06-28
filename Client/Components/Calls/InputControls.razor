@@ -2,6 +2,8 @@
 @inject ICallService _calls
 @inject IStringLocalizer<Pages.Chat> Loc
 
+@* Component displaying controls for video and audio transmit *@
+
 <!-- Video -->
 <MudCard Class="column_container smallpadgap darkenedcard" Style="flex: 0 0 content">
     @if (_canTransmitVideo)

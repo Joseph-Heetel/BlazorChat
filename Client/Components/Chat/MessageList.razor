@@ -2,6 +2,9 @@
 @inject Services.IChatStateService ChatState
 @inject IJSRuntime JS
 
+@* This component renders the list currently of currently loaded messages and provides the javascript interop
+   for infinite list functionality *@
+
 <div class="messagelist_container maxflex" style="overflow-y: auto; padding-top: 0px" id="listElement">
     <div id="topMarker" style="flex: 0 0 1px" />
     @foreach (var message in _messages)

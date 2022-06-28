@@ -6,6 +6,9 @@
 @inject IChatApiService Api
 @inject IStringLocalizer<Pages.Chat> Loc
 
+@* This component renders a button which allows user to launch the form submit dialog.
+   If the user can not launch this dialog it displays a reason instead. *@
+
 <MudButton OnClick=@(displayDialog) Disabled=_buttonDisabled>@(_buttonText)</MudButton>
 @code {
     [Parameter]

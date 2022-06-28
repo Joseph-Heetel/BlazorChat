@@ -7,6 +7,8 @@
 @inject IDialogService _dialogService
 @inject IStringLocalizer<Pages.Chat> Loc
 
+@* This component displays a single message *@
+
 <div class="messagecontainer @(_alignRight ? "alignright" : "alignleft")" id=@(Params.Message.Id)>
     @if (Params.ShowAuthor)
     {

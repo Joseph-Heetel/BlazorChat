@@ -2,6 +2,8 @@
 @using System.Text.RegularExpressions
 @inherits FormValueBase<string?>
 
+@* This component displays input controls for an enum form value (a list of options to choose from) *@
+
 @if (_paramsValid)
 {
     <MudSelect T=string @bind-Value=@(_value)

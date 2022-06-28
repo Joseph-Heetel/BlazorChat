@@ -5,8 +5,12 @@
 @using System.Text
 @inject Services.IChatApiService ChatApiService
 @inject Services.ICallService CallService
-@inject ISnackbar Snackbar;
+@inject ISnackbar Snackbar
+
+@* Injected to make sure dialogs that may need closing can be collected from application start *@
 @inject Services.IDialogCloseService DialogCloseService
+
+@* This component shows the login form if not authorized, and hosts the chat/call interface otherwise *@
 
 <AuthorizeView>
     <Authorized>

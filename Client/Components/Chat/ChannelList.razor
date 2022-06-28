@@ -1,12 +1,15 @@
 ﻿@using BlazorChat.Shared
 
+@* This component displays a list of all channels the user has access to. 
+   It highlights the currently viewed channel and channels with unread messages. *@
+
 <MudList Clickable="true" @bind-SelectedValue="Selected" Class="maxflex">
     @foreach (var channel in _channelsSorted.Values)
     {
         <MudListItem Value=@(channel.Id)>
             @if (channel.Id == Params.CurrentChannelId)
             {
-                <!-- Currently selected channel -->
+                @* Currently selected channel *@
                 <div class="listitem">
                     <MudIcon Icon=@(Icons.Filled.Chat)></MudIcon>
                     <MudText Class="mud-text-primary" Typo=@(Typo.body1)>@(channel.Name)</MudText>

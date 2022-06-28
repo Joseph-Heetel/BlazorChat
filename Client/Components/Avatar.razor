@@ -1,6 +1,8 @@
 ﻿@using BlazorChat.Client.Services
 @inject IMediaResolverService MediaResolver
 
+@* This component displays a users avatar (Text initials fallback or image) *@
+
 <div style=@(Style) class="container @(_size)">
     @if (!string.IsNullOrEmpty(_imageUrl))
     {

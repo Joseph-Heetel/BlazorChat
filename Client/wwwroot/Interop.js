@@ -9,23 +9,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 // This class describes objects used for intersection observing and scroll control
 class InfiniteListHelper {
-    constructor(scrollEl, topEl, bottomEl, dnetobj, callbackTopInView, callbackBottomInView) {
-        this.scrollEl = scrollEl;
+    constructor(topEl, bottomEl, dnetobj, callbackTopInView, callbackBottomInView) {
         this.topEl = topEl;
         this.bottomEl = bottomEl;
         this.dnetobj = dnetobj;
         this.callbackTopInView = callbackTopInView !== null && callbackTopInView !== void 0 ? callbackTopInView : "JS_TopInView";
         this.callbackBottomInView = callbackBottomInView !== null && callbackBottomInView !== void 0 ? callbackBottomInView : "JS_BottomInView";
-        this.observer = new IntersectionObserver((entries) => this.onIntersect(entries), {
-            root: this.scrollEl
-        });
-        this.observer.observe(this.topEl);
-        this.observer.observe(this.bottomEl);
+        // Configure observer
+        this.observer = new IntersectionObserver((entries) => this.onIntersect(entries) // Setup callback with lambda capturing this object
+        );
+        this.observer.observe(this.topEl); // Observe top
+        this.observer.observe(this.bottomEl); // Observe bottom
+        // Update .NET side on the current state
         this.initialReport();
     }
     initialReport() {
         return this.onIntersect(this.observer.takeRecords());
     }
+    // Intersect callback for IntersectionObserver
     onIntersect(entries) {
         return __awaiter(this, void 0, void 0, function* () {
             for (const entry of entries) {
@@ -40,22 +41,21 @@ class InfiniteListHelper {
             }
         });
     }
-    scrollTo(percentage) {
-        let y = (this.scrollEl.scrollHeight - this.scrollEl.clientHeight) * percentage;
-        this.scrollEl.scrollTo(0, y);
-    }
+    // Scrolls element marked by id into view
     scrollIntoView(id) {
         const el = document.getElementById(id);
         el === null || el === void 0 ? void 0 : el.scrollIntoView(true);
         return Boolean(el !== undefined);
     }
+    // Cleanup resources (would leak memory if not done)
     dispose() {
         this.observer.disconnect();
         this.observer = null;
     }
 }
-function MakeNewInfiniteListHelper(id, scrollElId, topElId, bottomElId, dnetobj, callbackTopInView, callbackBottomInView) {
-    var obj = new InfiniteListHelper(document.getElementById(scrollElId), document.getElementById(topElId), document.getElementById(bottomElId), dnetobj, callbackTopInView, callbackBottomInView);
+// Attaches a new InfiniteListHelper object to global/window with key id
+function MakeNewInfiniteListHelper(id, topElId, bottomElId, dnetobj, callbackTopInView, callbackBottomInView) {
+    var obj = new InfiniteListHelper(document.getElementById(topElId), document.getElementById(bottomElId), dnetobj, callbackTopInView, callbackBottomInView);
     globalThis[id] = obj;
 }
 window.makeNewInfiniteListHelper = MakeNewInfiniteListHelper;

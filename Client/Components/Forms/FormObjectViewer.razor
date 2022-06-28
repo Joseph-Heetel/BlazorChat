@@ -1,4 +1,6 @@
-﻿@if (Schema != null)
+﻿@* This component shows a toggleable view of all children of a form object *@
+
+@if (Schema != null)
 {
     <MudTooltip Text=@(Schema.Description)>
         @if (DisplayAlways)

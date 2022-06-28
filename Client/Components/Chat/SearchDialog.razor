@@ -4,6 +4,8 @@
 @inject Services.IChatApiService ChatApiService
 @inject IStringLocalizer<Pages.Chat> Loc
 
+@* This dialog component allows searching and filtering messages *@
+
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">@(string.Format(Loc["search_title"], _currentChannel.Name))</MudText>

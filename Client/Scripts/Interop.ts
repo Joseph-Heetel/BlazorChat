@@ -1,9 +1,10 @@
-﻿import { DotNet } from "./definitions/@microsoft/dotnet-js-interop"
+﻿// Definition files for DotNet Interop
+import { DotNet } from "./definitions/@microsoft/dotnet-js-interop"
 
+/// Interface to consistently access objects attached to the window handle
 interface IWindowExtensions {
     makeNewInfiniteListHelper?: (
         id: string,
-        scrollElId: string,
         topElId: string,
         bottomElId: string,
         dnetobj: DotNet.DotNetObject,
@@ -18,35 +19,43 @@ interface IWindowExtensions {
 
 // This class describes objects used for intersection observing and scroll control
 class InfiniteListHelper {
+    // Intersection Observer (configured to observe both top and bottom elements)
     private observer: IntersectionObserver | null;
+    // The element with overflow enabled which can be scrolled
     private scrollEl: HTMLElement;
+    // The topmost element within the scrolling element
     private topEl: HTMLElement;
+    // The bottom element within the scrolling element
     private bottomEl: HTMLElement;
+    // Link back to the dotnet component listening to callbacks
     private dnetobj: DotNet.DotNetObject;
+    // Method name of .NET WASM callback invoked when the top element intersects the viewport
     private callbackTopInView: string;
+    // Method nameof .NET WASM callback invoked when the bottom element intersects the viewport
     private callbackBottomInView: string;
 
     constructor(
-        scrollEl: HTMLElement,
         topEl: HTMLElement,
         bottomEl: HTMLElement,
         dnetobj: DotNet.DotNetObject,
         callbackTopInView?: string,
         callbackBottomInView?: string,
     ) {
-        this.scrollEl = scrollEl;
         this.topEl = topEl;
         this.bottomEl = bottomEl;
         this.dnetobj = dnetobj
         this.callbackTopInView = callbackTopInView ?? "JS_TopInView";
         this.callbackBottomInView = callbackBottomInView ?? "JS_BottomInView";
 
-        this.observer = new IntersectionObserver((entries) => this.onIntersect(entries), {
-            root: this.scrollEl
-        });
-        this.observer.observe(this.topEl);
-        this.observer.observe(this.bottomEl);
+        // Configure observer
 
+        this.observer = new IntersectionObserver(
+            (entries) => this.onIntersect(entries) // Setup callback with lambda capturing this object
+        );
+        this.observer.observe(this.topEl); // Observe top
+        this.observer.observe(this.bottomEl); // Observe bottom
+
+        // Update .NET side on the current state
         this.initialReport();
     }
 
@@ -54,6 +63,7 @@ class InfiniteListHelper {
         return this.onIntersect(this.observer.takeRecords());
     }
 
+    // Intersect callback for IntersectionObserver
     private async onIntersect(entries: IntersectionObserverEntry[]): Promise<void> {
         for (const entry of entries) {
             if (entry.isIntersecting) {
@@ -67,26 +77,23 @@ class InfiniteListHelper {
         }
     }
 
-    public scrollTo(percentage: number) {
-        let y = (this.scrollEl.scrollHeight - this.scrollEl.clientHeight) * percentage;
-        this.scrollEl.scrollTo(0, y);
-    }
-
+    // Scrolls element marked by id into view
     public scrollIntoView(id: string): boolean {
         const el = document.getElementById(id);
         el?.scrollIntoView(true);
         return Boolean(el !== undefined);
     }
 
+    // Cleanup resources (would leak memory if not done)
     public dispose(): void {
         this.observer.disconnect();
         this.observer = null;
     }
 }
 
+// Attaches a new InfiniteListHelper object to global/window with key id
 function MakeNewInfiniteListHelper(
     id: string,
-    scrollElId: string,
     topElId: string,
     bottomElId: string,
     dnetobj: DotNet.DotNetObject,
@@ -94,7 +101,6 @@ function MakeNewInfiniteListHelper(
     callbackBottomInView?: string,
 ): void {
     var obj = new InfiniteListHelper(
-        document.getElementById(scrollElId),
         document.getElementById(topElId),
         document.getElementById(bottomElId),
         dnetobj,

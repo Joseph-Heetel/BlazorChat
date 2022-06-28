@@ -3,6 +3,8 @@
 @inject Services.ICallService CallService
 @inject IDialogService _dialogService
 
+@* This component displays a list of channel participants *@
+
 <div class="userlistcontainer">
     @foreach (var participant in _participantsSorted.Values)
     {
