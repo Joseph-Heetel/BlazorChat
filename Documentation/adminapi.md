@@ -4,7 +4,7 @@ It is an integral part of the chat application motivation that a custom implemen
 
 ## Api Reference
 * You can use the Swagger Api viewer to browse the admin api endpoints. Build and launch the chat application, open your browser at [https://localhost:7196](https://localhost:7196) and click `Swagger Ui Api Viewer` on the index page
-* You can use [Postman](https://www.postman.com/) and import the [preconfigured collection file]() for example use of endpoints
+* You can use [Postman](https://www.postman.com/) and import the [preconfigured collection file](./AdminApi.postman_collection.json) for example use of endpoints
 
 ## Authorization
 The Admin Api demonstrates an example authorization scheme using a bearer token (requires environment variables, see [setup.md](./setup.md))

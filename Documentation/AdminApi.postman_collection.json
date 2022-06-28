@@ -1,0 +1,397 @@
+{
+	"info": {
+		"_postman_id": "260ad24e-1e14-42e8-b6e4-66b6511d6f23",
+		"name": "Admin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Channels",
+			"item": [
+				{
+					"name": "Get channel list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/channels",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"channels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get specific channel",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/channels/{channelid}",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"channels",
+								"{channelid}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add channel member",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/channels/{channelid}/members/{userid}",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"channels",
+								"{channelid}",
+								"members",
+								"{userid}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove channel member",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/channels/{channelid}/members/{userid}",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"channels",
+								"{channelid}",
+								"members",
+								"{userid}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete channel",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/channels/{channelid}",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"channels",
+								"{channelid}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create channel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Name\": \"My Channel Name\",\r\n    \"UserIds\": [\r\n        \"userid1\",\r\n        \"userid2\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseAddress}}/admin/channels/create",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"channels",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post system message",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Name\": \"Test Channel\",\r\n    \"UserIds\": [\r\n        \"1a893266bd9c65a8\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseAddress}}/admin/channels/{channelid}/systemmessage?body=This+is+a+message+sent+from+the+admin+api%21",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"channels",
+								"{channelid}",
+								"systemmessage"
+							],
+							"query": [
+								{
+									"key": "body",
+									"value": "This+is+a+message+sent+from+the+admin+api%21"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "api/users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/users",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/users/{id}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/users/{userid}",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{userid}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/users/create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/users/create?name=My+User+Name&login=myuserlogin&password=mypassword",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"create"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "My+User+Name"
+								},
+								{
+									"key": "login",
+									"value": "myuserlogin"
+								},
+								{
+									"key": "password",
+									"value": "mypassword"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Forms",
+			"item": [
+				{
+					"name": "Create Form",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Forms Demonstrator\",\r\n    \"properties\": {\r\n        \"stringval\": {\r\n            \"title\": \"String Values\",\r\n            \"properties\": {\r\n                \"lengths\": {\r\n                    \"title\": \"Length Constrained\",\r\n                    \"description\": \"Maximum and minimum length\",\r\n                    \"type\": \"string\",\r\n                    \"minLength\": 3,\r\n                    \"maxLength\": 8\r\n                },\r\n                \"regexpattern\": {\r\n                    \"title\": \"Pattern Constrained\",\r\n                    \"description\": \"IP adresses match this regex\",\r\n                    \"type\": \"string\",\r\n                    \"pattern\": \"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$\"\r\n                }\r\n            }\r\n        },\r\n        \"numbers\": {\r\n            \"title\": \"Number Values\",\r\n            \"properties\": {\r\n                \"integer\": {\r\n                    \"title\": \"Integer\",\r\n                    \"description\": \"Allows only integers to be entered\",\r\n                    \"type\": \"integer\"\r\n                },\r\n                \"minMax\": {\r\n                    \"title\": \"Minima / Maxima\",\r\n                    \"description\": \"Inclusive and exlusive maxima can be set\",\r\n                    \"minimum\": -0.5,\r\n                    \"exclusiveMaximum\": 0.78\r\n                },\r\n                \"multi\": {\r\n                    \"title\": \"Multiple Of\",\r\n                    \"description\": \"Allows only positive multiples of a certain number\",\r\n                    \"multipleOf\": 0.3\r\n                }\r\n            }\r\n        },\r\n        \"selectors\":{\r\n            \"title\": \"Selectors and Toggles\",\r\n            \"properties\":{\r\n                \"toggle\":{\r\n                    \"title\": \"Toggle (boolean)\",\r\n                    \"description\": \"Just a toggle\",\r\n                    \"type\":\"boolean\"\r\n                },\r\n                \"optionaltoggle\":{\r\n                    \"title\": \"Toggle (Optional boolean)\",\r\n                    \"description\": \"Just a toggle\",\r\n                    \"type\": [\"boolean\", \"null\"]\r\n                },\r\n                \"enum\":{\r\n                    \"title\":\"Dropdown Selector\",\r\n                    \"enum\": [\"Option 1\", \"Option 2\", \"Option 3\"]\r\n                }\r\n            }\r\n        },\r\n        \"requireds\":{\r\n            \"title\": \"Required versus optional fields\",\r\n            \"properties\": {\r\n                \"optional\": {\r\n                    \"title\": \"Optional Field\",\r\n                    \"type\": [\"string\", \"null\"]\r\n                },\r\n                \"required\":{\r\n                    \"title\": \"Required Field\",\r\n                    \"type\": \"string\"\r\n                }\r\n            },\r\n            \"required\": [\"required\"]\r\n        }\r\n    },\r\n    \"required\": [\"requireds\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseAddress}}/admin/forms",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"forms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Form",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/forms/",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"forms",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"FormId\":\"{formid}\",\r\n    \"RecipientId\":\"{recipientid}\",\r\n    \"ExpiresTS\": 3000000000000,\r\n    \"MessageId\": \"{messageid}\",\r\n    \"ChannelId\": \"{channelid}\",\r\n    \"AllowMultiple\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseAddress}}/admin/forms/request",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"forms",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Responses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/forms/responses",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"forms",
+								"responses"
+							],
+							"query": [
+								{
+									"key": "requestIdstr",
+									"value": "{requestid}",
+									"disabled": true
+								},
+								{
+									"key": "formIdstr",
+									"value": "{formid}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{mytoken}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BaseAddress",
+			"value": "https://localhost:7196/api",
+			"type": "default"
+		}
+	]
+}
