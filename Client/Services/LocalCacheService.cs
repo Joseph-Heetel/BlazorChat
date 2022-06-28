@@ -42,16 +42,6 @@ namespace BlazorChat.Client.Services
 
         public ValueTask<IReadOnlyCollection<User>> CachedUsers => this.Users.GetAll();
 
-        public ValueTask<Result<Channel>> CachedChannel(ItemId channelId)
-        {
-            return Channels.Get(channelId);
-        }
-
-        public ValueTask<Result<Message>> CachedMessage(ItemId messageId)
-        {
-            return Messages.Get(messageId);
-        }
-
         public async ValueTask<IReadOnlyCollection<Message>> CachedMessages(ItemId channelId)
         {
             var allMessages = await Messages.GetAll();
@@ -64,11 +54,6 @@ namespace BlazorChat.Client.Services
                 }
             }
             return filtered;
-        }
-
-        public ValueTask<Result<User>> CachedUser(ItemId userId)
-        {
-            return Users.Get(userId);
         }
 
         public async ValueTask UpdateItem(Channel channel)
@@ -112,23 +97,25 @@ namespace BlazorChat.Client.Services
 
         public async Task Maintain(Channel[] channels)
         {
-            var channelDict = new HashSet<ItemId>();
+            // Check if some channels in the cache are no longer available
+            var knownChannels = new HashSet<ItemId>();
             foreach (var channel in channels)
             {
-                channelDict.Add(channel.Id);
+                knownChannels.Add(channel.Id);
             }
             var channelsToRemove = new List<Channel>();
             {
                 var cachedChannels = await CachedChannels;
                 foreach (var channel in cachedChannels)
                 {
-                    if (!channelDict.Contains(channel.Id))
+                    if (!knownChannels.Contains(channel.Id))
                     {
                         channelsToRemove.Add(channel);
                     }
                 }
             }
 
+            // Remove no longer valid channels from cache
             foreach (var channel in channelsToRemove)
             {
                 var messages = await CachedMessages(channel.Id);

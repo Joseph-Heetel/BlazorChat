@@ -3,8 +3,14 @@ using MudBlazor;
 
 namespace BlazorChat.Client.Services
 {
+    /// <summary>
+    /// A custom service for closing all open mudblazor dialogs (Since MudBlazor does not expose the option)
+    /// </summary>
     public interface IDialogCloseService
     {
+        /// <summary>
+        /// Closes all open dialogs
+        /// </summary>
         void CloseAll();
     }
 
@@ -13,6 +19,9 @@ namespace BlazorChat.Client.Services
         private readonly MudBlazor.IDialogService _dialogService;
         private bool _disposed = false;
 
+        /// <summary>
+        /// Collection of all open dialogs
+        /// </summary>
         private static readonly IDictionary<Guid, IDialogReference> _dialogs = new Dictionary<Guid, IDialogReference>();
 
         public DialogCloseService(MudBlazor.IDialogService dialogService)

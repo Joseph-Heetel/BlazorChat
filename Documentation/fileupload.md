@@ -45,9 +45,9 @@ and [OWASP](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Up
     These prevent attackers from uploading files which could be (accidently) executed on another clients machine.
 * No server-local storage of files prevents attacks requiring a file in the servers file system
 * Non-exhaustive list of **remaining vulnerabilities**:
-    * File content is processed in **server memory**. Given modern security in .NET applications this being exploitable is unlikely, but never impossible.
-    * The file content is not being scanned for malicious content. Controlling file name and extension mitigates many vectors, but still allows exploiting **vulnerabilities in client-side software**
-    * The file upload endpoint is very expensive to process server side, making it ideal for **denial of service attacks**
+    * File content is processed in **server memory**. This effectively allows any user to upload any data to the servers memory with little restrictions. Given modern security in .NET applications this being exploitable is unlikely, but never impossible.
+    * The file content is not being scanned for malicious content. Controlling file name and extension mitigates many vectors, but still allows exploiting **vulnerabilities in outdated client-side software**
+    * The file upload endpoint is very expensive to process server side, making it ideal for **denial of service attacks** (can be mitigated somewhat by implementing rate limiting)
 
 # File Access
 Generally, files managed by the chat service are provided to users only temporarily:
