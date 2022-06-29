@@ -20,19 +20,17 @@
             <InputFile id="fileInput" OnChange="uploadAvatar" hidden accept=".jpg, .jpeg, .png, .pdf" />
             @if (string.IsNullOrEmpty(_process))
             {
-                <MudText Style="margin-top: 2em">@(Loc["pedit_changename"])</MudText>
-                <div class="row_container">
-                    <MudTextField T=string Label="@(Loc["pedit_name"])" @bind-Text=@(_userName)></MudTextField>
-                    <MudButton OnClick=@(updateUserName)>@(Loc["apply"])</MudButton>
-                </div>
-                <MudText Style="margin-top: 2em">@(Loc["pedit_changepw"])</MudText>
                 <div class="content">
+                    <MudText Style="margin-top: 2em">@(Loc["pedit_changename"])</MudText>
+                    <MudTextField T=string Label="@(Loc["pedit_name"])" @bind-Text=@(_userName)></MudTextField>
+                    <MudButton Disabled=@(_userName == (_selfUser?.Name ?? "")) OnClick=@(updateUserName)>@(Loc["pedit_applyname"])</MudButton>
+                    <MudText Style="margin-top: 2em">@(Loc["pedit_changepw"])</MudText>
                     <MudTextField T=string Label="@(Loc["pedit_oldpassword"])" InputType=@(InputType.Password) @bind-Text=@(_oldPassword)></MudTextField>
                     <MudTextField T=string Label="@(Loc["pedit_newpassword"])" InputType=@(InputType.Password) @bind-Text=@(_newPassword) DebounceInterval=@(.2) OnDebounceIntervalElapsed=@(processPasswordFeedback)></MudTextField>
                     <MudTextField T=string Label="@(Loc["pedit_newpassword"])" InputType=@(InputType.Password) @bind-Text=@(_newPasswordRepeat) DebounceInterval=@(.2) OnDebounceIntervalElapsed=@(processPasswordFeedback)></MudTextField>
                     @if (string.IsNullOrEmpty(_passwordError))
                     {
-                        <MudButton OnClick=@(updatePassword)>@(Loc["apply"])</MudButton>
+                        <MudButton Disabled=@(string.IsNullOrEmpty(_oldPassword + _newPassword + _newPasswordRepeat)) OnClick=@(updatePassword)>@(Loc["pedit_applypw"])</MudButton>
                     }
                     else
                     {

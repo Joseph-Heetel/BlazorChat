@@ -80,7 +80,7 @@ namespace BlazorChat.Client.Components
             {
                 return;
             }
-            _process = "Updating Username ...";
+            _process = Loc["pedit_nameprocess"];
             this.StateHasChanged();
             await ChatApiService.UpdateUsername(_userName);
             _process = "";
@@ -118,7 +118,7 @@ namespace BlazorChat.Client.Components
             {
                 return;
             }
-            _process = "Updating Password ...";
+            _process = Loc["pedit_pwprocess"];
             this.StateHasChanged();
             bool success = await ChatApiService.UpdatePassword(_oldPassword, _newPassword);
             _process = "";
@@ -142,15 +142,21 @@ namespace BlazorChat.Client.Components
                 return;
             }
             IBrowserFile file = args.File;
+            string? errormsg = null;
+            if (file.Size > ChatConstants.MAX_AVATAR_SIZE)
+            {
+                errormsg = string.Format(Loc["send_file_toobig", FileHelper.MakeHumanReadableFileSize(ChatConstants.MAX_AVATAR_SIZE)]);
+            }
             if (!FileHelper.IsValidMimeType(file.ContentType) || !FileHelper.IsImageMime(file.ContentType))
             {
-                return;
+                errormsg = string.Format(Loc["send_file_invalidtype"], file.ContentType);
             }
-            if (file.Size > ChatConstants.MAX_FILE_SIZE)
+            if (errormsg != null)
             {
+                Snackbar.Add(errormsg, Severity.Error);
                 return;
             }
-            _process = "Uploading Avatar ...";
+            _process = Loc["pedit_uploadprocess"];
             this.StateHasChanged();
             await ChatApiService.UploadAvatar(file);
             _process = "";

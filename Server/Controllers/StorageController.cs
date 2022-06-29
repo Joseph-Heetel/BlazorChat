@@ -127,9 +127,8 @@ namespace BlazorChat.Server.Controllers
             }
 
             // Only one avatar is supposed to be uploaded at one time, so we just delete all files
-            // associated with the user. This operation is expected to fail if the user
-            // didn't have an avatar uploaded before, so we don't check the result.
-            await _storageService.DeleteContainer(userId);
+            // associated with the user.
+            await _storageService.ClearContainer(userId);
 
             var fileId = await _storageService.UploadFile(userId, new FileUploadInfo() { Data = mem.ToArray(), MimeType = mimetype });
             if (fileId.IsZero)

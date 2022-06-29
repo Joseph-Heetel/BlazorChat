@@ -10,16 +10,18 @@ namespace BlazorChat.Server.AdminApi
     [ApiController]
     public class AdminUserController : ControllerBase
     {
-        public AdminUserController(IUserDataService userdata, ILoginDataService login, IAdminAuthService auth)
+        public AdminUserController(IUserDataService userdata, ILoginDataService login, IAdminAuthService auth, IServiceProvider serviceProvider)
         {
             _userService = userdata;
             _loginService = login;
             _adminAuthService = auth;
+            _storageService = serviceProvider.GetService<IStorageService>();
         }
 
         private readonly IUserDataService _userService;
         private readonly ILoginDataService _loginService;
         private readonly IAdminAuthService _adminAuthService;
+        private readonly IStorageService? _storageService;
 
         [Route("")]
         [HttpGet]
@@ -94,7 +96,16 @@ namespace BlazorChat.Server.AdminApi
             {
                 return BadRequest();
             }
-            // TODO: Proper user deletion
+
+            // Replaces the user with a deleted item
+            
+            if (_storageService != null)
+            {
+                // Deleting the users storage container removes the avatar
+                await _storageService.DeleteContainer(userId);
+                // Unset avatar reference
+                await _userService.UpdateAvatar(userId, null);
+            }
             return await _userService.UpdateUserName(userId, "Deleted User") ? Ok() : NotFound();
         }
 

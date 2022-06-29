@@ -9,6 +9,7 @@ namespace BlazorChat.Server.Services
     public interface IStorageService
     {
         public Task<bool> DeleteContainer(ItemId domainId);
+        public Task ClearContainer(ItemId domainId);
         public Task<ItemId> UploadFile(ItemId domainId, FileUploadInfo file);
         public Task<TemporaryURL?> GetTemporaryFileURL(ItemId channelId, ItemId fileId, string mimeType);
     }
@@ -86,6 +87,21 @@ namespace BlazorChat.Server.Services
                 Url = uri.ToString(),
                 Expires = expires
             };
+        }
+
+        public async Task ClearContainer(ItemId domainId)
+        {
+            Debug.Assert(_blobServiceClient != null);
+            var client = _blobServiceClient.GetBlobContainerClient(domainId.ToString());
+            if (!await client.ExistsAsync())
+            {
+                return;
+            }
+            var page = client.GetBlobsAsync(BlobTraits.All, BlobStates.None);
+            await foreach (var item in page)
+            {
+                await client.DeleteBlobAsync(item.Name);
+            }
         }
     }
 }

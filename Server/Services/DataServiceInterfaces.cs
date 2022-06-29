@@ -51,7 +51,7 @@ namespace BlazorChat.Server.Services
         /// Updates the avatar of the user identified by userId
         /// </summary>
         /// <returns>True, if operation succeeds</returns>
-        public Task<bool> UpdateAvatar(ItemId userId, FileAttachment fileAttachment);
+        public Task<bool> UpdateAvatar(ItemId userId, FileAttachment? fileAttachment);
     }
 
     public interface IChannelDataService

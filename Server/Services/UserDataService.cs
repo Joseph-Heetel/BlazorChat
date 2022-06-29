@@ -117,15 +117,18 @@ namespace BlazorChat.Server.Services
             return replaceResult.IsSuccess;
         }
 
-        public async Task<bool> UpdateAvatar(ItemId userId, FileAttachment fileAttachment)
+        public async Task<bool> UpdateAvatar(ItemId userId, FileAttachment? fileAttachment)
         {
             string userIdstr = userId.ToString();
 
-            MediaModel mediaModel = MediaModel.FromApiType(fileAttachment);
-
-            if (!mediaModel.CheckWellFormed())
+            MediaModel? mediaModel = null;
+            if (fileAttachment != null)
             {
-                return false;
+                mediaModel = MediaModel.FromApiType(fileAttachment);
+                if (!mediaModel.CheckWellFormed())
+                {
+                    return false;
+                }
             }
 
             // Get user data

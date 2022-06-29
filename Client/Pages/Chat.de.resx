@@ -219,6 +219,12 @@
   <data name="logout" xml:space="preserve">
     <value>Abmelden</value>
   </data>
+  <data name="pedit_applyname" xml:space="preserve">
+    <value>Name ändern</value>
+  </data>
+  <data name="pedit_applypw" xml:space="preserve">
+    <value>Passwort ändern</value>
+  </data>
   <data name="pedit_changeavatar" xml:space="preserve">
     <value>Avatar</value>
   </data>
@@ -230,6 +236,9 @@
   </data>
   <data name="pedit_name" xml:space="preserve">
     <value>Neuer Name</value>
+  </data>
+  <data name="pedit_nameprocess" xml:space="preserve">
+    <value>Name wird geändert</value>
   </data>
   <data name="pedit_newpassword" xml:space="preserve">
     <value>Neues Passwort</value>
@@ -243,6 +252,9 @@
   <data name="pedit_pwfail" xml:space="preserve">
     <value>Fehler beim Ändern des Passworts!</value>
   </data>
+  <data name="pedit_pwprocess" xml:space="preserve">
+    <value>Passwort wird geändert</value>
+  </data>
   <data name="pedit_title" xml:space="preserve">
     <value>Profil Bearbeiten</value>
   </data>
@@ -251,6 +263,9 @@
   </data>
   <data name="pedit_upload" xml:space="preserve">
     <value>Avatar hochladen</value>
+  </data>
+  <data name="pedit_uploadprocess" xml:space="preserve">
+    <value>Avatar wird hochgeladen</value>
   </data>
   <data name="pview_inchannel" xml:space="preserve">
     <value>In Kanal</value>
