@@ -60,8 +60,8 @@ namespace BlazorChat.Client.Components.Calls
         private Device[] _videoInputs = Array.Empty<Device>();
         private Device[] _audioInputs = Array.Empty<Device>();
 
-        private string _cancelString = "Cancel";
-        private string _acceptString = "Call";
+        private string _cancelString = "";
+        private string _acceptString = "";
         private string _errorMessage = "";
 
         protected override void OnInitialized()

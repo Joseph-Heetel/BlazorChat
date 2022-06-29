@@ -132,11 +132,6 @@ interface TransmitState {
     capture: boolean;
 }
 
-interface RemoteTrack {
-    track: MediaStreamTrack,
-    stream: MediaStream
-}
-
 interface Device {
     id: string;
     label: string;
@@ -281,7 +276,6 @@ class RtcManager {
     private remoteVideo0Track: MediaTrack | null = null;
     private remoteVideo1Track: MediaTrack | null = null;
     private dnetobj: DotNet.DotNetObject | null = null;
-    private userId: string | null = null;
     private role: SignalingRole = "unassigned";
 
     private localUserMediaStream: MediaStream | null = null;
@@ -289,13 +283,11 @@ class RtcManager {
     private datachannel: RTCDataChannel | null = null;
     private makingOffer: boolean = false;
     private remoteTransmitState: TransmitState | null = null;
-    private remoteTracks: RemoteTrack[] = new Array<RemoteTrack>();
     private iceServers: RTCIceServer[] = new Array<RTCIceServer>();
 
     // Setup pre call
-    public async init(dnetobj: DotNet.DotNetObject, userid: string, videoDeviceId?: string, audioDeviceId?: string, iceServers?: RTCIceServer[]) {
+    public async init(dnetobj: DotNet.DotNetObject, videoDeviceId?: string, audioDeviceId?: string, iceServers?: RTCIceServer[]) {
         this.dnetobj = dnetobj;
-        this.userId = userid;
 
         // configure constraints to select video/audio device
         let constraints: MediaStreamConstraints | null;
@@ -586,9 +578,11 @@ class RtcManager {
         };
         let result: string | null = null;
         try {
+            // Get capture track
             const stream = await navigator.mediaDevices.getDisplayMedia(constraints);
             const track = stream.getVideoTracks()[0];
             if (track) {
+                // Attach capture track
                 this.localCaptureTrack = new LocalTrack("capture", { id: track.id, label: track.label }, track, stream);
                 this.localCaptureTrack.connection = this.connection;
                 this.setElements(null);
@@ -767,17 +761,6 @@ async function wrapCallWithTimeout(thisArg: any, call: any, ...args: any[]): Pro
     }
 }
 
-// Wraps any function allowing successful catching of rejection. Very useful for debugging use of Web API
-async function wrapCall(thisArg: any, call: any, ...args: any[]): Promise<any> {
-    try {
-        return await call.apply(thisArg, args);
-    }
-    catch (e) {
-        console.error("Call threw exception!", e, call, args);
-        throw e;
-    }
-}
-
 (window as IWindowExtensions).webRtcHelper = new RtcManager();
 
 // Queries mediaDevices
@@ -788,6 +771,8 @@ async function queryDevices(): Promise<DeviceQuery> {
         audioDevices: new Array<Device>()
     };
     if (!(window as IWindowExtensions).hasRequestedUserMedia) {
+
+        // Need to request access before being able to enumerate media devices
         const constraints: MediaStreamConstraints = {
             audio: true,
             video: true
@@ -821,7 +806,6 @@ async function queryDevices(): Promise<DeviceQuery> {
             }
         } return result;
     }
-
 
     for (const device of devices) {
         if (device.kind === 'audioinput') {

@@ -561,6 +561,7 @@ namespace BlazorChat.Client.Services
 
         private Task ChatHub_OnMessageReadUpdate(ItemId channelId, ItemId userId, long timestamp)
         {
+            // find application, update timestamp, notify any channel watchers
             Channel channel = _channelCache.State[channelId];
             Participation? participation = channel.Participants.FirstOrDefault(item => item.Id == userId);
             if (participation != null)
@@ -575,10 +576,12 @@ namespace BlazorChat.Client.Services
         {
             if (_currentChannel.State?.Id == message.ChannelId)
             {
+                // channel is loaded, add it to the list and scroll to it
                 await integrateMessages(new Message[] { message }, true);
                 await SetHighlightedMessage(message.ChannelId, message.Id);
                 if (message.AuthorId != _apiService.SelfUser.State!.Id)
                 {
+                    // Mark the message as read
                     _ = Task.Run(async () =>
                     {
                         await _apiService.UpdateReadHorizon(message.ChannelId, message.Created);
@@ -587,6 +590,7 @@ namespace BlazorChat.Client.Services
             }
             else
             {
+                // Notify channel cache watchers that there is a channel with unread messages
                 _channelCache.State[message.ChannelId].HasUnread = true;
                 _channelCache.TriggerChange();
             }
@@ -596,6 +600,7 @@ namespace BlazorChat.Client.Services
         {
             if (_currentChannel.State?.Id == arg.ChannelId && _loadedMessagesIds.Contains(arg.Id))
             {
+                // Message is loaded, so do replace the previous version of it
                 return integrateMessages(new Message[] { arg }, true, true);
             }
             return Task.CompletedTask;
@@ -608,6 +613,7 @@ namespace BlazorChat.Client.Services
                 Message? message = _loadedMessagesSorted.Values.FirstOrDefault(msg => msg.Id == messageId);
                 if (message != null)
                 {
+                    // Message was indeed loaded, remove it from the list
                     _loadedMessagesSorted.Remove(message.CreatedTS);
                     _loadedMessagesIds.Remove(messageId);
                     _loadedMessages.TriggerChange(new List<Message>(_loadedMessagesSorted.Values));
@@ -646,6 +652,7 @@ namespace BlazorChat.Client.Services
             var user = await _apiService.GetUser(userId);
             if (user != null)
             {
+                // replace the user
                 _userCache.State[user.Id] = user;
                 _userCache.TriggerChange();
             }

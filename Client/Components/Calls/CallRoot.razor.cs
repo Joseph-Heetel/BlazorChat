@@ -23,7 +23,7 @@ using BlazorChat.Client.Services;
 
 namespace BlazorChat.Client.Components.Calls
 {
-    public partial class CallRoot
+    public partial class CallRoot : IDisposable
     {
         private ECallState _state;
 
@@ -123,6 +123,14 @@ namespace BlazorChat.Client.Components.Calls
         private async Task hangup()
         {
             await Calls.TerminateCall();
+        }
+
+        public void Dispose()
+        {
+            Calls.Status.StateChanged -= Status_StateChanged;
+            Calls.RemotePeerId.StateChanged -= RemotePeerId_StateChanged;
+            Calls.RemoteTransmitState.StateChanged -= RemoteTransmitState_StateChanged;
+            Api.SelfUser.StateChanged -= SelfUser_StateChanged;
         }
     }
 }

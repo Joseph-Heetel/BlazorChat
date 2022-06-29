@@ -35,6 +35,7 @@ namespace BlazorChat.Client.Services
             }
             if (tempUrl == null)
             {
+                // No ok server response for temporary url request: retry after 30 seconds
                 Expires = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(30);
                 return false;
             }

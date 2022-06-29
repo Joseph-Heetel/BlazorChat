@@ -190,7 +190,6 @@ namespace BlazorChat.Client.Services
             await _jsRuntime.InvokeVoidAsync(
                     "webRtcHelper.init",
                     dnetObjRef,
-                    _apiService.SelfUser.State!.Id.ToString(),
                     videoDevice.State?.Id ?? null,
                     audioDevice.State?.Id ?? null,
                     iceConfigs
