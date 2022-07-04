@@ -20,7 +20,6 @@ WebRTC is a highlevel api which allows managing a realtime connection between tw
 
     Negotiation messages are transmitted between peers via the servers SignalR hub.
 
-    ![WebRTC session init diagram](./rtc-session-init.svg)
 ## Issues
 * Whenever the browser Api is invoked from JS interop, promise rejections or other exceptions are not guaranteed to end up in the browser console (unlike .NET WASM exceptions). As a solution browser Api calls are wrapped in try catch blocks.
 * There are instances where a browser api call simply never returns. As a solution calls to the browser api are raced against a 1 second timeout.
