@@ -8,15 +8,56 @@ namespace BlazorChat.Server.Services
 {
     public interface IFormDataService
     {
+        /// <summary>
+        /// Get a form with form Id
+        /// </summary>
         public Task<JsonNode?> GetForm(ItemId formId);
+        /// <summary>
+        /// Create a form
+        /// </summary>
+        /// <returns>Valid ItemId of the form on success, zero otherwise</returns>
         public Task<ItemId> CreateForm(JsonDocument form);
+        /// <summary>
+        /// Return true if a formid is valid
+        /// </summary>
         public Task<bool> FormExists(ItemId formId);
+        /// <summary>
+        /// Create a form request
+        /// </summary>
+        /// <param name="formId">Form id</param>
+        /// <param name="recipientId">user id of recipient</param>
+        /// <param name="expires">Expiration timestamp</param>
+        /// <param name="allowMultiple">Allow multiple responses</param>
+        /// <returns>Valid ItemId of the form request on success, zero otherwise</returns>
         public Task<ItemId> CreateFormRequest(ItemId formId, ItemId recipientId, DateTimeOffset? expires = null, bool allowMultiple = false);
+        /// <summary>
+        /// Get a form request
+        /// </summary>
+        /// <param name="requestId"></param>
+        /// <returns></returns>
         public Task<FormRequest?> GetFormRequest(ItemId requestId);
+        /// <summary>
+        /// Record a reponse to a form request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="response"></param>
+        /// <returns></returns>
         public Task<ItemId> RecordResponse(FormRequest request, JsonDocument response);
+        /// <summary>
+        /// Get all responses
+        /// </summary>
         public Task<FormResponse[]> GetResponses();
+        /// <summary>
+        /// Get all responses for a specific request
+        /// </summary>
         public Task<FormResponse[]> GetRequestResponses(ItemId requestId);
+        /// <summary>
+        /// Get all responses for a specific form
+        /// </summary>
         public Task<FormResponse[]> GetFormResponses(ItemId formId);
+        /// <summary>
+        /// Get all forms recorded. Has ["id"] field on lowest hierarchy.
+        /// </summary>
         public Task<JsonNode[]> GetForms();
     }
 

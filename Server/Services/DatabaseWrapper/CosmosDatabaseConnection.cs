@@ -9,6 +9,9 @@ using System.Text;
 
 namespace BlazorChat.Server.Services.DatabaseWrapper
 {
+    /// <summary>
+    /// Singleton service managing the connection to cosmos db
+    /// </summary>
     public class CosmosDatabaseConnection : IDatabaseConnection
     {
         public const string BULKDELETESPROC = "bulkDeleteSproc";
@@ -66,9 +69,12 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
             bool createdNewContainer = false;
             if (this._database != null)
             {
+                // Create/Get container
                 ContainerResponse containerResponse = await this._database.CreateContainerIfNotExistsAsync(containerName, table.PartitionPath);
                 createdNewContainer = containerResponse.StatusCode == HttpStatusCode.Created;
                 Container container = containerResponse.Container;
+
+                // Detect and (if needed) upload bulkdeletescript
                 bool hasBulkDeleteScript = false;
                 try
                 {
@@ -79,9 +85,7 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
                     }
                 }
                 catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
-                {
-
-                }
+                { }
                 if (!hasBulkDeleteScript)
                 {
                     var properties = new StoredProcedureProperties()
@@ -98,7 +102,11 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
             return createdNewContainer;
         }
 
-
+        /// <summary>
+        /// Initializes with some basic data
+        /// </summary>
+        /// <remarks>User login "testuser" pw "password"; Channel testchannel, system welcome message</remarks>
+        /// <returns></returns>
         private async Task InitializeWithPlaceholderData()
         {
             var loginService = _serviceProvider.GetRequiredService<ILoginDataService>();

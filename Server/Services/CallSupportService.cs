@@ -8,12 +8,50 @@ namespace BlazorChat.Server.Services
 {
     public interface ICallSupportService
     {
+        /// <summary>
+        /// Initiates as pending call. Also notifies callee of the pending call.
+        /// </summary>
+        /// <param name="callerId"></param>
+        /// <param name="calleeId"></param>
+        /// <returns></returns>
         public Task<ItemId> InitiateCall(ItemId callerId, ItemId calleeId);
+        /// <summary>
+        /// List of pending calls the user is caller or callee in
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public Task<IList<PendingCall>> GetPendingCalls(ItemId userId);
+        /// <summary>
+        /// Terminates a call. Notifies both parties the call has been terminated
+        /// </summary>
+        /// <param name="callId"></param>
+        /// <returns></returns>
         public Task TerminateCall(ItemId callId);
+        /// <summary>
+        /// Returns true if the call id is a valid active call
+        /// </summary>
+        /// <param name="callId"></param>
+        /// <returns></returns>
         public Task<bool> IsOngoingCall(ItemId callId);
+        /// <summary>
+        /// Returns true if the user is part of the specified call
+        /// </summary>
+        /// <param name="callId"></param>
+        /// <param name="userId"></param>
+        /// <param name="checkpending"></param>
+        /// <param name="checkongoing"></param>
+        /// <returns></returns>
         public Task<bool> IsInCall(ItemId callId, ItemId userId, bool checkpending = true, bool checkongoing = true);
+        /// <summary>
+        /// Elevates a pending call into ongoing status
+        /// </summary>
+        /// <param name="callId"></param>
+        /// <returns></returns>
         public Task ElevateToOngoing(ItemId callId);
+        /// <summary>
+        /// Get a list of ice configurations
+        /// </summary>
+        /// <returns></returns>
         public Task<IceConfiguration[]> GetIceConfigurations();
     }
 

@@ -13,7 +13,7 @@ using BlazorChat.Server;
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-// Add services to the container.
+
 
 EnvironmentVarKeys.CheckEnvironment(out bool enableBlob, out bool enableTranslation);
 
@@ -41,7 +41,7 @@ builder.Services.AddSingleton<IHubManager, HubManager>();
 #if ENABLE_ADMINAPI_AUTH
 builder.Services.AddSingleton<IAdminAuthService, BearerCompareAdminAuthService>();
 #else
-builder.Services.AddSingleton<IAdminAuthService, NoAuthAdminAuthService>();
+builder.Services.AddSingleton<IAdminAuthService, PlaceholderAuthAdminAuthService>();
 #endif
 
 if (enableBlob)

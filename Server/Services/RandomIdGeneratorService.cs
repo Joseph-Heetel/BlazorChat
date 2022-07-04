@@ -19,6 +19,7 @@ namespace BlazorChat.Server.Services
     /// </remarks>
     public class RandomIdGeneratorService : IIdGeneratorService
     {
+        [ThreadStatic]
         private readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
 
         public void Generate(ItemId[] output)

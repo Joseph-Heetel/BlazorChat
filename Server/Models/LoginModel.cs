@@ -11,8 +11,6 @@ namespace BlazorChat.Server.Models
     /// </summary>
     class LoginModel : DBModelBase
     {
-        public const string PartitionPath = "/p";
-
         [JsonPropertyName("id")]
         public string? Login { get; set; }
 

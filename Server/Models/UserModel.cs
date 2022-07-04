@@ -6,8 +6,6 @@ namespace BlazorChat.Server.Models
 {
     public class UserModel : DBModelBase
     {
-        public const string PartitionPath = "/p";
-
         [JsonPropertyName("id")]
         [JsonConverter(typeof(ItemIdConverter))]
         public ItemId Id { get; set; }

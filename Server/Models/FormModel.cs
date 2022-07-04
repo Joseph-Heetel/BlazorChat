@@ -8,7 +8,6 @@ namespace BlazorChat.Server.Models
 {
     public class FormModel : DBModelBase
     {
-        public const string PartitionPath = "/p";
         [PartitionProperty(GenerateFromId = true)]
         [JsonPropertyName("p")]
         public string Partition { get; set; } = "";

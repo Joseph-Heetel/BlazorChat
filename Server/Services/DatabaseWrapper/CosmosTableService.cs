@@ -28,6 +28,10 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
             GetTypeInformation();
         }
 
+        /// <summary>
+        /// Finds partition key property (Marked with PartitionPropertyAttribute) and id key property (marked wiht JsonPropertyNameAttribute("id))
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public void GetTypeInformation()
         {
             foreach (var property in typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public))
@@ -65,12 +69,22 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
             }
         }
 
+        /// <summary>
+        /// Use partitionkey property to get a partition key
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         private PartitionKey GetPartitionKey(T item)
         {
             string key = (_partitionKeyProperty!.GetValue(item)!.ToString())!;
             return new PartitionKey(key);
         }
 
+        /// <summary>
+        /// Use id property to get item id
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         private string GetId(T item)
         {
             return _idProperty!.GetValue(item)!.ToString()!;
@@ -82,16 +96,26 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
         [ThreadStatic]
         private static HashAlgorithm? _hashAlgorithm;
 
-        private string GetPartitionKeyValue(string id)
+        /// <summary>
+        /// Generate the partitionkey value from id string
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Method is used but model type prohibits generating key from id</exception>
+        private string GeneratePartitionKeyValue(string id)
         {
             if (_generateKeyFromId)
             {
+                // Convert id to byte array
                 const int utf8arrlength = ItemId.IDLENGTH * 2;
                 _utf8Bytes ??= new byte[utf8arrlength + 1];
                 Encoding.UTF8.GetBytes(id, 0, Math.Min(utf8arrlength, id.Length), _utf8Bytes, 0);
+
+                // hash byte array
                 _hashAlgorithm ??= HashAlgorithm.Create(HashAlgorithmName.SHA256.Name!)!;
                 byte[] hashed = _hashAlgorithm.ComputeHash(_utf8Bytes);
 
+                // compact hash array to length of 4
                 int size = hashed.Length;
                 for (; size > 4; size /= 2)
                 {
@@ -109,11 +133,17 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
             }
         }
 
-        private PartitionKey GetPartitionKey(string id)
+        private PartitionKey GeneratePartitionKey(string id)
         {
-            return new PartitionKey(GetPartitionKeyValue(id));
+            return new PartitionKey(GeneratePartitionKeyValue(id));
         }
 
+        /// <summary>
+        /// Run the bulk delete script
+        /// </summary>
+        /// <param name="query">If specified, only affects items matching the query</param>
+        /// <param name="partitionKey">If specified, only affects items within one partition</param>
+        /// <returns></returns>
         public async Task<TableActionResult> BulkDeleteItemsAsync(string? query = null, string? partitionKey = null)
         {
             PartitionKey partKey = new PartitionKey(partitionKey);
@@ -131,6 +161,11 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
 
         }
 
+        /// <summary>
+        /// Creates a new item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public async Task<TableActionResult> CreateItemAsync(T item)
         {
             autoSetPartitionKey(item);
@@ -159,18 +194,28 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
 
         }
 
+        /// <summary>
+        /// Sets the partition key property if autogenerate is enabled on the model type
+        /// </summary>
+        /// <param name="item"></param>
         private void autoSetPartitionKey(T item)
         {
             if (_generateKeyFromId)
             {
-                string partition = GetPartitionKeyValue((_idProperty!.GetValue(item)!.ToString())!);
+                string partition = GeneratePartitionKeyValue((_idProperty!.GetValue(item)!.ToString())!);
                 _partitionKeyProperty!.SetValue(item, partition);
             }
         }
 
+        /// <summary>
+        /// Deletes an item
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="partitionKey"></param>
+        /// <returns></returns>
         public async Task<TableActionResult> DeleteItemAsync(string id, string? partitionKey = null)
         {
-            PartitionKey partKey = partitionKey == null ? GetPartitionKey(id) : new PartitionKey(partitionKey);
+            PartitionKey partKey = partitionKey == null ? GeneratePartitionKey(id) : new PartitionKey(partitionKey);
             try
             {
                 var response = await Container!.DeleteItemStreamAsync(id, partKey);
@@ -195,9 +240,15 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
             }
         }
 
+        /// <summary>
+        /// Gets an item
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="partitionKey"></param>
+        /// <returns></returns>
         public async Task<TableActionResult<T>> GetItemAsync(string id, string? partitionKey = null)
         {
-            PartitionKey partKey = partitionKey == null ? GetPartitionKey(id) : new PartitionKey(partitionKey);
+            PartitionKey partKey = partitionKey == null ? GeneratePartitionKey(id) : new PartitionKey(partitionKey);
             try
             {
                 CancellationTokenSource cts = new CancellationTokenSource();
@@ -251,6 +302,12 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
             public int Count { get; set; }
         }
 
+        /// <summary>
+        /// Performs and flattens a query
+        /// </summary>
+        /// <param name="query">If amended all items are returned</param>
+        /// <param name="partition">If specified only one partition is returned</param>
+        /// <returns></returns>
         public async Task<TableActionResult<List<T>>> QueryItemsAsync(string? query = null, string? partition = null)
         {
             var options = new QueryRequestOptions();
@@ -294,6 +351,11 @@ namespace BlazorChat.Server.Services.DatabaseWrapper
             }
         }
 
+        /// <summary>
+        /// Replaces an existing itme
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public async Task<TableActionResult> ReplaceItemAsync(T item)
         {
             autoSetPartitionKey(item);

@@ -71,6 +71,7 @@ namespace BlazorChat.Server.Services
 
             using var client = new HttpClient();
             using var request = new HttpRequestMessage();
+            
             // Build the request.
             request.Method = HttpMethod.Post;
             request.RequestUri = new Uri(ENDPOINT + route);
@@ -80,11 +81,12 @@ namespace BlazorChat.Server.Services
 
             // Send the request and get response.
             using HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
-            // Read response as a string.
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
+
+            // Parse response
             TranslateResponseContainer[]? responseContainers = await response.Content.ReadFromJsonAsync<TranslateResponseContainer[]>();
             TranslateResponseContainer? responseContainer = responseContainers?.FirstOrDefault();
             if (responseContainer == null || responseContainer.Translations == null || responseContainer.Translations.Length == 0)

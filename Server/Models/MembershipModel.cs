@@ -6,8 +6,6 @@ namespace BlazorChat.Server.Models
 {
     public class MembershipModel : DBModelBase
     {
-        public const string PartitionPath = "/p";
-
         [JsonPropertyName("id")]
         public string Key
         {

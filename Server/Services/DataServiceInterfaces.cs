@@ -23,6 +23,12 @@ namespace BlazorChat.Server.Services
         /// Creates a login - password pair, returns the associated <see cref="User"/> if successful. Returns null otherwise.
         /// </summary>
         public Task<User?> CreateUserAndLogin(string name, string login, ByteArray passwordHash);
+        /// <summary>
+        /// Replaces password for a given login
+        /// </summary>
+        /// <param name="login"></param>
+        /// <param name="newPasswordHash"></param>
+        /// <returns></returns>
         public Task<bool> UpdatePassword(string login, ByteArray newPasswordHash);
     }
 
