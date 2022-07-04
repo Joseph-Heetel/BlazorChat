@@ -39,7 +39,7 @@ namespace BlazorChat.Server.Controllers
                 return BadRequest("Could not parse form id!");
             }
 
-            // TODO: Perhaps access to scopes should be restricted to active form requests?
+            // TODO: Perhaps access to form should be restricted to active form requests?
 
             var form = await _formService.GetForm(formId);
             if (form == null)

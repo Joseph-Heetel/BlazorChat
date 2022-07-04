@@ -46,10 +46,6 @@ namespace BlazorChat.Client.Components
         private void Status_StateChanged(Services.ECallState value)
         {
             this._callInProgress = value != Services.ECallState.None;
-            if (_callInProgress)
-            {
-                // TODO close all dialogs
-            }
             this.StateHasChanged();
         }
 

@@ -25,8 +25,8 @@ namespace BlazorChat.Server.Hubs
         /// <summary>
         /// Maps ConnectionIds to Groups
         /// </summary>
-        /// <remarks>ConnectionId <-> Group is a N..N association. This list is dominantly accessed with the intent to read/write to it.
-        /// TODO: Consider double Dictionary instead</remarks>
+        /// <remarks>ConnectionId &lt-&gt Group is a N..N association. This list is dominantly accessed with the intent to read/write to it.
+        /// Double Dictionary not used because both dictionaries would be Dictionary&ltstring, List&ltstring&gt&gt and as such quite complicated to use</remarks>
         private readonly List<GroupAssociation> _groupAssociations = new List<GroupAssociation>();
 
         private readonly SemaphoreSlim _userAssociationsSemaphore = new SemaphoreSlim(1);
