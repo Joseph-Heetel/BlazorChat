@@ -152,7 +152,7 @@ namespace BlazorChat.Client.Services
             if (value == LoginState.Connected)
             {
                 // Do setup
-                _ = Task.Run(discoverChannelsAndUsers);
+                _ = Task.Run(() => discoverChannelsAndUsers(true));
             }
             else
             {
@@ -246,13 +246,16 @@ namespace BlazorChat.Client.Services
         /// Because no delta information is stored, all this info needs to be pulled anyhow, so that is the next step.
         /// </summary>
         /// <returns></returns>
-        private async Task discoverChannelsAndUsers()
+        private async Task discoverChannelsAndUsers(bool usecache)
         {
             resetUserCache();
             _channelCache.State.Clear();
 
-            // Get cached information for the moment
-            await discoverCache();
+            if (usecache)
+            {
+                // Get cached information for the moment
+                await discoverCache();
+            }
 
             // Request the real information from the api
             Channel[] channels = await _apiService.GetChannels();
@@ -624,7 +627,7 @@ namespace BlazorChat.Client.Services
 
         private Task ChatHub_OnChannellistChanged()
         {
-            return discoverChannelsAndUsers();
+            return discoverChannelsAndUsers(false);
         }
 
         private async Task ChatHub_OnChannelUpdated(ItemId channelId)
