@@ -19,6 +19,8 @@ WebRTC is a highlevel api which allows managing a realtime connection between tw
     Set local/remote descriptions and Forward negotiation messages. [Useful Guide on the topic](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Perfect_negotiation).
 
     Negotiation messages are transmitted between peers via the servers SignalR hub.
+
+    ![WebRTC session init diagram](./rtc-session-init.svg)
 ## Issues
 * Whenever the browser Api is invoked from JS interop, promise rejections or other exceptions are not guaranteed to end up in the browser console (unlike .NET WASM exceptions). As a solution browser Api calls are wrapped in try catch blocks.
 * There are instances where a browser api call simply never returns. As a solution calls to the browser api are raced against a 1 second timeout.
@@ -34,3 +36,16 @@ WebRTC is a highlevel api which allows managing a realtime connection between tw
 A [STUN](https://en.wikipedia.org/wiki/STUN) server is required for clients to discover their public Ip. Plenty of free services exist, such as `stun:stun.l.google.com:19302`. 
 
 A [TURN](https://en.wikipedia.org/wiki/Traversal_Using_Relays_around_NAT) server is required for NAT traversal. For testing a free service such as [Viagenie NUMB](https://numb.viagenie.ca/) can be used, but for production a dedicated solution needs to be setup (for example [coturn](https://github.com/coturn/coturn)). Right now TURN credentials are fixed environment variables and therefor shipped as effectively plain text as part of the client application. In a production environment, temporary credentials should be generated dynamically and provided to the client only as needed.
+
+## JS Interop for WebRTC
+All the heavy lifting for WebRTC happens in the browser Api, accessed via Javascript. In this implementation, The clients service `WebRTCCallService` (`Client/Services/`) controls the scripts state. A global object `window.webRtcHelper` manages the RTCPeerConnection and active media streams. A global function object `window.queryDevices` is used to get a list of input devices usable for WebRTC.
+
+Whenever a call is opened or accepted the Call service initiates the script-side webRtcHelper.
+
+The JS side right now manages many aspects, such as matching tracks to video elements, configuring local RTCPeerConnection, performing negotiations, etc. An alternative approach could be to match a `RtcPeerConnection` type on C# Side, with calls to and from the javascript counterpart directly with most of the logic happening in C#.
+
+## Data channel
+A data channel is used to transmit the state of attached media to the other peer. The original intent was to allow identifying tracks to sources (camera vs. screen capture), but this was abandoned as not feasible (See [issues](#issues)). At this time all it does is notifying the other client about the state of input devices (microphone enabled? camera enabled? screenshare enabled?)
+
+## Multiple Users
+In theory, voice + video meetings could be enabled with more than two participants via peer 2 peer. However this requires a unique rtc peer connection per client for all other participants. This also requires transmitting outgoing streams for every other participant separately. This puts a lot of strain on both client hardware and network. Existing implementations therefor restrict the maximum number of participants in peer 2 peer calls between 3 - 4 with video and ~ 10 with audio only. 
