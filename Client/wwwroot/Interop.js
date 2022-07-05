@@ -178,21 +178,18 @@ class RtcManager {
         this.remoteVideo0Track = null;
         this.remoteVideo1Track = null;
         this.dnetobj = null;
-        this.userId = null;
         this.role = "unassigned";
         this.localUserMediaStream = null;
         this.connection = null;
         this.datachannel = null;
         this.makingOffer = false;
         this.remoteTransmitState = null;
-        this.remoteTracks = new Array();
         this.iceServers = new Array();
     }
     // Setup pre call
-    init(dnetobj, userid, videoDeviceId, audioDeviceId, iceServers) {
+    init(dnetobj, videoDeviceId, audioDeviceId, iceServers) {
         return __awaiter(this, void 0, void 0, function* () {
             this.dnetobj = dnetobj;
-            this.userId = userid;
             // configure constraints to select video/audio device
             let constraints;
             if (videoDeviceId || audioDeviceId) {
@@ -457,9 +454,11 @@ class RtcManager {
             };
             let result = null;
             try {
+                // Get capture track
                 const stream = yield navigator.mediaDevices.getDisplayMedia(constraints);
                 const track = stream.getVideoTracks()[0];
                 if (track) {
+                    // Attach capture track
                     this.localCaptureTrack = new LocalTrack("capture", { id: track.id, label: track.label }, track, stream);
                     this.localCaptureTrack.connection = this.connection;
                     this.setElements(null);
@@ -644,18 +643,6 @@ function wrapCallWithTimeout(thisArg, call, ...args) {
         }
     });
 }
-// Wraps any function allowing successful catching of rejection. Very useful for debugging use of Web API
-function wrapCall(thisArg, call, ...args) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            return yield call.apply(thisArg, args);
-        }
-        catch (e) {
-            console.error("Call threw exception!", e, call, args);
-            throw e;
-        }
-    });
-}
 window.webRtcHelper = new RtcManager();
 // Queries mediaDevices
 function queryDevices() {
@@ -665,6 +652,7 @@ function queryDevices() {
             audioDevices: new Array()
         };
         if (!window.hasRequestedUserMedia) {
+            // Need to request access before being able to enumerate media devices
             const constraints = {
                 audio: true,
                 video: true

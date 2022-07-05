@@ -7,6 +7,11 @@ namespace BlazorChat.Server.Hubs
 {
     public partial class HubManager : IHubManager
     {
+        /* ASSOCIATIONS
+         * ConnectionId : N <-> 1 : UserId
+         * ConnectionId : N <-> N : Group
+         */
+
         private class GroupAssociation
         {
             public GroupAssociation() { }
