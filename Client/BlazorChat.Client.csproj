@@ -17,6 +17,10 @@
 		<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <DefineConstants></DefineConstants>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <None Remove="Scripts\Interop.js" />
 	</ItemGroup>
@@ -45,8 +49,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ServiceWorker Include="wwwroot\service-worker.js" 
-					   PublishedContent="wwwroot\service-worker.published.js" />
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -79,7 +79,8 @@ namespace BlazorChat.Client.Components.Chat
             var results = await ChatApiService.SearchMessages(query);
             _results.Clear();
             _selectedResult = null;
-            foreach (var result in results)
+            if (results.TryGet(out var messages))
+            foreach (var result in messages)
             {
                 _results.Add(new MessageViewParams()
                 {

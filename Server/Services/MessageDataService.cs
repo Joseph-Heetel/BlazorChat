@@ -116,7 +116,7 @@ namespace BlazorChat.Server.Services
             List<string> conditions = new List<string>();
             if (!authorId.IsZero)
             {
-                conditions.Add($"i.authorid = \"{authorId}\"");
+                conditions.Add($"i.authorId = \"{authorId}\"");
             }
             if (before != default)
             {

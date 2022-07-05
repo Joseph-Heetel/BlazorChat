@@ -8,76 +8,6 @@ using System.Web;
 
 namespace BlazorChat.Client.Services
 {
-    /// <summary>
-    /// Service exposing chat state access. Manages state of Channel/User collections, current channel and Message Collections and Hub connection
-    /// </summary>
-    public interface IChatStateService
-    {
-        /// <summary>
-        /// Collection of channels visible to the user
-        /// </summary>
-        public IReadOnlyObservable<IDictionary<ItemId, Channel>> ChannelCache { get; }
-        /// <summary>
-        /// Messages of currently viewed channel
-        /// </summary>
-        public IReadOnlyObservable<IReadOnlyCollection<Message>> LoadedMessages { get; }
-        /// <summary>
-        /// Cache mapping UserIds to respective User information objects
-        /// </summary>
-        public IReadOnlyObservable<IDictionary<ItemId, User>> UserCache { get; }
-        /// <summary>
-        /// Id of the highlighted message.
-        /// </summary>
-        public IReadOnlyObservable<ItemId> HighlightedMessageId { get; }
-
-        /// <summary>
-        /// State of currently viewed channel
-        /// </summary>
-        public IReadOnlyObservable<Channel?> CurrentChannel { get; }
-        /// <summary>
-        /// List of pending calls, if any
-        /// </summary>
-        public IReadOnlyObservable<IReadOnlyCollection<PendingCall>> PendingCalls { get; }
-
-        /// <summary>
-        /// Updates <see cref="CurrentChannel"/> and initiates loading of messages
-        /// </summary>
-        /// <param name="channel">Channel or null</param>
-        /// <param name="reference">Optional reference timestamp for message loading. <see cref="DateTimeOffset.Now"/> if omitted.</param>
-        public Task SetCurrentChannel(Channel? channel, DateTimeOffset? reference = null);
-        /// <summary>
-        /// Loads newer messages
-        /// </summary>
-        /// <param name="reference">Optional reference timestamp for message loading. <see cref="DateTimeOffset.Now"/> or time of newest message if omitted.</param>
-        /// <returns>Number of new messages loaded</returns>
-        public Task<int> LoadNewerMessages(DateTimeOffset? reference = null);
-        /// <summary>
-        /// Loads older messages
-        /// </summary>
-        /// <param name="reference">Optional reference timestamp for message loading. <see cref="DateTimeOffset.Now"/> or time of oldest message if omitted.</param>
-        /// <returns>Number of new messages loaded</returns>
-        public Task<int> LoadOlderMessages(DateTimeOffset? reference = null);
-        /// <summary>
-        /// Loads messages surrounding <paramref name="reference"/> timestamp
-        /// </summary>
-        public Task CheckoutTimestamp(DateTimeOffset reference);
-        /// <summary>
-        /// Checks if message with id <paramref name="id"/> is loaded
-        /// </summary>
-        /// <returns>True if is loaded, false otherwise.</returns>
-        bool HasMessageLoaded(ItemId id);
-        /// <summary>
-        /// Sets the highlighted message. Will cause the <see cref="CurrentChannel"/> to be set to <paramref name="channelId"/> and all messages surrounding <paramref name="messageId"/> to be loaded
-        /// </summary>
-        Task SetHighlightedMessage(ItemId channelId, ItemId messageId);
-        /// <summary>
-        /// Clears the highlighted message
-        /// </summary>
-        /// <returns></returns>
-        Task ClearHighlightedMessage();
-        Task TranslateMessage(ItemId channelId, ItemId messageId);
-    }
-
     public sealed class ChatStateService : IChatStateService, IAsyncDisposable
     {
         /*
@@ -134,6 +64,7 @@ namespace BlazorChat.Client.Services
             this._cacheService = cache;
             this._navManager = nav;
             this._apiService.LoginState.StateChanged += LoginState_StateChanged;
+            LoginState_StateChanged(_apiService.LoginState.State);
             this._hubService.OnMessageReceived += ChatHub_OnMessageReceived;
             this._hubService.OnMessageUpdated += ChatHub_OnMessageUpdated;
             this._hubService.OnMessageDeleted += ChatHub_OnMessageDeleted;
@@ -258,45 +189,51 @@ namespace BlazorChat.Client.Services
             }
 
             // Request the real information from the api
-            Channel[] channels = await _apiService.GetChannels();
-
-            // Synchronise the cache with the real information
-            await _cacheService.Maintain(channels);
-
-            // Clear memory channel and user cache (that way we don't need to find the difference between cached items from browser local storage and reality)
-            _channelCache.State.Clear();
-            resetUserCache();
-
-            // Collect users from channels that need to be fetched from the Api
-            HashSet<ItemId> userIds = new HashSet<ItemId>();
-            // Push real information to channel cache
-            foreach (var channel in channels)
+            var apiresponse = await _apiService.GetChannels();
+            if (apiresponse.TryGet(out var channels))
             {
-                _channelCache.State.Add(channel.Id, channel);
-                foreach (var participation in channel.Participants)
+
+                // Synchronise the cache with the real information
+                await _cacheService.Maintain(channels);
+
+                // Clear memory channel and user cache (that way we don't need to find the difference between cached items from browser local storage and reality)
+                _channelCache.State.Clear();
+                resetUserCache();
+
+                // Collect users from channels that need to be fetched from the Api
+                HashSet<ItemId> userIds = new HashSet<ItemId>();
+                // Push real information to channel cache
+                foreach (var channel in channels)
                 {
-                    if (!_userCache.State.ContainsKey(participation.Id))
+                    _channelCache.State.Add(channel.Id, channel);
+                    foreach (var participation in channel.Participants)
                     {
-                        userIds.Add(participation.Id);
+                        if (!_userCache.State.ContainsKey(participation.Id))
+                        {
+                            userIds.Add(participation.Id);
+                        }
                     }
                 }
-            }
 
-            // Update UI with new state of channel cache
-            _channelCache.TriggerChange();
+                // Update UI with new state of channel cache
+                _channelCache.TriggerChange();
 
-            // Fetch users
-            if (userIds.Count > 0)
-            {
-                User[] users = await _apiService.GetUsers(userIds);
-                foreach (User user in users)
+                // Fetch users
+                if (userIds.Count > 0)
                 {
-                    _userCache.State[user.Id] = user;
+                    var userapiresponse = await _apiService.GetUsers(userIds);
+                    if (userapiresponse.TryGet(out User[] users))
+                    {
+                        foreach (User user in users)
+                        {
+                            _userCache.State[user.Id] = user;
+                        }
+                    }
                 }
-            }
 
-            // Update UI with new state of user cache
-            _userCache.TriggerChange();
+                // Update UI with new state of user cache
+                _userCache.TriggerChange();
+            }
 
             // Current channel may have already contained a channel which is now an old invalid object, so replace if necessary
             if (_currentChannel.State != null)
@@ -366,15 +303,16 @@ namespace BlazorChat.Client.Services
         private async Task<Message[]> loadNewerMessagesInternal(DateTimeOffset? reference)
         {
             Trace.Assert(_currentChannel.State != null);
-            var messages = await _apiService.GetMessages(_currentChannel.State!.Id, reference ?? DateTimeOffset.UtcNow, false, ChatConstants.MESSAGE_FETCH_DEFAULT);
+            var apiresult = await _apiService.GetMessages(_currentChannel.State!.Id, reference ?? DateTimeOffset.UtcNow, false, ChatConstants.MESSAGE_FETCH_DEFAULT);
 
-            if (messages.Length > 0)
+            if (apiresult.TryGet(out Message[] messages) && messages.Length > 0)
             {
                 // Update read horizon if necessary
                 Message newest = messages.MaxBy(x => x.CreatedTS)!;
                 updateReadHorizonIfNecessary(_currentChannel.State, newest.Created);
+                return messages;
             }
-            return messages;
+            return Array.Empty<Message>();
         }
 
         /// <summary>
@@ -385,15 +323,16 @@ namespace BlazorChat.Client.Services
         private async Task<Message[]> loadOlderMessagesInternal(DateTimeOffset? reference)
         {
             Trace.Assert(_currentChannel.State != null);
-            var messages = await _apiService.GetMessages(_currentChannel.State!.Id, reference ?? DateTimeOffset.UtcNow, true, ChatConstants.MESSAGE_FETCH_DEFAULT);
+            var apiresult = await _apiService.GetMessages(_currentChannel.State!.Id, reference ?? DateTimeOffset.UtcNow, true, ChatConstants.MESSAGE_FETCH_DEFAULT);
 
-            if (messages.Length > 0)
+            if (apiresult.TryGet(out Message[] messages) && messages.Length > 0)
             {
                 // Update read horizon if necessary
                 Message newest = messages.MaxBy(x => x.CreatedTS)!;
                 updateReadHorizonIfNecessary(_currentChannel.State, newest.Created);
+                return messages;
             }
-            return messages;
+            return Array.Empty<Message>();
         }
 
         /// <summary>
@@ -632,8 +571,8 @@ namespace BlazorChat.Client.Services
 
         private async Task ChatHub_OnChannelUpdated(ItemId channelId)
         {
-            var channel = await _apiService.GetChannel(channelId);
-            if (channel != null)
+            var response = await _apiService.GetChannel(channelId);
+            if (response.TryGet(out Channel channel))
             {
                 // Replace users and channel meta data
                 List<ItemId> userIds = new List<ItemId>(channel.Participants.Select(p => p.Id));
@@ -652,8 +591,8 @@ namespace BlazorChat.Client.Services
         }
         private async Task ChatHub_OnUserUpdated(ItemId userId)
         {
-            var user = await _apiService.GetUser(userId);
-            if (user != null)
+            var apiresponse = await _apiService.GetUser(userId);
+            if (apiresponse.TryGet(out User user))
             {
                 // replace the user
                 _userCache.State[user.Id] = user;
@@ -680,8 +619,11 @@ namespace BlazorChat.Client.Services
 
         private async Task RefreshPendingCalls()
         {
-            var calls = await _apiService.GetCalls();
-            this._pendingCalls.State = calls;
+            var apiresponse = await _apiService.GetCalls();
+            if (apiresponse.TryGet(out PendingCall[] calls))
+            {
+                this._pendingCalls.State = calls;
+            }
         }
 
 

@@ -186,7 +186,8 @@ namespace BlazorChat.Client.Services
 
         private async Task initiateJS()
         {
-            var iceConfigs = await _apiService.GetIceConfigurations(callId.State);
+            IceConfiguration[]? iceConfigs = await _apiService.GetIceConfigurations(callId.State);
+            iceConfigs ??= Array.Empty<IceConfiguration>();
             await _jsRuntime.InvokeVoidAsync(
                     "webRtcHelper.init",
                     dnetObjRef,

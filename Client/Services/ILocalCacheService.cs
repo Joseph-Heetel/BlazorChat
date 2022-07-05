@@ -69,5 +69,7 @@ namespace BlazorChat.Client.Services
         /// Purges the entire cache (for example on user logout)
         /// </summary>
         public Task ClearCache();
+        public Task<Session?> GetOfflineSession();
+        public Task SetOfflineSession(Session session);
     }
 }

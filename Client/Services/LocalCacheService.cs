@@ -155,5 +155,15 @@ namespace BlazorChat.Client.Services
             Channels.Clear();
             await Storage.ClearAsync();
         }
+
+        public Task<Session?> GetOfflineSession()
+        {
+            return Storage.GetItemAsync<Session?>("offlinesession").AsTask();
+        }
+
+        public Task SetOfflineSession(Session session)
+        {
+            return Storage.SetItemAsync("offlinesession", session).AsTask();
+        }
     }
 }
