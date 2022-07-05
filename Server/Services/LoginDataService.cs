@@ -108,5 +108,23 @@ namespace BlazorChat.Server.Services
             return (await _loginsTable.ReplaceItemAsync(model)).IsSuccess;
 
         }
+
+        public async Task<ItemId?> GetUserForLogin(string login)
+        {
+            var response = await _loginsTable.GetItemAsync(login);
+            if (!response.IsSuccess)
+            {
+                return null;
+            }
+            var item = response.ResultAsserted;
+            if (item.CheckWellFormed())
+            {
+                return item.UserId;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

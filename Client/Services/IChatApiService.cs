@@ -192,5 +192,6 @@ namespace BlazorChat.Client.Services
         /// Gets a temporary url for a user avatar
         /// </summary>
         Task<ApiResult<TemporaryURL>> GetTemporaryAvatarURL(ItemId userId, FileAttachment attachment);
+        Task<ApiResult> ClaimTokenSession(string tokenbase64);
     }
 }

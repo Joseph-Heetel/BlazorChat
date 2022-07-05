@@ -26,7 +26,7 @@
         /// Location string used to configure http requests to azure translator service
         /// </summary>
         public const string AZURETRANSLATORLOCATION = "AzureTranslatorLocation";
-
+        public const string JWTTOKENSECRET = "JwtTokenSecret";
 
         public static void CheckEnvironment(out bool enableBlob, out bool enableTranslation)
         {

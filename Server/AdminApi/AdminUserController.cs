@@ -10,18 +10,20 @@ namespace BlazorChat.Server.AdminApi
     [ApiController]
     public class AdminUserController : ControllerBase
     {
-        public AdminUserController(IUserDataService userdata, ILoginDataService login, IAdminAuthService auth, IServiceProvider serviceProvider)
+        public AdminUserController(IUserDataService userdata, ILoginDataService login, IAdminAuthService auth, IServiceProvider serviceProvider, ITokenService tokenService)
         {
             _userService = userdata;
             _loginService = login;
             _adminAuthService = auth;
             _storageService = serviceProvider.GetService<IStorageService>();
+            _tokenService = tokenService;
         }
 
         private readonly IUserDataService _userService;
         private readonly ILoginDataService _loginService;
         private readonly IAdminAuthService _adminAuthService;
         private readonly IStorageService? _storageService;
+        private readonly ITokenService _tokenService;
 
         [Route("")]
         [HttpGet]
@@ -126,6 +128,23 @@ namespace BlazorChat.Server.AdminApi
                 return BadRequest();
             }
             return await _userService.UpdateUserName(userId, newName) ? Ok() : NotFound();
+        }
+
+        [Route("makesession")]
+        [HttpPost]
+        public async Task<ActionResult<string>> MakeSession([FromQuery] string? login)
+        {
+            if (!await _adminAuthService.ValidateBearer(Request))
+            {
+                return Unauthorized();
+            }
+            if (login == null)
+            {
+                return BadRequest();
+            }
+            string token = _tokenService.MakeToken(login, DateTimeOffset.UtcNow + TimeSpan.FromHours(8));
+            string host = HttpContext.Request.Host.Value;
+            return $"https://{host}/chat?token={Uri.EscapeDataString(token)}";
         }
     }
 }

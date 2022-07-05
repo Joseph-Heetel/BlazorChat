@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using System.Text.Json.Nodes;
 using System.Globalization;
 using Blazored.LocalStorage;
+using System.Web;
 
 namespace BlazorChat.Client.Services
 {
@@ -47,6 +48,27 @@ namespace BlazorChat.Client.Services
             this._navManager = navManager;
             this._cacheService = cache;
             _logger = loggerFactory.CreateLogger<ChatApiService>();
+            _navManager.LocationChanged += _navManager_LocationChanged;
+            onLocationChanged(_navManager.Uri);
+        }
+
+        private void _navManager_LocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+        {
+            onLocationChanged(e.Location);
+        }
+
+        private async void onLocationChanged(string location)
+        {
+            int indexOfQuery = location.IndexOf('?');
+            if (indexOfQuery >= 0)
+            {
+                var query = HttpUtility.ParseQueryString(location.Substring(indexOfQuery));
+                string? tokenParam = query.Get("token");
+                if (tokenParam != null)
+                {
+                    await ClaimTokenSession(tokenParam);
+                }
+            }
         }
 
         private ByteArray GeneratePasswordHash(string password)
@@ -244,6 +266,25 @@ namespace BlazorChat.Client.Services
                 this._loginState.State = Services.LoginState.Connected;
                 _logger.LogInformation($"Logged in as \"{session.User?.Name ?? "null"}\" [{session.User?.Id ?? default(ItemId)}]");
                 return response;
+            }
+            else
+            {
+                this._loginState.State = Services.LoginState.NoInit;
+            }
+            return response;
+        }
+
+        public async Task<ApiResult> ClaimTokenSession(string tokenbase64)
+        {
+            if (_loginState.State == Services.LoginState.Connected)
+            {
+                await Logout();
+            }
+            this._loginState.State = Services.LoginState.Connecting;
+            ApiResult<Session> response = await ApiGet<Session>($"/api/session/token/{Uri.EscapeDataString(tokenbase64)}");
+            if (response.IsSuccess)
+            {
+                _navManager.NavigateTo("chat", true); // In order for auth state to update, the page needs to reload
             }
             else
             {

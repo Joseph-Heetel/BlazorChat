@@ -30,6 +30,12 @@ namespace BlazorChat.Server.Services
         /// <param name="newPasswordHash"></param>
         /// <returns></returns>
         public Task<bool> UpdatePassword(string login, ByteArray newPasswordHash);
+        /// <summary>
+        /// Gets the user id for login, bypassing password check
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        public Task<ItemId?> GetUserForLogin(string login);
     }
 
     public interface IUserDataService

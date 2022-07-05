@@ -12,13 +12,15 @@ namespace BlazorChat.Server.Controllers
     [ApiController]
     public class SessionController : ControllerBase
     {
-        public readonly ILoginDataService _loginService;
-        public readonly IUserDataService _userService;
+        private readonly ILoginDataService _loginService;
+        private readonly IUserDataService _userService;
+        private readonly ITokenService _tokenService;
 
-        public SessionController(ILoginDataService loginData, IUserDataService userData)
+        public SessionController(ILoginDataService loginData, IUserDataService userData, ITokenService tokenService)
         {
             _loginService = loginData;
             _userService = userData;
+            _tokenService = tokenService;
         }
 
         /// <summary>
@@ -100,6 +102,30 @@ namespace BlazorChat.Server.Controllers
 
             // Generate session
             return await HttpContext.SigninSession(request.ExpireDelay, user, request.Login);
+        }
+
+        [Route("token/{tokenbase64}")]
+        [HttpGet]
+        public async Task<ActionResult<Session>> ClaimTokenSession(string tokenbase64)
+        {
+            if (!_tokenService.ValidateToken(tokenbase64, out string login, out DateTimeOffset expires))
+            {
+                return Unauthorized();
+            }
+            
+            var userId = await _loginService.GetUserForLogin(login);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var user = await _userService.GetUser(userId.Value);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            return await HttpContext.SigninSession(default, user, login);
         }
 
         [Route("changepassword")]

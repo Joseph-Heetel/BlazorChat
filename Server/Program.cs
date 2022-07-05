@@ -36,6 +36,7 @@ builder.Services.AddSingleton<IMessageDataService, MessageDataService>();
 builder.Services.AddSingleton<IFormDataService, FormDataService>();
 builder.Services.AddSingleton<ICallSupportService, CallSupportService>();
 builder.Services.AddSingleton<IDatabaseConnection, CosmosDatabaseConnection>();
+builder.Services.AddSingleton<ITokenService, JsonWebTokenService>();
 builder.Services.AddSingleton<IHubManager, HubManager>();
 
 #if ENABLE_ADMINAPI_AUTH
