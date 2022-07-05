@@ -18,6 +18,7 @@ using BlazorChat.Shared;
 using System.Text.Json;
 using System.Diagnostics;
 using MudBlazor;
+using BlazorChat.Client.Services;
 
 namespace BlazorChat.Client.Components.Chat
 {
@@ -59,15 +60,14 @@ namespace BlazorChat.Client.Components.Chat
             Debug.Assert(!Params.CurrentChannelId.IsZero);
             _state = SendControlState.Sending;
             this.StateHasChanged();
-            Message? result = null;
-            FileAttachment? attachment = null;
+            ApiResult<FileAttachment> attachmentapiresult = default;
             bool error = false;
             if (_file != null)
             {
                 IBrowserFile file = _file;
                 _file = null;
-                attachment = await ChatApiService.UploadFile(Params.CurrentChannelId, file);
-                if (attachment == null)
+                attachmentapiresult = await ChatApiService.UploadFile(Params.CurrentChannelId, file);
+                if (!attachmentapiresult)
                 {
                     _Snackbar.Add(Loc["send_file_fail"], Severity.Error);
                     error = true;
@@ -77,8 +77,9 @@ namespace BlazorChat.Client.Components.Chat
             {
                 string messageBody = _newMessageBody.Trim(' ', '\n');
                 _newMessageBody = string.Empty;
-                result = await ChatApiService.CreateMessage(Params.CurrentChannelId, messageBody, attachment);
-                if (result == null)
+                var attachment = attachmentapiresult.Result;
+                var sendresult = await ChatApiService.CreateMessage(Params.CurrentChannelId, messageBody, attachment);
+                if (!sendresult)
                 {
                     _Snackbar.Add(Loc["send_message_fail"], Severity.Error);
                 }

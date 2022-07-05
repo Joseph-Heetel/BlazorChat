@@ -80,15 +80,33 @@ namespace BlazorChat.Client.Services
         /// <param name="ids">Collection of user Ids to fetch</param>
         /// <returns>Array of user objects. May return empty array if an error occurs.</returns>
         public Task<ApiResult<User[]>> GetUsers(IReadOnlyCollection<ItemId> ids);
+        /// <summary>
+        /// Creates a message
+        /// </summary>
+        /// <param name="channelId"></param>
+        /// <param name="body"></param>
+        /// <param name="attachment"></param>
         Task<ApiResult<Message>> CreateMessage(ItemId channelId, string body = "", FileAttachment? attachment = null);
         /// <summary>
         /// Uploades a new file to channel <paramref name="channelId"/> with file body <paramref name="file"/>
         /// </summary>
         /// <returns>The chatmessage if successful</returns>
         public Task<ApiResult<FileAttachment>> UploadFile(ItemId channelId, IBrowserFile file);
+        /// <summary>
+        /// Upload a new avatar
+        /// </summary>
         public Task<ApiResult> UploadAvatar(IBrowserFile file);
+        /// <summary>
+        /// Update own username
+        /// </summary>
         public Task<ApiResult> UpdateUsername(string username);
+        /// <summary>
+        /// Update own password
+        /// </summary>
         public Task<ApiResult> UpdatePassword(string oldpassword, string newpassword);
+        /// <summary>
+        /// Get temporary url for file access
+        /// </summary>
         public Task<ApiResult<TemporaryURL>> GetTemporaryURL(ItemId channelId, FileAttachment attachment);
         /// <summary>
         /// Get a list of chatmessages
