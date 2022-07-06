@@ -93,7 +93,7 @@ Encapsulated behind services are multiple Microsoft Azure products:
     * [File Upload](Documentation/fileupload.md)
     * [Admin Api](Documentation/adminapi.md)
     * [Client -> Server Communication](Documentation/clientapi.md)
-    * [Database](database.md)
+    * [Database](Documentation/database.md)
 
 # Cloning and Configuration
 

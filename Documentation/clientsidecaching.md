@@ -6,6 +6,8 @@ As an effort to improve application launch performance, a client side cache usin
 * After fetching the current state from the server, the cache service is updated and resynced
 * Since total local storage data size is limited to < 5MB (depending on browser and browser settings) a maximum of items is enforced.
 
+The caches main benefit is enabling some operation when the user starts the application offline.
+
 Local Storage access requires the Browser Api. Normally this can only be accessed via Javascript interop, but a Nuget package conveniently wrapping this exists: [Blazored.LocalStorage](https://www.nuget.org/packages/Blazored.LocalStorage/).
 
 The cache implementation is quite simplistic and has some drawbacks and shortcuts
