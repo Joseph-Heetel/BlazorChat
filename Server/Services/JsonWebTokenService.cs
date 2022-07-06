@@ -38,7 +38,7 @@ namespace BlazorChat.Server.Services
             _jwtHandler = new JwtSecurityTokenHandler();
             
             // Configure security key
-            string? secret = Environment.GetEnvironmentVariable(EnvironmentVarKeys.JWTTOKENSECRET);
+            string? secret = Environment.GetEnvironmentVariable(EnvironmentVarKeys.JWTSECRET);
             byte[] bytes;
             if (!string.IsNullOrEmpty(secret))
             {

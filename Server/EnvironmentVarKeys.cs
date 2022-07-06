@@ -29,14 +29,14 @@
         /// <summary>
         /// Token key string used to configure the jwt Securitykey (UTF8 representation)
         /// </summary>
-        public const string JWTTOKENSECRET = "JwtTokenSecret";
+        public const string JWTSECRET = "JwtSecret";
 
         public static void CheckEnvironment(out bool enableBlob, out bool enableTranslation)
         {
             bool hasCosmosDbConnectionString = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AZURECOSMOSCONNECTIONSTRING));
             enableBlob = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AZUREBLOBCONNECTIONSTRING));
             enableTranslation = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AZURETRANSLATORKEY)) && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AZURETRANSLATORLOCATION));
-            bool hasTokenSecret = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(JWTTOKENSECRET));
+            bool hasTokenSecret = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(JWTSECRET));
 
             if (!hasCosmosDbConnectionString)
             {
@@ -55,7 +55,7 @@
 
             if (!hasTokenSecret)
             {
-                Console.WriteLine($"Environment Variable \"{JWTTOKENSECRET}\" not set. Jwt tokens generated for token sign-in will be signed with a random key generated at startup!");
+                Console.WriteLine($"Environment Variable \"{JWTSECRET}\" not set. Jwt tokens generated for token sign-in will be signed with a random key generated at startup!");
             }
         }
     }

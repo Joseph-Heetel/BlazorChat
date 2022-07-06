@@ -24,7 +24,6 @@ Whenever the database service does not find the required tables present it creat
 |Flag|Description|Files|
 |-|-|-|
 |`ENABLE_ENDUSER_SELFREGISTER`|If set, shows the "register" option in the login screen. Be sure to set it on the server project too to enable the register Api endpoint.|Client/Components/Root.razor.cs|
-|`APIDEBUGLOGGING`|If set, prints to the browser console everytime the Api service invokes an endpoint, and whenever a HttpRequest fails.|Client/Services/ChatApiService.cs Client/Extensions.cs|
 |`HUBDEBUGLOGGING`|If set, prints to the browser console everytime the server invokes a SignalR hub on the client.|Client/Services/ChatHubService.cs|
 ### Server
 |Flag|Description|Files|
@@ -42,3 +41,4 @@ For debugging you may set environment variables via `Server/Properties/launchSet
 |`IceConfigurations`|Array of [RTCIceServer](https://developer.mozilla.org/en-US/docs/Web/API/RTCIceServer) json objects (urls property must be array!). Provided to the client for initializing the RTCPeerConnection with (enabling STUN and TURN support accordingly). |
 |`AzureTranslatorKey`|Key used to authenticate with Azure translator services. |
 |`AzureTranslatorLocation`|Location of Azure Translator Service.|
+|`JwtSecret`|Key used for signing JWTs (for token sign-in urls generated via `adminapi/users/makesession` endpoint). JWTs are signed with HMAC-SHA256 and the key passed as UTF8 represantation byte array.|
