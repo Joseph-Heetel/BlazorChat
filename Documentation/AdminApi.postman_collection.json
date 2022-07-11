@@ -9,7 +9,7 @@
 			"name": "Channels",
 			"item": [
 				{
-					"name": "Get channel list",
+					"name": "Get All Channels",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -27,7 +27,7 @@
 					"response": []
 				},
 				{
-					"name": "Get specific channel",
+					"name": "Get Channel by Id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -46,7 +46,7 @@
 					"response": []
 				},
 				{
-					"name": "Add channel member",
+					"name": "Add Channel Member",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -67,7 +67,7 @@
 					"response": []
 				},
 				{
-					"name": "Remove channel member",
+					"name": "Remove Channel Member",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -88,7 +88,7 @@
 					"response": []
 				},
 				{
-					"name": "Delete channel",
+					"name": "Delete Channel",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -107,7 +107,7 @@
 					"response": []
 				},
 				{
-					"name": "Create channel",
+					"name": "Create Channel",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -135,21 +135,12 @@
 					"response": []
 				},
 				{
-					"name": "Post system message",
+					"name": "Post System Message",
 					"request": {
 						"method": "POST",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"Name\": \"Test Channel\",\r\n    \"UserIds\": [\r\n        \"1a893266bd9c65a8\"\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "{{BaseAddress}}/admin/channels/{channelid}/systemmessage?body=This+is+a+message+sent+from+the+admin+api%21",
+							"raw": "{{BaseAddress}}/admin/channels/{channelid}/systemmessage?body=Welcome+to+Blazor+Chat%21",
 							"host": [
 								"{{BaseAddress}}"
 							],
@@ -162,7 +153,7 @@
 							"query": [
 								{
 									"key": "body",
-									"value": "This+is+a+message+sent+from+the+admin+api%21"
+									"value": "Welcome+to+Blazor+Chat%21"
 								}
 							]
 						}
@@ -175,7 +166,7 @@
 			"name": "User",
 			"item": [
 				{
-					"name": "api/users",
+					"name": "Get All Users",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -193,7 +184,7 @@
 					"response": []
 				},
 				{
-					"name": "api/users/{id}",
+					"name": "Get User by Id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -212,7 +203,7 @@
 					"response": []
 				},
 				{
-					"name": "api/users/create",
+					"name": "Create User",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -238,6 +229,31 @@
 								{
 									"key": "password",
 									"value": "mypassword"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Session",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseAddress}}/admin/users/makesession?login=testuser",
+							"host": [
+								"{{BaseAddress}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"makesession"
+							],
+							"query": [
+								{
+									"key": "login",
+									"value": "testuser"
 								}
 							]
 						}
@@ -390,7 +406,7 @@
 	"variable": [
 		{
 			"key": "BaseAddress",
-			"value": "https://localhost:7196/api",
+			"value": "https://localhost:7196/api\n",
 			"type": "default"
 		}
 	]
