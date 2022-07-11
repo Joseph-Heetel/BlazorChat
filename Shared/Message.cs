@@ -10,7 +10,7 @@ namespace BlazorChat.Shared
     /// <summary>
     /// Represents a chat message
     /// </summary>
-    public class Message : ItemBase
+    public class Message : ItemBase, IComparable<Message>
     {
         [JsonConverter(typeof(ItemIdConverter))]
         public ItemId ChannelId { get; set; }
@@ -46,6 +46,27 @@ namespace BlazorChat.Shared
         public override string ToString()
         {
             return $"[{ChannelId:X}] {AuthorId:X}: \"{Body}\" ({DateTimeOffset.FromUnixTimeMilliseconds(CreatedTS)}, {Id:X})";
+        }
+
+        public int CompareTo(Message? other)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+            if (object.ReferenceEquals(this, other))
+            {
+                return 0;
+            }
+            return Created.CompareTo(other.Created);
+        }
+    }
+
+    public class MessageComparer : IComparer<Message>
+    {
+        public int Compare(Message? x, Message? y)
+        {
+            return x?.CompareTo(y) ?? (y == null ? 0 : -1);
         }
     }
 

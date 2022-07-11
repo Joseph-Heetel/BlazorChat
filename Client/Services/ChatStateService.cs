@@ -303,14 +303,36 @@ namespace BlazorChat.Client.Services
         private async Task<Message[]> loadNewerMessagesInternal(DateTimeOffset? reference)
         {
             Trace.Assert(_currentChannel.State != null);
-            var apiresult = await _apiService.GetMessages(_currentChannel.State!.Id, reference ?? DateTimeOffset.UtcNow, false, ChatConstants.MESSAGE_FETCH_DEFAULT);
 
-            if (apiresult.TryGet(out Message[] messages) && messages.Length > 0)
+            bool usecache = !_hubService.Connected.State;
+
+            if (!usecache)
             {
-                // Update read horizon if necessary
-                Message newest = messages.MaxBy(x => x.CreatedTS)!;
-                updateReadHorizonIfNecessary(_currentChannel.State, newest.Created);
-                return messages;
+                var apiresult = await _apiService.GetMessages(_currentChannel.State!.Id, reference ?? DateTimeOffset.UtcNow, false, ChatConstants.MESSAGE_FETCH_DEFAULT);
+                if (apiresult.TryGet(out Message[] messages) && messages.Length > 0)
+                {
+                    // Update read horizon if necessary
+                    Message newest = messages.MaxBy(x => x.CreatedTS)!;
+                    updateReadHorizonIfNecessary(_currentChannel.State, newest.Created);
+                    return messages;
+                }
+                else if (apiresult.StatusCode == EApiStatusCode.NetErrorCode || apiresult.StatusCode == EApiStatusCode.NetException)
+                {
+                    // Network error, get messages from cache
+                    usecache = true;
+                }
+            }
+            if (usecache)
+            {
+                List<Message> messages = new List<Message>(await _cacheService.CachedMessages(_currentChannel.State!.Id));
+                messages.Sort(new MessageComparer());
+                for (int i = 0; i < messages.Count; i++)
+                {
+                    if (messages[i].Created > reference)
+                    {
+                        return messages.GetRange(i, messages.Count - i).ToArray();
+                    }
+                }
             }
             return Array.Empty<Message>();
         }
@@ -323,14 +345,36 @@ namespace BlazorChat.Client.Services
         private async Task<Message[]> loadOlderMessagesInternal(DateTimeOffset? reference)
         {
             Trace.Assert(_currentChannel.State != null);
-            var apiresult = await _apiService.GetMessages(_currentChannel.State!.Id, reference ?? DateTimeOffset.UtcNow, true, ChatConstants.MESSAGE_FETCH_DEFAULT);
 
-            if (apiresult.TryGet(out Message[] messages) && messages.Length > 0)
+            bool usecache = !_hubService.Connected.State;
+
+            if (!usecache)
             {
-                // Update read horizon if necessary
-                Message newest = messages.MaxBy(x => x.CreatedTS)!;
-                updateReadHorizonIfNecessary(_currentChannel.State, newest.Created);
-                return messages;
+                var apiresult = await _apiService.GetMessages(_currentChannel.State!.Id, reference ?? DateTimeOffset.UtcNow, true, ChatConstants.MESSAGE_FETCH_DEFAULT);
+                if (apiresult.TryGet(out Message[] messages) && messages.Length > 0)
+                {
+                    // Update read horizon if necessary
+                    Message newest = messages.MaxBy(x => x.CreatedTS)!;
+                    updateReadHorizonIfNecessary(_currentChannel.State, newest.Created);
+                    return messages;
+                }
+                else if (apiresult.StatusCode == EApiStatusCode.NetErrorCode || apiresult.StatusCode == EApiStatusCode.NetException)
+                {
+                    // Network error, get messages from cache
+                    usecache = true;
+                }
+            }
+            if (usecache)
+            {
+                List<Message> messages = new List<Message>(await _cacheService.CachedMessages(_currentChannel.State!.Id));
+                messages.Sort(new MessageComparer());
+                for (int i = messages.Count - 1; i >= 0; i--)
+                {
+                    if (messages[i].Created < reference)
+                    {
+                        return messages.GetRange(0, i).ToArray();
+                    }
+                }
             }
             return Array.Empty<Message>();
         }
@@ -436,20 +480,16 @@ namespace BlazorChat.Client.Services
 
         #endregion
 
-        public async Task SetCurrentChannel(Channel? channel, DateTimeOffset? reference)
+        public Task SetCurrentChannel(Channel? channel, DateTimeOffset? reference)
         {
             _currentChannel.State = channel;
             clearMessages();
             if (channel != null)
             {
                 _ = Task.Run(() => this.CheckoutTimestamp(reference ?? DateTimeOffset.UtcNow));
-                if (reference == null)
-                {
-                    var messages = await _cacheService.CachedMessages(channel.Id);
-                    await integrateMessages(messages, true);
-                }
             }
             updateNavBarQuery();
+            return Task.CompletedTask;
         }
 
         public Task ClearHighlightedMessage()
