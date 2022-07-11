@@ -14,8 +14,11 @@ git clone https://github.com/Soloplan-Innovation-Lab/BlazorChat
 ## Build and Run
 
 
-Configure compiler flags and optional environment variables if you want. Initialise your dotnet environment and Build the project.
-Whenever the database service does not find the required tables present it creates those and adds some default data. Open your browser and navigate to [https:://localhost:7196/chat](https:://localhost:7196/chat), then authenticate with `testuser` and `password`. Refer to the AdminApi to generate and configure more users.
+Configure compiler flags and optional environment variables if you want. Initialise your dotnet environment and Build the project. Whenever the database service does not find the required tables present it creates those and adds some default data.
+
+Open your browser and navigate to [https:://localhost:7196/chat](https:://localhost:7196/chat). You may need to trust the dev environment https certificate (`dotnet dev-certs https --trust`).
+
+In the chat login page, authenticate with `testuser` and `password`. Refer to the AdminApi to generate and configure more users.
 
 (You can connect from other devices in the local network via `https://<HostingComputersLocalIp>:7196/chat`)
 
@@ -42,3 +45,17 @@ For debugging you may set environment variables via `Server/Properties/launchSet
 |`AzureTranslatorKey`|Key used to authenticate with Azure translator services. |
 |`AzureTranslatorLocation`|Location of Azure Translator Service.|
 |`JwtSecret`|Key used for signing JWTs (for token sign-in urls generated via `adminapi/users/makesession` endpoint). JWTs are signed with HMAC-SHA256 and the key passed as UTF8 represantation byte array.|
+
+### Example Iceconfigurations Env Variable
+```
+"IceConfigurations": 
+"[
+    {\"urls\": [\"stun:stun.l.google.com:19302\"]},
+    {
+        \"urls\":[\"stun:s.example.com\",\"turn:t.example.com\"],
+        \"username\":\"myusername\",
+        \"credentialType\":\"password\",
+        \"credential\":\"mypassword\"
+    }
+]"
+```

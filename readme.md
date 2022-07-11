@@ -37,6 +37,11 @@ It is commonplace in the logistics branche for companies to employ external cont
 * Forms attached to messages
 * Forms are defined as [Json Schemas](https://json*schema.org/)
 
+### PWA
+
+* Can be "installed" as **Progressive Web App**
+* Falls back to a **local text cache** if internet connection fails
+
 ### Miscellaneous
 
 * All **data access is scoped** to channels (no data leaks between users who don't share channels)
