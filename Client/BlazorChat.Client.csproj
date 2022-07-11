@@ -4,13 +4,14 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>10.0</LangVersion>
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
 		<TypeScriptToolsVersion>4.6.2</TypeScriptToolsVersion>
 		<RootNamespace>BlazorChat.Client</RootNamespace>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <DefineConstants></DefineConstants>
+		<DefineConstants></DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -18,11 +19,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <DefineConstants></DefineConstants>
+		<DefineConstants></DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Scripts\Interop.js" />
+		<None Remove="Scripts\Interop.js" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -33,7 +34,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.5" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.6" />
-		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.7.2">
+		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.7.4">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -43,7 +44,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Shared\BlazorChat.Shared.csproj" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<Content Include="Scripts\Interop.ts" />
 	</ItemGroup>
@@ -53,8 +54,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Update="appsettings.json">
-	    <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-	  </Content>
+		<Content Update="appsettings.json">
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</Content>
 	</ItemGroup>
 </Project>

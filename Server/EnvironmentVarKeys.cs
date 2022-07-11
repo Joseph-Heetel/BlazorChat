@@ -31,7 +31,13 @@
         /// </summary>
         public const string JWTSECRET = "JwtSecret";
 
-        public static void CheckEnvironment(out bool enableBlob, out bool enableTranslation)
+        /// <summary>
+        /// Checks for required environment variables.
+        /// </summary>
+        /// <param name="enableBlob"></param>
+        /// <param name="enableTranslation"></param>
+        /// <returns>Returns true, if all mandatory environment variables are set, false otherwise.</returns>
+        public static bool CheckEnvironment(out bool enableBlob, out bool enableTranslation)
         {
             bool hasCosmosDbConnectionString = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AZURECOSMOSCONNECTIONSTRING));
             enableBlob = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AZUREBLOBCONNECTIONSTRING));
@@ -40,23 +46,24 @@
 
             if (!hasCosmosDbConnectionString)
             {
-                Console.Error.WriteLine($"Required environment variable \"{AZURECOSMOSCONNECTIONSTRING}\" was not set!");
+                Console.Error.WriteLine($"REQUIRED environment variable \"{AZURECOSMOSCONNECTIONSTRING}\" was not set!");
             }
 
             if (!enableBlob)
             {
-                Console.WriteLine($"Environment Variable \"{AZUREBLOBCONNECTIONSTRING}\" was not set. BlobStorage support disabled!");
+                Console.WriteLine($"Optional Environment Variable \"{AZUREBLOBCONNECTIONSTRING}\" was not set. BlobStorage support disabled!");
             }
 
             if (!enableTranslation)
             {
-                Console.WriteLine($"Environment Variables \"{AZURETRANSLATORKEY}\" and \"{AZURETRANSLATORLOCATION}\" were not set. Translator support disabled!");
+                Console.WriteLine($"Optional Environment Variables \"{AZURETRANSLATORKEY}\" and \"{AZURETRANSLATORLOCATION}\" were not set. Translator support disabled!");
             }
 
             if (!hasTokenSecret)
             {
-                Console.WriteLine($"Environment Variable \"{JWTSECRET}\" not set. Jwt tokens generated for token sign-in will be signed with a random key generated at startup!");
+                Console.WriteLine($"Optional Environment Variable \"{JWTSECRET}\" not set. Jwt tokens generated for token sign-in will be signed with a random key generated at startup!");
             }
+            return hasCosmosDbConnectionString;
         }
     }
 }

@@ -19,9 +19,9 @@ namespace BlazorChat.Server.Services
         private readonly IIdGeneratorService _idGenService;
         private readonly IHubContext<ChatHub> _hubContext;
         private readonly IHubManager _hubManager;
-        private readonly IStorageService _storageService;
+        private readonly IStorageService? _storageService;
 
-        public ChannelDataService(IDatabaseConnection db, IIdGeneratorService idgen, IHubContext<ChatHub> hub, IHubManager hubManager, IStorageService storage)
+        public ChannelDataService(IDatabaseConnection db, IIdGeneratorService idgen, IHubContext<ChatHub> hub, IHubManager hubManager, IServiceProvider serviceProvider)
         {
             _channelsTable = db.GetTable<ChannelModel>(DatabaseConstants.CHANNELSTABLE);
             _membersTable = db.GetTable<MembershipModel>(DatabaseConstants.MEMBERSHIPSTABLE);
@@ -29,7 +29,7 @@ namespace BlazorChat.Server.Services
             _idGenService = idgen;
             _hubContext = hub;
             _hubManager = hubManager;
-            _storageService = storage;
+            _storageService = serviceProvider.GetService<IStorageService>();
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace BlazorChat.Server.Services
                 var deleteMembershipsTask = _membersTable.BulkDeleteItemsAsync(MakeQuery_Participants(channelId), "0");
 
                 // Delete the blob container storing media
-                var deleteBlobTasks = _storageService.DeleteContainer(channelId);
+                var deleteBlobTasks = _storageService?.DeleteContainer(channelId) ?? Task.CompletedTask;
 
                 // Notify channel members that the channels available to them have changed
                 var notifyChannelMembersTask = _hubContext.Clients.Group(IHubManager.ChannelGroupName(channelId)).SendAsync(SignalRConstants.CHANNEL_LISTCHANGED);

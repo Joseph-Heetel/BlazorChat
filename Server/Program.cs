@@ -15,7 +15,10 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 
-EnvironmentVarKeys.CheckEnvironment(out bool enableBlob, out bool enableTranslation);
+if (!EnvironmentVarKeys.CheckEnvironment(out bool enableBlob, out bool enableTranslation))
+{
+    return;
+}
 
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 {
