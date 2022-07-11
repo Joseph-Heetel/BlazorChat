@@ -75,7 +75,11 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(o => 
+{
+    o.MapType<ItemId>(() => { return new Microsoft.OpenApi.Models.OpenApiSchema() { Type = "string" }; });
+    o.MapType<ByteArray>(() => { return new Microsoft.OpenApi.Models.OpenApiSchema() { Type = "string" }; });
+});
 builder.Logging.AddAzureWebAppDiagnostics();
 builder.Logging.AddConsole();
 
@@ -83,6 +87,7 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
