@@ -61,7 +61,7 @@ namespace BlazorChat.Client.Components.Chat
             }
         }
 
-        private async Task onSubmit()
+        private void onSubmit()
         {
             if (_state != SendControlState.Ready)
             {
@@ -86,13 +86,18 @@ namespace BlazorChat.Client.Components.Chat
                 var state = await dispatchState.Task;
                 if (state == EMessageDispatchState.Failure)
                 {
-                    _Snackbar.Add("Failure", Severity.Error, options =>
+                    _Snackbar.Add(Loc["send_message_fail"], Severity.Error, options =>
                     {
                         options.VisibleStateDuration = 5000;
                     });
                 }
             });
             this.StateHasChanged();
+        }
+
+        private void onClearPending()
+        {
+            _messageDispatcher.Clear();
         }
 
         private void onKeyPress(KeyboardEventArgs e)

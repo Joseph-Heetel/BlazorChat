@@ -33,6 +33,13 @@ namespace BlazorChat.Client.Components.Chat
         protected override void OnInitialized()
         {
             ChatState.HighlightedMessageId.StateChanged += HighlightedMessageId_StateChanged;
+            _messageDispatch.ActiveMessageDispatches.StateChanged += ActiveMessageDispatches_StateChanged;
+        }
+
+        private void ActiveMessageDispatches_StateChanged(IReadOnlyCollection<Services.IMessageDispatchState> value)
+        {
+            RefreshParameters();
+            StateHasChanged();
         }
 
         private void HighlightedMessageId_StateChanged(ItemId value)
@@ -50,9 +57,14 @@ namespace BlazorChat.Client.Components.Chat
 
         protected override void OnParametersSet()
         {
+            RefreshParameters();
+        }
+
+        private void RefreshParameters()
+        {
             // Construct the messageviewparam list including read state information
             _messages.Clear();
-            _messages.Capacity = Params.Messages.Count;
+            _messages.Capacity = Params.Messages.Count + _messageDispatch.Count.State;
 
             // Keep track of prev. messages author and timestamp so we can hide if they're not necessary
             ItemId prevAuthorId = default;
@@ -86,6 +98,17 @@ namespace BlazorChat.Client.Components.Chat
 
                 prevAuthorId = message.AuthorId;
                 prevMessageTime = message.Created;
+            }
+            foreach (var message in _messageDispatch.AsPendingMessages())
+            {
+                _messages.Add(new MessageViewParams()
+                {
+                    Message = message,
+                    ReadCount = 0,
+                    SelfUserId = Params.SelfUserId,
+                    TotalCount = Params.Participants.Count,
+                    ShowAuthor = false
+                });
             }
         }
 
@@ -144,6 +167,7 @@ namespace BlazorChat.Client.Components.Chat
         {
             _objectReference?.Dispose();
             ChatState.HighlightedMessageId.StateChanged -= HighlightedMessageId_StateChanged;
+            _messageDispatch.ActiveMessageDispatches.StateChanged -= ActiveMessageDispatches_StateChanged;
             if (!string.IsNullOrEmpty(_observerInteropId))
             {
                 await JS.InvokeVoidAsync($"{_observerInteropId}.dispose");

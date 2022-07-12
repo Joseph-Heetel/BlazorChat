@@ -85,6 +85,10 @@ div.darkbackgroundaccent {
     background-color: var(--mud-palette-primary);
 }
 
+div.pendingaccent {
+    background-color: var(--mud-palette-warning-darken);
+}
+
 div.lightbackgroundaccent {
     background-color: var(--mud-palette-info-lighten);
 }

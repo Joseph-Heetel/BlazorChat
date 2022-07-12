@@ -18,15 +18,22 @@
         <MudCardHeader>
             <CardHeaderContent>
                 <div class="row_container" style="align-content: stretch; gap: 0.3em">
-                    @if (Params.TotalCount == Params.ReadCount)
+                    @if (_pending)
                     {
-                        <MudIcon Icon=@(Icons.Filled.DoneAll) Size=@(Size.Small)/>
+                        <MudIcon Icon=@(Icons.Filled.Sync) Size=@(Size.Small) />
                     }
-                    <MudText Typo=@(Typo.caption) Style="flex: 0 1 100%">@(_timedisplay)</MudText>
+                    else if (Params.TotalCount == Params.ReadCount)
+                    {
+                        <MudIcon Icon=@(Icons.Filled.DoneAll) Size=@(Size.Small) />
+                    }
+                    @if (!_pending)
+                    {
+                        <MudText Typo=@(Typo.caption) Style="flex: 0 1 100%">@(_timedisplay)</MudText>
+                    }
                 </div>
             </CardHeaderContent>
             <CardHeaderActions>
-                @if(_text.Length > 0 && Params.Message.AuthorId != Params.SelfUserId)
+                @if (_text.Length > 0 && Params.Message.AuthorId != Params.SelfUserId)
                 {
                     <MudIconButton Icon=@(Icons.Filled.Translate) OnClick=@(translate) />
                 }

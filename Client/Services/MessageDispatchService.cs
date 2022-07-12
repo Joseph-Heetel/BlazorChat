@@ -109,6 +109,8 @@ namespace BlazorChat.Client.Services
         /// Collection of currently queued messages
         /// </summary>
         public IReadOnlyObservable<IReadOnlyCollection<IMessageDispatchState>> ActiveMessageDispatches { get; }
+        public Message[] AsPendingMessages();
+        public void Clear();
     }
 
     public class MessageDispatchService : IMessageDispatchService, IDisposable
@@ -262,7 +264,7 @@ namespace BlazorChat.Client.Services
                         }
                     }
                 }
-                _ = _dispatchProcesses.Dequeue();
+                _ = _dispatchProcesses.TryDequeue(out _);
                 // Update UI state
                 UpdateState();
             }
@@ -300,6 +302,26 @@ namespace BlazorChat.Client.Services
                 }
             }
             await _cacheService.SetQueuedMessages(messages);
+        }
+
+        public Message[] AsPendingMessages()
+        {
+            return _dispatchProcesses.Select(p =>
+            {
+                FileAttachment? attachment = null;
+                if (p.File != null)
+                {
+                    attachment = new FileAttachment() { MimeType = p.File.ContentType, Size = p.File.Size };
+                }
+                return new Message(default, p.ChannelId, _apiService.SelfUser.State!.Id, 0, p.Body ?? string.Empty, attachment);
+            }).ToArray();
+        }
+
+        public void Clear()
+        {
+            _dispatchProcesses.Clear();
+            UpdateState();
+            _ = Task.Run(SaveMessageQueue);
         }
     }
 }

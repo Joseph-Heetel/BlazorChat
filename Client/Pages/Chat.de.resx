@@ -309,6 +309,9 @@
   <data name="search_title" xml:space="preserve">
     <value>Suche nach Nachrichten in {0}</value>
   </data>
+  <data name="send_clear_pending" xml:space="preserve">
+    <value>Ausstehende Nachrichten löschen</value>
+  </data>
   <data name="send_file" xml:space="preserve">
     <value>Datei:</value>
   </data>

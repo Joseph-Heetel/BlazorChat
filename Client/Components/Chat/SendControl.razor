@@ -3,6 +3,7 @@
 @inject Services.IChatStateService ChatStateService
 @inject Services.IMessageDispatchService _messageDispatcher
 @inject IStringLocalizer<Pages.Chat> Loc
+@using BlazorChat.Shared
 
 @* This component hosts inputs and logic for composing messages *@
 
@@ -29,11 +30,30 @@
                                Icon="@Icons.Filled.CloudUpload"
                                Disabled=@(_state != SendControlState.Ready)
                                for="fileInput" />
-                <MudTextField Class="autoflex" @bind-Value="_newMessageBody" Immediate Lines=@(2) Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                <MudTextField Class="autoflex"
+                              @bind-Value="_newMessageBody"
+                              Immediate Lines=@(2)
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              MaxLength=@(ChatConstants.MESSAGE_BODY_MAX)></MudTextField>
                 @if (_queuedMessagesCount > 0)
                 {
                     <MudBadge Content=@(_queuedMessagesCount) Color=@(Color.Warning)>
-                        <MudIcon Icon=@(Icons.Filled.ScheduleSend)></MudIcon>
+                        <MudMenu>
+                            <ActivatorContent>
+                                <MudIconButton Icon=@(Icons.Filled.ScheduleSend)>
+                                </MudIconButton>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <MudMenuItem>
+                                    <MudButton StartIcon=@(Icons.Filled.Clear)
+                                           IconColor=@(Color.Error)
+                                           OnClick=@(onClearPending)>
+                                           @Loc["send_clear_pending"]
+                                    </MudButton>
+                                </MudMenuItem>
+                            </ChildContent>
+                        </MudMenu>
                     </MudBadge>
                 }
                 @if (_state == SendControlState.Sending)

@@ -1,5 +1,6 @@
 ﻿@using BlazorChat.Shared
 @inject Services.IChatStateService ChatState
+@inject Services.IMessageDispatchService _messageDispatch
 @inject IJSRuntime JS
 
 @* This component renders the list currently of currently loaded messages and provides the javascript interop

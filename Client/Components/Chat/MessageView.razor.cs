@@ -41,6 +41,7 @@ namespace BlazorChat.Client.Components.Chat
         private ItemId _formRequestId = default;
         private string _cardClass = "darkenedcard";
         private ItemId _channelId = default;
+        private bool _pending = false;
 
         private UserViewParams _authorViewParams;
 
@@ -62,12 +63,6 @@ namespace BlazorChat.Client.Components.Chat
             ChatStateService.UserCache.StateChanged += UserCache_StateChanged;
         }
 
-        private void IsDarkMode_StateChanged(bool value)
-        {
-            updateAccent();
-            this.StateHasChanged();
-        }
-
         protected override void OnParametersSet()
         {
             _authorViewParams = new UserViewParams()
@@ -87,6 +82,8 @@ namespace BlazorChat.Client.Components.Chat
             }
 
             _formRequestId = Params.Message.FormRequestId;
+
+            _pending = Params.Message.Id.IsZero;
 
             _text = Params.Message.Body.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
@@ -158,7 +155,14 @@ namespace BlazorChat.Client.Components.Chat
             _accent = (!Params.SelfUserId.IsZero && Params.Message?.AuthorId == Params.SelfUserId);
             if (_accent)
             {
-                _cardClass = (ThemeInfo?.IsDarkMode ?? false) ? "darkbackgroundaccent" : "lightbackgroundaccent";
+                if (_pending)
+                {
+                    _cardClass = "pendingaccent";
+                }
+                else
+                {
+                    _cardClass = (ThemeInfo?.IsDarkMode ?? false) ? "darkbackgroundaccent" : "lightbackgroundaccent";
+                }
             }
             else
             {
