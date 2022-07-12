@@ -109,7 +109,13 @@ namespace BlazorChat.Client.Services
         /// Collection of currently queued messages
         /// </summary>
         public IReadOnlyObservable<IReadOnlyCollection<IMessageDispatchState>> ActiveMessageDispatches { get; }
+        /// <summary>
+        /// Converts dispatch processes to pending messages
+        /// </summary>
         public Message[] AsPendingMessages();
+        /// <summary>
+        /// Clear and cancel all dispatch processes
+        /// </summary>
         public void Clear();
     }
 
@@ -326,6 +332,10 @@ namespace BlazorChat.Client.Services
         public void Clear()
         {
             _clearCts.Cancel();
+            foreach (var process in _dispatchProcesses)
+            {
+                process.Tcs.SetCanceled(_clearCts.Token);
+            }
             _clearCts.Dispose();
             _clearCts = new CancellationTokenSource();
             _dispatchProcesses.Clear();

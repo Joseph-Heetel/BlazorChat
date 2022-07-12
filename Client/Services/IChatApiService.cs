@@ -192,6 +192,10 @@ namespace BlazorChat.Client.Services
         /// Gets a temporary url for a user avatar
         /// </summary>
         Task<ApiResult<TemporaryURL>> GetTemporaryAvatarURL(ItemId userId, FileAttachment attachment, CancellationToken ct = default);
+        /// <summary>
+        /// Start a session by consuming a JWT in base64 string format
+        /// </summary>
+        /// <param name="tokenbase64"></param>
         Task<ApiResult> ClaimTokenSession(string tokenbase64, CancellationToken ct = default);
     }
 }

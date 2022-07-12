@@ -69,9 +69,22 @@ namespace BlazorChat.Client.Services
         /// Purges the entire cache (for example on user logout)
         /// </summary>
         public Task ClearCache();
+        /// <summary>
+        /// Retrieve a placeholder session for offline use
+        /// </summary>
         public Task<Session?> GetOfflineSession();
+        /// <summary>
+        /// Save session to be retrievable as offline session
+        /// </summary>
         public Task SetOfflineSession(Session session);
+        /// <summary>
+        /// Set pending messages to be stored for later upload
+        /// </summary>
         public Task SetQueuedMessages(IReadOnlyCollection<MessageDispatchProcess> processes);
+        /// <summary>
+        /// Retrieve pending messages
+        /// </summary>
+        /// <returns></returns>
         public Task<MessageDispatchProcess[]> GetQueuedMessages();
     }
 }

@@ -69,6 +69,12 @@ namespace BlazorChat.Client.Services
         /// </summary>
         /// <returns></returns>
         Task ClearHighlightedMessage();
+        /// <summary>
+        /// Replaces a loaded message indicated by channelId+messageId with a version translated to current locale
+        /// </summary>
+        /// <param name="channelId"></param>
+        /// <param name="messageId"></param>
+        /// <returns></returns>
         Task TranslateMessage(ItemId channelId, ItemId messageId);
     }
 }
