@@ -1,9 +1,8 @@
 ﻿@using BlazorChat.Client.Services
 @using BlazorChat.Shared
 @using System.Collections
-@inject IChatStateService ChatStateService
-@inject IChatApiService ChatApiService
-@inject IMediaResolverService MediaService
+@inject IChatApiService _apiService
+@inject IMediaResolverService _mediaService
 @inject IStringLocalizer<Pages.Chat> Loc
 @inject ISnackbar Snackbar
 
@@ -48,6 +47,13 @@
                     }
                     <MudText>@(Loc["pedit_upload"])</MudText>
                 </MudButton>
+                @if (!string.IsNullOrEmpty(_avatarUrl))
+                {
+                    <MudIconButton Icon=@(Icons.Filled.Delete)
+                           Color=@(Color.Error)
+                           Variant=@(Variant.Outlined)
+                           OnClick=@(deleteAvatar)></MudIconButton>
+                }
             }
             else
             {

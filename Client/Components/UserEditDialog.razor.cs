@@ -38,8 +38,8 @@ namespace BlazorChat.Client.Components
 
         protected override void OnInitialized()
         {
-            ChatApiService.SelfUser.StateChanged += SelfUser_StateChanged;
-            SelfUser_StateChanged(ChatApiService.SelfUser.State);
+            _apiService.SelfUser.StateChanged += SelfUser_StateChanged;
+            SelfUser_StateChanged(_apiService.SelfUser.State);
         }
 
         private void SelfUser_StateChanged(User? value)
@@ -57,12 +57,12 @@ namespace BlazorChat.Client.Components
             {
                 if (!_avatarId.IsZero)
                 {
-                    MediaService.Unsubscribe(_avatarId, onAvatarUrlChanged);
+                    _mediaService.Unsubscribe(_avatarId, onAvatarUrlChanged);
                 }
                 if (_selfUser?.Avatar != null)
                 {
                     _avatarId = _selfUser.Avatar.Id;
-                    _avatarUrl = MediaService.GetAndSubscribe(_selfUser.Id, _selfUser.Avatar, onAvatarUrlChanged);
+                    _avatarUrl = _mediaService.GetAndSubscribe(_selfUser.Id, _selfUser.Avatar, onAvatarUrlChanged);
                 }
             }
             this.StateHasChanged();
@@ -82,7 +82,7 @@ namespace BlazorChat.Client.Components
             }
             _process = Loc["pedit_nameprocess"];
             this.StateHasChanged();
-            await ChatApiService.UpdateUsername(_userName);
+            await _apiService.UpdateUsername(_userName);
             _process = "";
             this.StateHasChanged();
         }
@@ -120,7 +120,7 @@ namespace BlazorChat.Client.Components
             }
             _process = Loc["pedit_pwprocess"];
             this.StateHasChanged();
-            bool success = await ChatApiService.UpdatePassword(_oldPassword, _newPassword);
+            bool success = await _apiService.UpdatePassword(_oldPassword, _newPassword);
             _process = "";
             if (!success)
             {
@@ -158,9 +158,24 @@ namespace BlazorChat.Client.Components
             }
             _process = Loc["pedit_uploadprocess"];
             this.StateHasChanged();
-            await ChatApiService.UploadAvatar(file);
+            await _apiService.UploadAvatar(file);
             _process = "";
             this.StateHasChanged();
+        }
+
+        private async Task deleteAvatar()
+        {
+            if (_selfUser == null || _selfUser.Avatar == null)
+            {
+                return;
+            }
+            var result = await _apiService.UploadAvatar(null);
+            if (result.IsSuccess)
+            {
+                _mediaService.Unsubscribe(_avatarId, onAvatarUrlChanged);
+                _avatarUrl = string.Empty;
+                StateHasChanged();
+            }
         }
 
         private void exit()
@@ -170,8 +185,8 @@ namespace BlazorChat.Client.Components
 
         public void Dispose()
         {
-            ChatApiService.SelfUser.StateChanged -= SelfUser_StateChanged;
-            MediaService.Unsubscribe(_avatarId, onAvatarUrlChanged);
+            _apiService.SelfUser.StateChanged -= SelfUser_StateChanged;
+            _mediaService.Unsubscribe(_avatarId, onAvatarUrlChanged);
         }
     }
 }

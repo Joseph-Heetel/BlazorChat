@@ -88,6 +88,7 @@ namespace BlazorChat.Server.Controllers
                 Size = mem.Length
             };
         }
+
         [Route("avatar")]
         [HttpPost]
         public async Task<ActionResult> UploadAvatar()
@@ -142,6 +143,30 @@ namespace BlazorChat.Server.Controllers
                 Size = mem.Length
             };
             if (!await _userService.UpdateAvatar(userId, attachment))
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            return Ok();
+        }
+
+        [Route("avatar")]
+        [HttpDelete]
+        public async Task<ActionResult> DeleteAvatar()
+        {
+            // check authorization, get user Id
+            if (!User.GetUserLogin(out ItemId userId))
+            {
+                return Unauthorized();
+            }
+
+            if (_storageService == null)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable);
+            }
+
+            await _storageService.ClearContainer(userId);
+
+            if (!await _userService.UpdateAvatar(userId, null))
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }

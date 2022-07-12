@@ -88,7 +88,7 @@ namespace BlazorChat.Client.Services
         /// <param name="path"></param>
         /// <param name="payload"></param>
         /// <returns></returns>
-        private async Task<ApiResult> apiPost<TPayload>(string path, TPayload payload)
+        private async Task<ApiResult> apiPost<TPayload>(string path, TPayload payload, CancellationToken ct = default)
         {
             string method = $"POST<{typeof(TPayload)}>";
             HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, path);
@@ -101,28 +101,28 @@ namespace BlazorChat.Client.Services
                 _logger.LogCritical($"Http {method} \"{path}\" request json serialization failed: {e.Message}");
                 return ApiResult.JsonException;
             }
-            return await ApiHttpSend(message, method);
+            return await apiHttpSend(message, method, ct);
         }
 
         /// <summary>
         /// Sends Http Request
         /// </summary>
-        private Task<ApiResult> apiHttpSend(HttpMethod method, string path)
+        private Task<ApiResult> apiHttpSend(HttpMethod method, string path, CancellationToken ct = default)
         {
             HttpRequestMessage request = new HttpRequestMessage(method, path);
-            return ApiHttpSend(request);
+            return apiHttpSend(request, null, ct);
         }
         /// <summary>
         /// Sends Http Request
         /// </summary>
-        public async Task<ApiResult> ApiHttpSend(HttpRequestMessage message, string? customMethodInfo = null)
+        private async Task<ApiResult> apiHttpSend(HttpRequestMessage message, string? customMethodInfo = null, CancellationToken ct = default)
         {
             HttpClient client = getHttpClient();
             string path = message.RequestUri?.OriginalString ?? "";
             string method = customMethodInfo ?? message.Method.Method;
             try
             {
-                HttpResponseMessage response = await client.SendAsync(message);
+                HttpResponseMessage response = await client.SendAsync(message, ct);
                 if (!response.IsSuccessStatusCode)
                 {
                     _logger.LogWarning($"Http {method} \"{path}\" non-success status: {(int)response.StatusCode} {response.StatusCode}");
@@ -143,14 +143,14 @@ namespace BlazorChat.Client.Services
         /// <summary>
         /// Send Http Get request, json-deserializes response content as <typeparamref name="T"/>
         /// </summary>
-        public Task<ApiResult<T>> ApiGet<T>(string path)
+        private Task<ApiResult<T>> apiGet<T>(string path, CancellationToken ct = default)
         {
-            return ApiHttpSend<T>(HttpMethod.Get, path);
+            return apiHttpSend<T>(HttpMethod.Get, path, ct);
         }
         /// <summary>
         /// Sends Http post request, json-serializes <paramref name="payload"/> as request content, json-deserializes response content as <typeparamref name="T"/>
         /// </summary>
-        public async Task<ApiResult<T>> ApiPost<T, TPayload>(string path, TPayload payload)
+        private async Task<ApiResult<T>> apiPost<T, TPayload>(string path, TPayload payload, CancellationToken ct = default)
         {
             string method = $"POST<{typeof(TPayload)}>";
             HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, path);
@@ -163,20 +163,20 @@ namespace BlazorChat.Client.Services
                 _logger.LogCritical($"Http {method} \"{path}\" request json serialization failed: {e.Message}");
                 return ApiResult<T>.JsonException;
             }
-            return await ApiHttpSend<T>(message, method);
+            return await apiHttpSend<T>(message, method, ct);
         }
         /// <summary>
         /// Send Http request, json-deserializes response content as <typeparamref name="T"/>
         /// </summary>
-        public Task<ApiResult<T>> ApiHttpSend<T>(HttpMethod method, string path)
+        public Task<ApiResult<T>> apiHttpSend<T>(HttpMethod method, string path, CancellationToken ct = default)
         {
             HttpRequestMessage message = new HttpRequestMessage(method, path);
-            return ApiHttpSend<T>(message);
+            return apiHttpSend<T>(message, null, ct);
         }
         /// <summary>
         /// Send Http request, json-deserializes response content as <typeparamref name="T"/>
         /// </summary>
-        public async Task<ApiResult<T>> ApiHttpSend<T>(HttpRequestMessage message, string? customMethodInfo = null)
+        public async Task<ApiResult<T>> apiHttpSend<T>(HttpRequestMessage message, string? customMethodInfo = null, CancellationToken ct = default)
         {
             HttpClient client = getHttpClient();
             string path = message.RequestUri?.OriginalString ?? "";
@@ -184,7 +184,7 @@ namespace BlazorChat.Client.Services
             HttpResponseMessage response;
             try
             {
-                response = await client.SendAsync(message);
+                response = await client.SendAsync(message, ct);
             }
             catch (Exception ex)
             {
@@ -200,7 +200,7 @@ namespace BlazorChat.Client.Services
             {
                 try
                 {
-                    var result = new ApiResult<T>(EApiStatusCode.Success, response.StatusCode, await response.Content.ReadFromJsonAsync<T>());
+                    var result = new ApiResult<T>(EApiStatusCode.Success, response.StatusCode, await response.Content.ReadFromJsonAsync<T>((JsonSerializerOptions?)null, ct));
                     _logger.LogDebug($"Http {method} \"{path}\" good: {(int)response.StatusCode} {response.StatusCode}");
                     return result;
                 }
@@ -215,11 +215,11 @@ namespace BlazorChat.Client.Services
 
         #endregion
 
-        public async Task<ApiResult> Login(string login, string password)
+        public async Task<ApiResult> Login(string login, string password, CancellationToken ct = default)
         {
             this._loginState.State = Services.LoginState.Connecting;
             LoginRequest request = new LoginRequest() { Login = login, PasswordHash = GeneratePasswordHash(password) };
-            ApiResult<Session> response = await ApiPost<Session, LoginRequest>("/api/session/login", request);
+            ApiResult<Session> response = await apiPost<Session, LoginRequest>("/api/session/login", request, ct);
             if (response.IsSuccess)
             {
                 _navManager.NavigateTo("chat", true); // In order for auth state to update, the page needs to reload
@@ -231,11 +231,11 @@ namespace BlazorChat.Client.Services
             return response;
         }
 
-        public async Task<ApiResult> Register(string login, string password, string username)
+        public async Task<ApiResult> Register(string login, string password, string username, CancellationToken ct = default)
         {
             this._loginState.State = Services.LoginState.Connecting;
             var request = new RegisterRequest() { Login = login, PasswordHash = GeneratePasswordHash(password), Name = username };
-            ApiResult<Session> response = await ApiPost<Session, RegisterRequest>("/api/session/register", request);
+            ApiResult<Session> response = await apiPost<Session, RegisterRequest>("/api/session/register", request, ct);
             if (response.IsSuccess)
             {
                 _navManager.NavigateTo("chat", true); // In order for auth state to update, the page needs to reload
@@ -247,10 +247,10 @@ namespace BlazorChat.Client.Services
             return response;
         }
 
-        public async Task<ApiResult<Session>> RecoverExistingSession()
+        public async Task<ApiResult<Session>> RecoverExistingSession(CancellationToken ct = default)
         {
             this._loginState.State = Services.LoginState.Connecting;
-            ApiResult<Session> response = await ApiGet<Session>("/api/session");
+            ApiResult<Session> response = await apiGet<Session>("/api/session", ct);
             Session? session = response.Result;
             if (response.StatusCode == EApiStatusCode.NetException)
             {
@@ -274,14 +274,14 @@ namespace BlazorChat.Client.Services
             return response;
         }
 
-        public async Task<ApiResult> ClaimTokenSession(string tokenbase64)
+        public async Task<ApiResult> ClaimTokenSession(string tokenbase64, CancellationToken ct = default)
         {
             if (_loginState.State == Services.LoginState.Connected)
             {
                 await Logout();
             }
             this._loginState.State = Services.LoginState.Connecting;
-            ApiResult<Session> response = await ApiGet<Session>($"/api/session/token/{Uri.EscapeDataString(tokenbase64)}");
+            ApiResult<Session> response = await apiGet<Session>($"/api/session/token/{Uri.EscapeDataString(tokenbase64)}", ct);
             if (response.IsSuccess)
             {
                 _navManager.NavigateTo("chat", true); // In order for auth state to update, the page needs to reload
@@ -293,9 +293,9 @@ namespace BlazorChat.Client.Services
             return response;
         }
 
-        public async Task Logout()
+        public async Task Logout(CancellationToken ct = default)
         {
-            await apiHttpSend(HttpMethod.Delete, "/api/session/logout");
+            await apiHttpSend(HttpMethod.Delete, "/api/session/logout", ct);
             {
                 this._loginState.State = Services.LoginState.NoInit;
                 this._session.State = null;
@@ -305,22 +305,22 @@ namespace BlazorChat.Client.Services
             }
         }
 
-        public Task<ApiResult<Message>> CreateMessage(ItemId channelId, string body = "", FileAttachment? attachment = null)
+        public Task<ApiResult<Message>> CreateMessage(ItemId channelId, string body = "", FileAttachment? attachment = null, CancellationToken ct = default)
         {
             MessageCreateInfo messageCreateInfo = new MessageCreateInfo() { ChannelId = channelId, Body = body, Attachment = attachment };
-            return ApiPost<Message, MessageCreateInfo>("api/messages/create", messageCreateInfo);
+            return apiPost<Message, MessageCreateInfo>("api/messages/create", messageCreateInfo, ct);
         }
 
-        public Task<ApiResult<Message[]>> SearchMessages(MessageSearchQuery query)
+        public Task<ApiResult<Message[]>> SearchMessages(MessageSearchQuery query, CancellationToken ct = default)
         {
-            return ApiPost<Message[], MessageSearchQuery>("api/messages/find", query);
+            return apiPost<Message[], MessageSearchQuery>("api/messages/find", query, ct);
         }
 
-        public async Task<ApiResult<Message[]>> GetMessages(ItemId channelId, DateTimeOffset reference, bool older, int limit)
+        public async Task<ApiResult<Message[]>> GetMessages(ItemId channelId, DateTimeOffset reference, bool older, int limit, CancellationToken ct = default)
         {
             MessageGetInfo messageGetInfo = new MessageGetInfo() { ChannelId = channelId, Limit = limit, Older = older, Reference = reference };
 
-            var messages = await ApiPost<Message[], MessageGetInfo>("api/messages/get", messageGetInfo);
+            var messages = await apiPost<Message[], MessageGetInfo>("api/messages/get", messageGetInfo, ct);
 
             if (messages.IsSuccess)
             {
@@ -333,7 +333,7 @@ namespace BlazorChat.Client.Services
             return messages;
         }
 
-        public async Task<ApiResult<FileAttachment>> UploadFile(ItemId channelId, IBrowserFile file)
+        public async Task<ApiResult<FileAttachment>> UploadFile(ItemId channelId, IBrowserFile file, CancellationToken ct = default)
         {
             string? mimeType = file.ContentType.ToLowerInvariant();
             if (!FileHelper.IsValidMimeType(mimeType) || !FileHelper.IsImageMime(mimeType))
@@ -348,22 +348,22 @@ namespace BlazorChat.Client.Services
             fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
             HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, $"api/storage/{channelId}");
             message.Content = fileContent;
-            return await ApiHttpSend<FileAttachment>(message);
+            return await apiHttpSend<FileAttachment>(message, null, ct);
         }
 
-        public Task<ApiResult<TemporaryURL>> GetTemporaryURL(ItemId channelId, FileAttachment attachment)
+        public Task<ApiResult<TemporaryURL>> GetTemporaryURL(ItemId channelId, FileAttachment attachment, CancellationToken ct = default)
         {
-            return ApiGet<TemporaryURL>(attachment.TemporaryFileRequestURL(channelId));
+            return apiGet<TemporaryURL>(attachment.TemporaryFileRequestURL(channelId), ct);
         }
 
-        public Task<ApiResult<TemporaryURL>> GetTemporaryAvatarURL(ItemId userId, FileAttachment attachment)
+        public Task<ApiResult<TemporaryURL>> GetTemporaryAvatarURL(ItemId userId, FileAttachment attachment, CancellationToken ct = default)
         {
-            return ApiGet<TemporaryURL>(attachment.TemporaryAvatarRequestURL(userId));
+            return apiGet<TemporaryURL>(attachment.TemporaryAvatarRequestURL(userId), ct);
         }
 
-        public async Task<ApiResult<Channel>> GetChannel(ItemId id)
+        public async Task<ApiResult<Channel>> GetChannel(ItemId id, CancellationToken ct = default)
         {
-            var response = await ApiGet<Channel>($"api/channels/{id}");
+            var response = await apiGet<Channel>($"api/channels/{id}", ct);
             if (response.TryGet(out Channel channel))
             {
                 await _cacheService.UpdateItem(channel);
@@ -371,9 +371,9 @@ namespace BlazorChat.Client.Services
             return response;
         }
 
-        public async Task<ApiResult<Channel[]>> GetChannels()
+        public async Task<ApiResult<Channel[]>> GetChannels(CancellationToken ct = default)
         {
-            var response = await ApiGet<Channel[]>("api/channels");
+            var response = await apiGet<Channel[]>("api/channels", ct);
 
             if (response.TryGet(out Channel[] channels))
             {
@@ -386,9 +386,9 @@ namespace BlazorChat.Client.Services
             return response;
         }
 
-        public async Task<ApiResult<User>> GetUser(ItemId id)
+        public async Task<ApiResult<User>> GetUser(ItemId id, CancellationToken ct = default)
         {
-            var response = await ApiGet<User>($"api/users/{id}");
+            var response = await apiGet<User>($"api/users/{id}", ct);
             if (response.TryGet(out User user))
             {
                 await _cacheService.UpdateItem(user.Clone());
@@ -401,9 +401,9 @@ namespace BlazorChat.Client.Services
 
         }
 
-        public async Task<ApiResult<User[]>> GetUsers(IReadOnlyCollection<ItemId> ids)
+        public async Task<ApiResult<User[]>> GetUsers(IReadOnlyCollection<ItemId> ids, CancellationToken ct = default)
         {
-            var response = await ApiPost<User[], IReadOnlyCollection<ItemId>>("api/users/multi", ids);
+            var response = await apiPost<User[], IReadOnlyCollection<ItemId>>("api/users/multi", ids, ct);
             if (response.TryGet(out User[] users))
                 foreach (var user in users)
                 {
@@ -417,19 +417,19 @@ namespace BlazorChat.Client.Services
             return response;
         }
 
-        public Task<ApiResult<JsonDocument>> GetForm(ItemId formId)
+        public Task<ApiResult<JsonDocument>> GetForm(ItemId formId, CancellationToken ct = default)
         {
-            return ApiGet<JsonDocument>($"api/forms/{formId}");
+            return apiGet<JsonDocument>($"api/forms/{formId}", ct);
         }
 
-        public Task<ApiResult> UpdateReadHorizon(ItemId channelId, DateTimeOffset timestamp)
+        public Task<ApiResult> UpdateReadHorizon(ItemId channelId, DateTimeOffset timestamp, CancellationToken ct = default)
         {
-            return apiHttpSend(HttpMethod.Patch, $"api/channels/{channelId}/readhorizon/{timestamp.ToUnixTimeMilliseconds()}");
+            return apiHttpSend(HttpMethod.Patch, $"api/channels/{channelId}/readhorizon/{timestamp.ToUnixTimeMilliseconds()}", ct);
         }
 
-        public async Task<ApiResult<Message>> GetMessage(ItemId channelId, ItemId messageId)
+        public async Task<ApiResult<Message>> GetMessage(ItemId channelId, ItemId messageId, CancellationToken ct = default)
         {
-            var response = await ApiGet<Message>($"api/messages/{channelId}/{messageId}");
+            var response = await apiGet<Message>($"api/messages/{channelId}/{messageId}", ct);
             if (response.TryGet(out Message message))
             {
                 await _cacheService.UpdateItem(message);
@@ -437,70 +437,76 @@ namespace BlazorChat.Client.Services
             return response;
         }
 
-        public Task<ApiResult<ItemId>> InitCall(ItemId calleeId)
+        public Task<ApiResult<ItemId>> InitCall(ItemId calleeId, CancellationToken ct = default)
         {
-            return ApiHttpSend<ItemId>(HttpMethod.Post, $"api/calls/init/{calleeId}");
+            return apiHttpSend<ItemId>(HttpMethod.Post, $"api/calls/init/{calleeId}", ct);
         }
 
-        public Task<ApiResult<PendingCall[]>> GetCalls()
+        public Task<ApiResult<PendingCall[]>> GetCalls(CancellationToken ct = default)
         {
-            return ApiGet<PendingCall[]>($"api/calls");
+            return apiGet<PendingCall[]>($"api/calls", ct);
         }
 
-        public Task<ApiResult> ElevateCall(ItemId callId)
+        public Task<ApiResult> ElevateCall(ItemId callId, CancellationToken ct = default)
         {
-            return apiHttpSend(HttpMethod.Post, $"api/calls/{callId}");
+            return apiHttpSend(HttpMethod.Post, $"api/calls/{callId}", ct);
         }
 
-        public Task<ApiResult> TerminateCall(ItemId callId)
+        public Task<ApiResult> TerminateCall(ItemId callId, CancellationToken ct = default)
         {
-            return apiHttpSend(HttpMethod.Delete, $"api/calls/{callId}");
+            return apiHttpSend(HttpMethod.Delete, $"api/calls/{callId}", ct);
         }
 
-        public async Task<ApiResult> UploadAvatar(IBrowserFile file)
+        public async Task<ApiResult> UploadAvatar(IBrowserFile? file, CancellationToken ct = default)
         {
-
-            string? mimeType = file.ContentType.ToLowerInvariant();
-            if (!FileHelper.IsValidMimeType(mimeType) || !FileHelper.IsImageMime(mimeType))
+            if (file != null)
             {
-                return ApiResult.PreconditionFail;
+                string? mimeType = file.ContentType.ToLowerInvariant();
+                if (!FileHelper.IsValidMimeType(mimeType) || !FileHelper.IsImageMime(mimeType))
+                {
+                    return ApiResult.PreconditionFail;
+                }
+                if (file.Size > ChatConstants.MAX_FILE_SIZE)
+                {
+                    return ApiResult.PreconditionFail;
+                }
+                var fileContent = new StreamContent(file.OpenReadStream(ChatConstants.MAX_FILE_SIZE));
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, $"api/storage/avatar");
+                message.Content = fileContent;
+                return await apiHttpSend(message, null, ct);
             }
-            if (file.Size > ChatConstants.MAX_FILE_SIZE)
+            else
             {
-                return ApiResult.PreconditionFail;
+                return await apiHttpSend(HttpMethod.Delete, $"api/storage/avatar", ct);
             }
-            var fileContent = new StreamContent(file.OpenReadStream(ChatConstants.MAX_FILE_SIZE));
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, $"api/storage/avatar");
-            message.Content = fileContent;
-            return await ApiHttpSend(message);
         }
 
-        public Task<ApiResult> UpdateUsername(string username)
+        public Task<ApiResult> UpdateUsername(string username, CancellationToken ct = default)
         {
-            return apiHttpSend(HttpMethod.Patch, $"api/users/username/{Uri.EscapeDataString(username)}");
+            return apiHttpSend(HttpMethod.Patch, $"api/users/username/{Uri.EscapeDataString(username)}", ct);
         }
 
-        public Task<ApiResult<FormRequest>> GetFormRequest(ItemId requestId)
+        public Task<ApiResult<FormRequest>> GetFormRequest(ItemId requestId, CancellationToken ct = default)
         {
-            return ApiGet<FormRequest>($"api/forms/request/{requestId}");
+            return apiGet<FormRequest>($"api/forms/request/{requestId}", ct);
         }
 
-        public Task<ApiResult> PostFormResponse(ItemId requestId, JsonNode response)
+        public Task<ApiResult> PostFormResponse(ItemId requestId, JsonNode response, CancellationToken ct = default)
         {
             JsonContent content = JsonContent.Create(response);
-            return apiPost($" api/forms/response/{requestId}", content);
+            return apiPost($" api/forms/response/{requestId}", content, ct);
         }
 
-        public Task<ApiResult<IceConfiguration[]>> GetIceConfigurations(ItemId callId)
+        public Task<ApiResult<IceConfiguration[]>> GetIceConfigurations(ItemId callId, CancellationToken ct = default)
         {
-            return ApiGet<IceConfiguration[]>($"api/calls/ice/{callId}");
+            return apiGet<IceConfiguration[]>($"api/calls/ice/{callId}", ct);
         }
 
-        public async Task<ApiResult<Message>> GetMessageTranslated(ItemId channelId, ItemId messageId, string? languageCode = null)
+        public async Task<ApiResult<Message>> GetMessageTranslated(ItemId channelId, ItemId messageId, string? languageCode = null, CancellationToken ct = default)
         {
             languageCode ??= CultureInfo.CurrentCulture.Name;
-            var response = await ApiGet<Message>($"api/messages/translate/{channelId}/{messageId}/{languageCode}");
+            var response = await apiGet<Message>($"api/messages/translate/{channelId}/{messageId}/{languageCode}", ct);
             if (response.TryGet(out Message message))
             {
                 await _cacheService.UpdateItem(message);
@@ -508,7 +514,7 @@ namespace BlazorChat.Client.Services
             return response;
         }
 
-        public async Task<ApiResult> UpdatePassword(string oldpassword, string newpassword)
+        public async Task<ApiResult> UpdatePassword(string oldpassword, string newpassword, CancellationToken ct = default)
         {
             if (_session.State == null)
             {
@@ -520,7 +526,7 @@ namespace BlazorChat.Client.Services
                 PasswordHash = new ByteArray(_hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(oldpassword))),
                 NewPasswordHash = new ByteArray(_hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(newpassword))),
             };
-            return await apiPost("api/session/changepassword", changeRequest);
+            return await apiPost("api/session/changepassword", changeRequest, ct);
         }
     }
 }

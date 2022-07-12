@@ -118,7 +118,11 @@ namespace BlazorChat.Client.Services
         /// <summary>
         /// CTS for when the service is disposed, allowing the looping task to stop
         /// </summary>
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource _disposeCts = new CancellationTokenSource();
+        /// <summary>
+        /// CTS for when the list is cleared
+        /// </summary>
+        private CancellationTokenSource _clearCts = new CancellationTokenSource();
         /// <summary>
         /// "Semaphore" for accessing the sender function. Blazor WASM is guaranteed completely thread safe, 
         /// but asynchronous tasks could cause multiple send processes to execute "simultaneously".
@@ -154,8 +158,10 @@ namespace BlazorChat.Client.Services
 
         public void Dispose()
         {
-            _cts.Cancel();
-            _cts.Dispose();
+            _disposeCts.Cancel();
+            _disposeCts.Dispose();
+            _clearCts.Cancel();
+            _clearCts.Dispose();
         }
 
         public IMessageDispatchState Postmessage(ItemId channelId, string? body, IBrowserFile? file)
@@ -181,7 +187,7 @@ namespace BlazorChat.Client.Services
         /// <returns></returns>
         private async Task LoopProcessQueue()
         {
-            while (!_cts.IsCancellationRequested)
+            while (!_disposeCts.IsCancellationRequested)
             {
                 await ProcessQueue();
                 await Task.Delay(TimeSpan.FromSeconds(1));
@@ -200,7 +206,7 @@ namespace BlazorChat.Client.Services
             }
             _isProcessingMessages = true;
 
-            while (_dispatchProcesses.Count > 0 && !_cts.IsCancellationRequested)
+            while (_dispatchProcesses.Count > 0 && !_disposeCts.IsCancellationRequested)
             {
                 MessageDispatchProcess current = _dispatchProcesses.Peek();
 
@@ -208,7 +214,7 @@ namespace BlazorChat.Client.Services
                 if (current.File != null && current.UploadFileResult == null)
                 {
                     // Upload file
-                    ApiResult<FileAttachment> upload = await _apiService.UploadFile(current.ChannelId, current.File);
+                    ApiResult<FileAttachment> upload = await _apiService.UploadFile(current.ChannelId, current.File, _clearCts.Token);
                     current.UploadFileResult = upload;
 
                     // Process upload result
@@ -234,7 +240,7 @@ namespace BlazorChat.Client.Services
                 {
                     // Send the message
                     FileAttachment? attachment = current.UploadFileResult?.Result;
-                    ApiResult<Message> send = await _apiService.CreateMessage(current.ChannelId, current.Body ?? string.Empty, attachment);
+                    ApiResult<Message> send = await _apiService.CreateMessage(current.ChannelId, current.Body ?? string.Empty, attachment, _clearCts.Token);
                     current.SendMessageResult = send;
 
                     // Process the message creation result
@@ -319,6 +325,9 @@ namespace BlazorChat.Client.Services
 
         public void Clear()
         {
+            _clearCts.Cancel();
+            _clearCts.Dispose();
+            _clearCts = new CancellationTokenSource();
             _dispatchProcesses.Clear();
             UpdateState();
             _ = Task.Run(SaveMessageQueue);
