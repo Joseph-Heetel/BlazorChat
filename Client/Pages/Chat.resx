@@ -270,6 +270,9 @@
   <data name="pview_inchannel" xml:space="preserve">
     <value>In Channel</value>
   </data>
+  <data name="pwaprompt" xml:space="preserve">
+    <value>BlazorChat can also be installed as a Progressive Web App!</value>
+  </data>
   <data name="read_by" xml:space="preserve">
     <value>Read By</value>
   </data>

@@ -14,7 +14,11 @@ interface IWindowExtensions {
     webRtcHelper?: RtcManager;
     queryDevices?: () => Promise<DeviceQuery>;
     hasRequestedUserMedia?: boolean;
+    isPWA?: () => boolean;
+}
 
+(globalThis as IWindowExtensions).isPWA = () => {
+    return window.matchMedia('(display-mode: standalone)').matches;
 }
 
 // This class describes objects used for intersection observing and scroll control

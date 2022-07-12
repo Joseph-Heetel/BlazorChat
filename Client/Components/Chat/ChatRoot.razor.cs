@@ -63,7 +63,17 @@ namespace BlazorChat.Client.Components.Chat
             }
             updateChannelListParams();
             updateMessageListParams();
+            _ = Task.Run(displayPwaPrompt);
             return base.OnInitializedAsync();
+        }
+
+        async Task displayPwaPrompt() 
+        {
+            var isPwa = await _jsRuntime.InvokeAsync<bool>("isPWA");
+            if (!isPwa)
+            {
+                _Snackbar.Add(Loc["pwaprompt"], Severity.Success, config => config.VisibleStateDuration = 10000);
+            }
         }
 
         #endregion

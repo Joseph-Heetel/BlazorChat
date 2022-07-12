@@ -7,6 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+globalThis.isPWA = () => {
+    return window.matchMedia('(display-mode: standalone)').matches;
+};
 // This class describes objects used for intersection observing and scroll control
 class InfiniteListHelper {
     constructor(topEl, bottomEl, dnetobj, callbackTopInView, callbackBottomInView) {
