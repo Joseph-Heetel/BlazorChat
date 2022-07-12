@@ -34,6 +34,8 @@ namespace BlazorChat.Client.Components.Chat
         private Snackbar? _connectionLostSnackbar { get; set; } = null;
         private Snackbar? _callIncomingSnackbar { get; set; } = null;
 
+        private bool _showInstallButton = false;
+
         #region Init
 
         protected override Task OnInitializedAsync()
@@ -63,17 +65,20 @@ namespace BlazorChat.Client.Components.Chat
             }
             updateChannelListParams();
             updateMessageListParams();
-            _ = Task.Run(displayPwaPrompt);
+            _ = Task.Run(checkPwaAvailability);
             return base.OnInitializedAsync();
         }
 
-        async Task displayPwaPrompt() 
+        async Task checkPwaAvailability()
         {
-            var isPwa = await _jsRuntime.InvokeAsync<bool>("isPWA");
-            if (!isPwa)
-            {
-                _Snackbar.Add(Loc["pwaprompt"], Severity.Success, config => config.VisibleStateDuration = 10000);
-            }
+            _showInstallButton = await _jsRuntime.InvokeAsync<bool>("displayInstallButton");
+            StateHasChanged();
+        }
+
+        async Task displayInstallPrompt()
+        {
+            _showInstallButton = _showInstallButton && !await _jsRuntime.InvokeAsync<bool>("showInstallPrompt");
+            StateHasChanged();
         }
 
         #endregion

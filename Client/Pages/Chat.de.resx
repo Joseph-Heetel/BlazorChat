@@ -213,6 +213,9 @@
   <data name="init_call" xml:space="preserve">
     <value>Anrufen</value>
   </data>
+  <data name="install" xml:space="preserve">
+    <value>Installieren</value>
+  </data>
   <data name="light_mode" xml:space="preserve">
     <value>Heller Modus</value>
   </data>
@@ -269,9 +272,6 @@
   </data>
   <data name="pview_inchannel" xml:space="preserve">
     <value>In Kanal</value>
-  </data>
-  <data name="pwaprompt" xml:space="preserve">
-    <value>BlazorChat kann auch als Progressive Web App installiert werden!</value>
   </data>
   <data name="read_by" xml:space="preserve">
     <value>Gelesen von</value>

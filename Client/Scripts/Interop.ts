@@ -1,6 +1,14 @@
 ﻿// Definition files for DotNet Interop
 import { DotNet } from "./definitions/@microsoft/dotnet-js-interop"
 
+// Experimental PWA install prompt support
+declare type BeforeInstallPromptEventChoice = "accepted" | "dismissed";
+interface BeforeInstallPromptEvent extends Event {
+    readonly platforms: string[];
+    readonly userChoice: Promise<BeforeInstallPromptEventChoice>;
+    prompt(): Promise<void>;
+}
+
 /// Interface to consistently access objects attached to the window handle
 interface IWindowExtensions {
     makeNewInfiniteListHelper?: (
@@ -14,11 +22,31 @@ interface IWindowExtensions {
     webRtcHelper?: RtcManager;
     queryDevices?: () => Promise<DeviceQuery>;
     hasRequestedUserMedia?: boolean;
-    isPWA?: () => boolean;
+    displayInstallButton?: () => boolean
+    deferredPwaPrompt?: BeforeInstallPromptEvent;
+    showInstallPrompt?: () => Promise<boolean>;
 }
 
-(globalThis as IWindowExtensions).isPWA = () => {
-    return window.matchMedia('(display-mode: standalone)').matches;
+(window as IWindowExtensions).displayInstallButton = () => !!(window as IWindowExtensions).deferredPwaPrompt;
+
+// Intercept beforeinstallprompt to be able to show it whenever we want
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    (window as IWindowExtensions).deferredPwaPrompt = e as BeforeInstallPromptEvent;
+});
+
+// show the deferred PWA prompt
+(window as IWindowExtensions).showInstallPrompt = async () => {
+    const prompt = (window as IWindowExtensions).deferredPwaPrompt;
+    if (prompt) {
+        await prompt.prompt();
+        if (await prompt.userChoice === "accepted") {
+            // No reason to keep it once installed
+            (window as IWindowExtensions).deferredPwaPrompt = undefined;
+            return true;
+        }
+    }
+    return false;
 }
 
 // This class describes objects used for intersection observing and scroll control

@@ -17,6 +17,13 @@
     <MudAppBar Color="Color.Surface" ToolBarClass="row_container gap">
         <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Chat" Color=_appbarButtonColor OnClick="@((_) => ToggleChannelList())" />
         <MudText Typo=@(Typo.h5) Class="maxflex">@(Title())</MudText>
+        @if (_showInstallButton)
+        {
+            <MudButton Variant=@(Variant.Filled)
+                   Color=@(Color.Primary)
+                   StartIcon=@(Icons.Filled.Download)
+                   OnClick=@(displayInstallPrompt)>@Loc["install"]</MudButton>
+        }
         <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.Search" Color=_appbarButtonColor OnClick=@(openSearchDialog) Disabled=@(CurrentChannel == null) />
         <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Filled.People" Color=_appbarButtonColor OnClick="@((_) => ToggleUserList())" />
     </MudAppBar>
@@ -33,7 +40,7 @@
 
             <div class="maincontainer @(SubtractDrawerClasses())">
                 <MessageList Params=(_messageListParams) OnTopVisible=attemptLoadOlderMessages OnBottomVisible=attemptLoadNewerMessages></MessageList>
-                <SendControl Params=@(_sendControlParams)/>
+                <SendControl Params=@(_sendControlParams) />
             </div>
         </MudDrawerContainer>
     </MudMainContent>

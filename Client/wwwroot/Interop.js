@@ -7,9 +7,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-globalThis.isPWA = () => {
-    return window.matchMedia('(display-mode: standalone)').matches;
-};
+window.displayInstallButton = () => !!window.deferredPwaPrompt;
+// Intercept beforeinstallprompt to be able to show it whenever we want
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    window.deferredPwaPrompt = e;
+});
+// show the deferred PWA prompt
+window.showInstallPrompt = () => __awaiter(void 0, void 0, void 0, function* () {
+    const prompt = window.deferredPwaPrompt;
+    if (prompt) {
+        yield prompt.prompt();
+        if ((yield prompt.userChoice) === "accepted") {
+            // No reason to keep it once installed
+            window.deferredPwaPrompt = undefined;
+            return true;
+        }
+    }
+    return false;
+});
 // This class describes objects used for intersection observing and scroll control
 class InfiniteListHelper {
     constructor(topEl, bottomEl, dnetobj, callbackTopInView, callbackBottomInView) {
