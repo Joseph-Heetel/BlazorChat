@@ -355,7 +355,7 @@ namespace BlazorChat.Client.Services
                 {
                     // Update read horizon if necessary
                     Message newest = messages.MaxBy(x => x.CreatedTS)!;
-                    updateReadHorizonIfNecessary(_currentChannel.State, newest.Created);
+                    updateReadHorizonIfNecessary(_currentChannel.State, newest);
                     return messages;
                 }
                 else if (apiresult.StatusCode == EApiStatusCode.NetErrorCode || apiresult.StatusCode == EApiStatusCode.NetException)

@@ -165,5 +165,19 @@ namespace BlazorChat.Client.Services
         {
             return Storage.SetItemAsync("offlinesession", session).AsTask();
         }
+
+        public Task SetQueuedMessages(IReadOnlyCollection<MessageDispatchProcess> processes)
+        {
+            return Storage.SetItemAsync("messagequeue", processes).AsTask();
+        }
+
+        public async Task<MessageDispatchProcess[]> GetQueuedMessages()
+        {
+            if (await Storage.ContainKeyAsync("messagequeue"))
+            {
+                return await Storage.GetItemAsync<MessageDispatchProcess[]>("messagequeue");
+            }
+            return Array.Empty<MessageDispatchProcess>();
+        }
     }
 }

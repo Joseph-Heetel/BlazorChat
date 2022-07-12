@@ -71,5 +71,7 @@ namespace BlazorChat.Client.Services
         public Task ClearCache();
         public Task<Session?> GetOfflineSession();
         public Task SetOfflineSession(Session session);
+        public Task SetQueuedMessages(IReadOnlyCollection<MessageDispatchProcess> processes);
+        public Task<MessageDispatchProcess[]> GetQueuedMessages();
     }
 }

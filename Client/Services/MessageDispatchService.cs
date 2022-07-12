@@ -1,5 +1,6 @@
 ﻿using BlazorChat.Shared;
 using Microsoft.AspNetCore.Components.Forms;
+using System.Text.Json.Serialization;
 
 namespace BlazorChat.Client.Services
 {
@@ -45,32 +46,39 @@ namespace BlazorChat.Client.Services
         public Task<EMessageDispatchState> Task { get; }
     }
 
-    internal class MessageDispatchProcess : IMessageDispatchState
+    public class MessageDispatchProcess : IMessageDispatchState
     {
         /// <summary>
         /// The <see cref="IMessageDispatchState.Task"/> task is manually resolved through this
         /// </summary>
+        [JsonIgnore]
         public TaskCompletionSource<EMessageDispatchState> Tcs { get; set; }
 
+        [JsonIgnore]
         public EMessageDispatchState State { get; set; }
 
+        [JsonIgnore]
         public ApiResult<FileAttachment>? UploadFileResult { get; set; }
 
+        [JsonIgnore]
         public ApiResult<Message>? SendMessageResult { get; set; }
 
         /// <summary>
         /// File that is to be uploaded
         /// </summary>
+        [JsonIgnore]
         public IBrowserFile? File { get; set; }
         /// <summary>
         /// Message body
         /// </summary>
+        [JsonPropertyName("body")]
         public string? Body { get; set; }
         /// <summary>
         /// Channel to send to
         /// </summary>
+        [JsonPropertyName("channelId")]
         public ItemId ChannelId { get; set; }
-
+        [JsonIgnore]
         public Task<EMessageDispatchState> Task { get; set; }
 
         public MessageDispatchProcess()
@@ -129,7 +137,11 @@ namespace BlazorChat.Client.Services
             _cacheService = cacheService;
             _apiService = apiService;
             _hubService = hubService;
-            _ = Task.Run(LoopProcessQueue);
+            _ = Task.Run(async () =>
+            {
+                await ReadSavedMessageQueue();
+                await LoopProcessQueue();
+            });
         }
 
         private readonly Observable<int> _count = new Observable<int>(0);
@@ -156,6 +168,7 @@ namespace BlazorChat.Client.Services
             _dispatchProcesses.Enqueue(dispatchProcess);
             UpdateState();
             // Immediately trigger a queue processing task
+            _ = Task.Run(SaveMessageQueue);
             _ = Task.Run(ProcessQueue);
             return dispatchProcess;
         }
@@ -253,6 +266,7 @@ namespace BlazorChat.Client.Services
                 // Update UI state
                 UpdateState();
             }
+            await SaveMessageQueue();
             _isProcessingMessages = false;
         }
 
@@ -263,6 +277,29 @@ namespace BlazorChat.Client.Services
         {
             _count.State = _dispatchProcesses.Count;
             _activeMessageDispatches.TriggerChange(_dispatchProcesses);
+        }
+
+        private async Task ReadSavedMessageQueue()
+        {
+            var messages = await _cacheService.GetQueuedMessages();
+            foreach (var message in messages)
+            {
+                _dispatchProcesses.Enqueue(message);
+            }
+            UpdateState();
+        }
+
+        private async Task SaveMessageQueue()
+        {
+            List<MessageDispatchProcess> messages = new List<MessageDispatchProcess>();
+            foreach (var message in _dispatchProcesses)
+            {
+                if (message.File == null)
+                {
+                    messages.Add(message);
+                }
+            }
+            await _cacheService.SetQueuedMessages(messages);
         }
     }
 }
