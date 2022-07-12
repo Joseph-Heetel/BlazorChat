@@ -313,7 +313,7 @@ namespace BlazorChat.Client.Services
                 {
                     // Update read horizon if necessary
                     Message newest = messages.MaxBy(x => x.CreatedTS)!;
-                    updateReadHorizonIfNecessary(_currentChannel.State, newest.Created);
+                    updateReadHorizonIfNecessary(_currentChannel.State, newest);
                     return messages;
                 }
                 else if (apiresult.StatusCode == EApiStatusCode.NetErrorCode || apiresult.StatusCode == EApiStatusCode.NetException)
@@ -384,15 +384,15 @@ namespace BlazorChat.Client.Services
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="readTimestamp"></param>
-        private void updateReadHorizonIfNecessary(Channel channel, DateTimeOffset readTimestamp)
+        private void updateReadHorizonIfNecessary(Channel channel, Message newest)
         {
             channel.HasUnread = false;
             Participation participation = channel.Participants.First(item => item.Id == _apiService.SelfUser.State!.Id);
-            if (participation.LastRead < readTimestamp)
+            if (participation.LastRead < newest.Created && newest.AuthorId != _apiService.SelfUser.State?.Id)
             {
                 _ = Task.Run(async () =>
                 {
-                    _ = await _apiService.UpdateReadHorizon(channel.Id, readTimestamp);
+                    _ = await _apiService.UpdateReadHorizon(channel.Id, newest.Created);
                 });
             }
         }

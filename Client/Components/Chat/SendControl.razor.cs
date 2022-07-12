@@ -22,13 +22,15 @@ using BlazorChat.Client.Services;
 
 namespace BlazorChat.Client.Components.Chat
 {
-    public partial class SendControl
+    public partial class SendControl : IDisposable
     {
         [Parameter]
         public SendControlParams Params { get; set; }
 
         private IBrowserFile? _file;
         private string _newMessageBody = string.Empty;
+
+        private int _queuedMessagesCount = 0;
 
         enum SendControlState
         {
@@ -38,6 +40,18 @@ namespace BlazorChat.Client.Components.Chat
         }
 
         private SendControlState _state = SendControlState.Disabled;
+
+        protected override void OnInitialized()
+        {
+            _messageDispatcher.Count.StateChanged += QueuedMessagesCount_StateChanged;
+            QueuedMessagesCount_StateChanged(_messageDispatcher.Count.State);
+        }
+
+        private void QueuedMessagesCount_StateChanged(int value)
+        {
+            _queuedMessagesCount = value;
+            StateHasChanged();
+        }
 
         protected override void OnParametersSet()
         {
@@ -60,31 +74,24 @@ namespace BlazorChat.Client.Components.Chat
             Debug.Assert(!Params.CurrentChannelId.IsZero);
             _state = SendControlState.Sending;
             this.StateHasChanged();
-            ApiResult<FileAttachment> attachmentapiresult = default;
-            bool error = false;
-            if (_file != null)
-            {
-                IBrowserFile file = _file;
-                _file = null;
-                attachmentapiresult = await ChatApiService.UploadFile(Params.CurrentChannelId, file);
-                if (!attachmentapiresult)
-                {
-                    _Snackbar.Add(Loc["send_file_fail"], Severity.Error);
-                    error = true;
-                }
-            }
-            if (!error)
-            {
-                string messageBody = _newMessageBody.Trim(' ', '\n');
-                _newMessageBody = string.Empty;
-                var attachment = attachmentapiresult.Result;
-                var sendresult = await ChatApiService.CreateMessage(Params.CurrentChannelId, messageBody, attachment);
-                if (!sendresult)
-                {
-                    _Snackbar.Add(Loc["send_message_fail"], Severity.Error);
-                }
-            }
+            IBrowserFile? file = _file;
+            string? body = _newMessageBody;
+            ItemId channelId = Params.CurrentChannelId;
+            _file = null;
+            _newMessageBody = string.Empty;
             _state = Params.CurrentChannelId.IsZero ? SendControlState.Disabled : SendControlState.Ready;
+            _ = Task.Run(async () =>
+            {
+                var dispatchState = _messageDispatcher.Postmessage(channelId, body, file);
+                var state = await dispatchState.Task;
+                if (state == EMessageDispatchState.Failure)
+                {
+                    _Snackbar.Add("Failure", Severity.Error, options =>
+                    {
+                        options.VisibleStateDuration = 5000;
+                    });
+                }
+            });
             this.StateHasChanged();
         }
 
@@ -137,6 +144,11 @@ namespace BlazorChat.Client.Components.Chat
         {
             _file = null;
             this.StateHasChanged();
+        }
+
+        public void Dispose()
+        {
+            _messageDispatcher.Count.StateChanged -= QueuedMessagesCount_StateChanged;
         }
     }
 }
