@@ -71,6 +71,9 @@ namespace BlazorChat.Client.Services
         /// Current state of audio transmit
         /// </summary>
         IReadOnlyObservable<bool> AudioTransmitEnabled { get; }
+        /// <summary>
+        /// Transmit state of the remote peer (which sources are they transmitting)
+        /// </summary>
         IReadOnlyObservable<TransmitState?> RemoteTransmitState { get; }
 
         /// <summary>
@@ -135,6 +138,7 @@ namespace BlazorChat.Client.Services
         /// </summary>
         /// <returns></returns>
         public Task EndScreenCapture();
+        public event Action? OnIceConnectFailed;
     }
 
     public class WebRTCCallservice : ICallService, IAsyncDisposable
@@ -152,6 +156,9 @@ namespace BlazorChat.Client.Services
         private readonly Observable<Device?> videoDevice = new Observable<Device?>(null);
         private readonly Observable<Device?> audioDevice = new Observable<Device?>(null);
         private readonly Observable<TransmitState?> remoteTransmitState = new Observable<TransmitState?>(null);
+
+        public event Action? OnIceConnectFailed;
+
         public IReadOnlyObservable<ItemId> CallId => callId;
         public IReadOnlyObservable<ECallState> Status => status;
         public IReadOnlyObservable<ItemId> RemotePeerId => remotePeerId;
@@ -267,7 +274,10 @@ namespace BlazorChat.Client.Services
         {
             if (status.State != ECallState.None)
             {
-                await _apiService.TerminateCall(callId.State);
+                // Do this out of sync because the api call to terminate may be expected to fail
+                // in certain situations (server restarted during call for example)
+                // The result of the call is not important
+                _ = Task.Run(() => _apiService.TerminateCall(callId.State));
             }
             await cleanLocal();
         }
@@ -281,9 +291,19 @@ namespace BlazorChat.Client.Services
         }
 
         [JSInvokable]
-        public async Task dispatchMessage(NegotiationMessage message)
+        public async Task<bool> dispatchMessage(NegotiationMessage message)
         {
-            var result = await _hubService.SendNegotiation(callId.State, remotePeerId.State, message);
+            bool result = false;
+            try
+            {
+                result = await _hubService.SendNegotiation(callId.State, remotePeerId.State, message);
+            }
+            catch (Exception)
+            {
+                // 
+                _ = Task.Run(TerminateCall);
+                return false;
+            }
             if (status.State == ECallState.Pending)
             {
                 status.State = ECallState.Ongoing;
@@ -291,7 +311,9 @@ namespace BlazorChat.Client.Services
             if (!result)
             {
                 Console.Error.WriteLine($"Failed to send negotiation message!");
+                return false;
             }
+            return true;
         }
 
         [JSInvokable]
@@ -302,6 +324,13 @@ namespace BlazorChat.Client.Services
                 remoteTransmitState.State = state;
             }
         }
+
+        [JSInvokable]
+        public void iceConnectFailed()
+        {
+            OnIceConnectFailed?.Invoke();
+        }
+
         public async Task<DeviceQuery> QueryDevices()
         {
             return await _jsRuntime.InvokeAsync<DeviceQuery>("window.queryDevices");

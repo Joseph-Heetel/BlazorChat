@@ -566,6 +566,7 @@ class RtcManager {
         this.connection.onnegotiationneeded = (e) => this.handleNegotiationNeeded();
         this.connection.oniceconnectionstatechange = (e) => {
             if (this.connection.iceConnectionState === 'failed') {
+                this.dnetobj.invokeMethodAsync<void>("iceConnectFailed");
                 this.connection.restartIce();
             }
         };

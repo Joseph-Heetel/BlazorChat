@@ -49,9 +49,15 @@ namespace BlazorChat.Client.Components.Calls
             RemotePeerId_StateChanged(Calls.RemotePeerId.State);
             Calls.RemoteTransmitState.StateChanged += RemoteTransmitState_StateChanged;
             RemoteTransmitState_StateChanged(Calls.RemoteTransmitState.State);
+            Calls.OnIceConnectFailed += Calls_OnIceConnectFailed;
             Api.SelfUser.StateChanged += SelfUser_StateChanged;
             SelfUser_StateChanged(Api.SelfUser.State);
             base.OnInitialized();
+        }
+
+        private void Calls_OnIceConnectFailed()
+        {
+            _snackbar.Add(Loc["call_icefailed"], Severity.Error, options => options.VisibleStateDuration = 5000);
         }
 
         private void RemoteTransmitState_StateChanged(TransmitState? value)
@@ -130,6 +136,7 @@ namespace BlazorChat.Client.Components.Calls
             Calls.Status.StateChanged -= Status_StateChanged;
             Calls.RemotePeerId.StateChanged -= RemotePeerId_StateChanged;
             Calls.RemoteTransmitState.StateChanged -= RemoteTransmitState_StateChanged;
+            Calls.OnIceConnectFailed -= Calls_OnIceConnectFailed;
             Api.SelfUser.StateChanged -= SelfUser_StateChanged;
         }
     }

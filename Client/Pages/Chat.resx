@@ -126,6 +126,9 @@
   <data name="call_camon" xml:space="preserve">
     <value>Enable Camera</value>
   </data>
+  <data name="call_icefailed" xml:space="preserve">
+    <value>Failed to establish connection to remote peer!</value>
+  </data>
   <data name="call_micoff" xml:space="preserve">
     <value>Mute Microphone</value>
   </data>

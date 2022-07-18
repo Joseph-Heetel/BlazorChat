@@ -126,6 +126,9 @@
   <data name="call_camon" xml:space="preserve">
     <value>Kamera anschalten</value>
   </data>
+  <data name="call_icefailed" xml:space="preserve">
+    <value>Verbindungsaufbau zum anderen Teilnehmer fehlgeschlagen!</value>
+  </data>
   <data name="call_micoff" xml:space="preserve">
     <value>Mikrofon stummschalten</value>
   </data>

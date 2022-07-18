@@ -112,6 +112,7 @@ namespace BlazorChat.Client.Components.Calls
         {
             if (MudDialog != null)
             {
+                _snackbar.Clear();
                 DialogCloseHelper.CloseAll();
                 MudDialog.Close();
             }
@@ -132,6 +133,7 @@ namespace BlazorChat.Client.Components.Calls
         {
             if (MudDialog != null)
             {
+                _snackbar.Clear();
                 DialogCloseHelper.CloseAll();
                 MudDialog.Close();
             }
