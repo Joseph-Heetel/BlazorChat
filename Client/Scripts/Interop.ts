@@ -335,7 +335,12 @@ class RtcManager {
 
         // get local media
         if (constraints) {
-            this.localUserMediaStream = await wrapCallWithTimeout(navigator.mediaDevices, navigator.mediaDevices.getUserMedia, constraints);
+            try {
+                this.localUserMediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+            }
+            catch (e) {
+                console.error("Failed to get user media", e);
+            }
 
             // setup audio
             const localAudioTracks: MediaStreamTrack[] = this.localUserMediaStream.getAudioTracks();

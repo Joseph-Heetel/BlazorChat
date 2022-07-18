@@ -274,10 +274,11 @@ namespace BlazorChat.Client.Services
         {
             if (status.State != ECallState.None)
             {
+                ItemId terminateCallId = callId.State;
                 // Do this out of sync because the api call to terminate may be expected to fail
                 // in certain situations (server restarted during call for example)
                 // The result of the call is not important
-                _ = Task.Run(() => _apiService.TerminateCall(callId.State));
+                _ = Task.Run(() => _apiService.TerminateCall(terminateCallId));
             }
             await cleanLocal();
         }
