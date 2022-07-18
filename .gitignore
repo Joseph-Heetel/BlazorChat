@@ -6,3 +6,4 @@
 */.config
 */*.user
 */*appsettings.json
+Client\wwwroot\Interop.js
